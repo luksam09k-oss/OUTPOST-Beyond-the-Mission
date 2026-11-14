@@ -1,0 +1,157 @@
+body:has(.ship) {
+  background: #070716;
+  display: grid;
+  place-items: center;
+}
+#app:has(.ship) {
+  width: min(100%, calc(100dvh * 16 / 9));
+  margin: 0 auto;
+  padding: 0;
+}
+.ship {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  aspect-ratio: 16 / 9;
+  background: #0a0a25;
+  overflow: hidden;
+  color: #edf5ff;
+  --ship-blue: #8ccfff;
+  --ship-gold: #ffd27a;
+  animation: ship-arrival .65s ease-out both;
+}
+.ship-room {
+  position: absolute;
+  inset: 0;
+  background: url('assets/nave.webp') center / 100% 100%;
+}
+.ship-light {
+  position: absolute;
+  inset: 28% 3% 27% 12%;
+  background: radial-gradient(ellipse at 58% 50%, #8fc9ff30, transparent 55%);
+  mix-blend-mode: screen;
+  animation: cabin-light 4s ease-in-out infinite alternate;
+}
+.ship-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, #03031c95),
+              repeating-linear-gradient(0deg, #0002 0 1px, transparent 1px 3px);
+}
+.ship-actor {
+  position: absolute;
+  bottom: 27%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 .55cqw 0 #111029a0);
+  transition: filter .22s;
+}
+.ship-neil {
+  left: 30%;
+  width: 8.6%;
+  aspect-ratio: 32 / 48;
+  background-image: url('assets/neil-sprite.png');
+  background-size: 700% 100%;
+  animation: neil-arrival 1.15s steps(12, end) both, neil-walk .575s steps(6, end) 2;
+}
+.ship-curiosity {
+  left: 68%;
+  width: 15.5%;
+  aspect-ratio: 64 / 52;
+  background-image: url('assets/curiosity-sprite.png');
+  background-size: 1200% 100%;
+  animation: curiosity-arrival 1.15s steps(12, end) both,
+             rover-drive .575s steps(6, end) 2,
+             rover-idle 1.75s 1.15s steps(6, end) infinite;
+}
+.ship[data-speaker="neil"] .ship-curiosity,
+.ship[data-speaker="curiosity"] .ship-neil {
+  filter: brightness(.67) drop-shadow(0 .55cqw 0 #111029a0);
+}
+.ship-content {
+  position: absolute;
+  z-index: 1;
+  left: 4%;
+  right: 4%;
+  bottom: 3%;
+}
+.ship-dialog,.ship-destination {
+  background: linear-gradient(110deg, #151d46ec, #0a112cec);
+  border: 2px solid #90c7ff;
+  box-shadow: 0 0 0 3px #151b42, inset 0 0 0 2px #405987, 0 0 2cqw #5098ee50;
+  border-radius: .85cqw;
+  animation: panel-arrival .2s ease-out both;
+}
+.ship-dialog {
+  position: relative;
+  min-height: 15cqw;
+  padding: 1.35cqw 1.6cqw 1.3cqw 22%;
+}
+.dialog-portrait {
+  position: absolute;
+  left: 1.5%;
+  bottom: 0;
+  width: 19%;
+  height: max(14cqw, 101%);
+  object-fit: contain;
+  object-position: bottom center;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 0 #0a1227);
+}
+.dialog-name,.ship-destination h1 {
+  color: var(--ship-blue);
+  font-size: clamp(15px, 2.15cqw, 32px);
+  margin: 0 0 .4em;
+  outline: none;
+  text-shadow: 2px 2px #273f7c;
+}
+.dialog-text {
+  font: 500 clamp(13px, 1.65cqw, 24px)/1.4 system-ui, sans-serif;
+  color: #f2f5ff;
+  margin: 0 0 .55em;
+}
+.dialog-layout { visibility: hidden; }
+.dialog-typing { position: absolute; inset: 0; }
+.dialog-content .ship-button { display: block; margin-left: auto; }
+.ship-button {
+  color: #eaf5ff;
+  background: #101c40;
+  border: 2px solid #75baff;
+  box-shadow: inset 0 0 0 2px #233c6a;
+  font-size: clamp(12px, 1.3cqw, 19px);
+  padding: .38em .8em;
+}
+.ship-button span { color: var(--ship-gold); animation: ship-prompt .9s steps(2, end) infinite; }
+.ship-button:hover:not(:disabled) { background: #20386a; color: white; }
+.ship-button[aria-disabled="true"] { border-color: #737fa0; color: #ccd5e7; cursor: help; }
+.ship-destination { padding: 1cqw 2cqw .65cqw; text-align: center; }
+.ship-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1cqw; }
+.ship-options small { display: block; font-weight: normal; margin-top: .2em; }
+.ship-status { min-height: 1.35em; margin: .4em 0 0; color: var(--ship-gold); font-size: clamp(11px, 1.22cqw, 16px); }
+.ship-meters { display: flex; flex-wrap: wrap; gap: .3em .65em; padding: 0; margin: 0 0 .6em; list-style: none; font-size: clamp(11px, 1.15cqw, 16px); }
+.ship-meters li { padding: .2em .4em; background: #0d1633; border: 1px solid #405987; }
+.ship-meters strong { color: var(--ship-gold); white-space: nowrap; }
+
+@keyframes ship-arrival { from { opacity: 0; } to { opacity: 1; } }
+@keyframes panel-arrival { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes cabin-light { from { opacity: .22; } to { opacity: .85; } }
+@keyframes ship-prompt { 50% { opacity: .35; } }
+@keyframes neil-arrival { from { left: 23%; } to { left: 30%; } }
+@keyframes curiosity-arrival { from { left: 75%; } to { left: 68%; } }
+@keyframes neil-walk { from { background-position-x: 16.6667%; } to { background-position-x: 116.6667%; } }
+@keyframes rover-drive { from { background-position-x: 54.54545%; } to { background-position-x: 109.0909%; } }
+@keyframes rover-idle { from { background-position-x: 0; } to { background-position-x: 54.54545%; } }
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .ship { aspect-ratio: auto; }
+  .ship-room { position: relative; aspect-ratio: 16 / 9; }
+  .ship-content { position: relative; inset: auto; margin: 0 12px 14px; }
+  .ship-dialog { min-height: 125px; padding: 12px 10px 10px 26%; }
+  .dialog-portrait { width: 24%; height: 100%; }
+  .ship-destination { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship,.ship-light,.ship-actor,.ship-dialog,.ship-destination,.ship-button span { animation: none; }
+}

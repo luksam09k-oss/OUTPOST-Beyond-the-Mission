@@ -23,17 +23,17 @@ const missions = [
     problem: 'El laboratorio y el soporte vital usan la misma batería. Hay que decidir cuál recibe la energía.',
     x: 205, y: 149, outside: true,
     options: [
-      ['Analizar la muestra ahora', [-24, 0, -12], true, 'Identificaste componentes del suelo. El soporte vital funcionó con una reserva menor.'],
+      ['Analizar la muestra ahora', [-24, -12, 0], true, 'Identificaste componentes del suelo. La ventilación consumió parte de la reserva de oxígeno.'],
       ['Guardar la muestra', [-6, 0, 0], false, 'La muestra queda recogida y pendiente de análisis. La energía se reservó para el soporte vital.']
     ]
   },
   {
     title: 'Buscando recursos', location: 'Zona polar', target: 'sensor del terreno',
     action: 'Examinar terreno frío', objective: 'Busca indicios de hielo en el suelo de una zona sombreada.',
-    problem: 'El sensor detectó una señal débil. Para comprobarla necesitarás energía y suministros.',
+    problem: 'El sensor detectó una señal débil. Para comprobarla tendrás que quedarte más tiempo fuera y gastar oxígeno del traje.',
     x: 267, y: 111, outside: true,
     options: [
-      ['Usar el escáner y perforar', [-21, -27, 0], true, 'El análisis encontró indicios de hielo. Buscarlo a mayor profundidad te costó baterías y piezas.'],
+      ['Usar el escáner y perforar', [-21, -27, 0], true, 'El análisis encontró indicios de hielo. Buscarlo a mayor profundidad te costó baterías y parte de la reserva de oxígeno.'],
       ['Marcar el punto en el mapa', [-5, -5, 0], false, 'Guardaste la ubicación para otra salida. Una señal débil necesita más mediciones.']
     ]
   },
@@ -43,8 +43,8 @@ const missions = [
     problem: 'Una alerta solar indica que podría aumentar la radiación. El equipo aún recoge datos afuera.',
     x: 253, y: 146, outside: false,
     options: [
-      ['Entrar todos al refugio', [-4, -5, 0], true, 'Las paredes del refugio reducen la exposición. Apagaste equipos secundarios para ahorrar energía.'],
-      ['Cerrar el equipo antes de entrar', [-11, -8, -30], false, 'Guardaste los datos, pero la tripulación estuvo expuesta más tiempo. Hay que vigilar su estado.']
+      ['Entrar todos al refugio', [-4, -5, 2], true, 'Las paredes del refugio reducen la exposición. Apagaste equipos secundarios para ahorrar energía.'],
+      ['Cerrar el equipo antes de entrar', [-11, -8, 30], false, 'Guardaste los datos, pero la tripulación estuvo expuesta más tiempo. Hay que vigilar su estado.']
     ]
   },
   {
@@ -53,13 +53,14 @@ const missions = [
     problem: 'Un ventilador del soporte vital se averió. Queda una pieza de repuesto y un circuito de emergencia.',
     x: 319, y: 120, outside: false,
     options: [
-      ['Instalar el repuesto', [-9, -31, 10], true, 'La pieza nueva reparó el ventilador. La base puede seguir operando con normalidad.'],
-      ['Activar el circuito de emergencia', [-3, -7, -17], false, 'El circuito de emergencia mantuvo el aire en circulación. La reparación queda pendiente.']
+      ['Instalar el repuesto', [-9, -7, 0], true, 'La pieza nueva reparó el ventilador. La base puede seguir operando con normalidad.'],
+      ['Activar el circuito de emergencia', [-3, -24, 0], false, 'El circuito de emergencia mantuvo el aire en circulación. El circuito gasta más oxígeno de reserva y la reparación queda pendiente.']
     ]
   }
 ];
 
-const resourceNames = ['Energía', 'Suministros', 'Seguridad'];
+const resourceNames = ['Energía', 'Oxígeno', 'Radiación'];
+const initialResources = [100, 100, 0];
 const directions = {
   arrowup: [0,-1], w: [0,-1], arrowdown: [0,1], s: [0,1],
   arrowleft: [-1,0], a: [-1,0], arrowright: [1,0], d: [1,0]
@@ -78,7 +79,7 @@ function header() {
 }
 
 function guide(message) {
-  return `<div class="guide"><canvas width="26" height="26" data-portrait="robot" aria-hidden="true"></canvas><div><strong>Neil Armstrong · Robot guía</strong><p>${message}</p></div></div>`;
+  return `<div class="guide"><img src="assets/neil-retrato.webp" alt=""><div><strong>Neil Armstrong</strong><p>${message}</p></div></div>`;
 }
 
 function show(next, html) {
@@ -88,37 +89,15 @@ function show(next, html) {
   app.innerHTML = html;
   app.querySelectorAll('[data-portrait]').forEach(canvas => {
     const id = canvas.dataset.portrait;
-    sprite(painter(canvas), 5, 3, id === 'robot' ? '#83edff' : crew[Number(id)].color, id === 'robot');
+    sprite(painter(canvas), 5, 3, crew[Number(id)].color);
   });
   app.querySelector('h1')?.focus();
-}
-
-function start() {
-  show('start', `
-    <h1 class="sr-only" tabindex="-1">OUTPOST · Beyond the Mission</h1>
-    <figure class="splash">
-      <img src="assets/portada.webp" width="1600" height="900" alt="Space Outpost Simulator. Un astronauta y un robot junto a una base lunar bajo un cielo estrellado.">
-      <span class="spark" style="left:36%;top:20%"></span><span class="spark" style="left:73%;top:57%"></span>
-      <button class="start" data-action="destinations" aria-label="Iniciar misión"></button>
-    </figure>
-    <div class="splash-actions"><button data-action="help">Cómo jugar</button></div>`);
-}
-
-function destinations() {
-  show('destinations', `${header()}<section class="panel destination">
-    <canvas id="moon" width="286" height="144" aria-hidden="true"></canvas>
-    <div><p class="kicker">SELECCIÓN DE DESTINO</p><h1 tabindex="-1">La Luna</h1>
-      <p>Explora cráteres, investiga el suelo y cuida la base con energía limitada.</p>
-      <button class="primary" data-action="briefing">Seleccionar Luna</button>
-      <button data-action="start">Volver</button>
-    </div></section>`);
-  drawMoon(document.querySelector('#moon'));
 }
 
 function briefing() {
   show('briefing', `${header()}<section class="panel">
     <p class="kicker">MISIÓN LUNAR</p><h1 tabindex="-1">Tripulación de la base</h1>
-    ${guide('Soy Neil Armstrong, el robot guía. Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
+    ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
     <ul class="crew" aria-label="Cinco tripulantes">${crew.map((person, i) =>
       `<li><canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas><strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
     <button class="primary" data-action="begin">Comenzar</button>
@@ -127,11 +106,11 @@ function briefing() {
 
 function stats() {
   return game.resources.map((value, i) => `<div class="stat">${resourceNames[i]} <strong>${value}%</strong>
-    <meter min="0" max="100" low="26" value="${value}" aria-label="${resourceNames[i]}"></meter></div>`).join('');
+    <meter min="0" max="100" low="26" high="74" optimum="${i === 2 ? 0 : 100}" value="${value}" aria-label="${resourceNames[i]}"></meter></div>`).join('');
 }
 
 function begin() {
-  game = { index: 0, log: [], resources: [100, 100, 100] };
+  game = { index: 0, log: [], resources: [...initialResources] };
   scene('base');
 }
 
@@ -220,13 +199,13 @@ function choose(option) {
   panel.innerHTML = `<h2 tabindex="-1">${success ? 'Objetivo completado' : 'Objetivo parcial'}</h2>
     ${guide(explanation)}<p>${changes(delta)}</p>
     <button class="primary" data-action="next">${game.index === 4 ? 'Ver resultados' : 'Siguiente misión'}</button>`;
-  sprite(painter(panel.querySelector('canvas')), 5, 3, '#83edff', true);
   panel.querySelector('h2').focus();
 }
 
 function next() {
   if (phase !== 'feedback') return;
-  if (game.index < missions.length-1 && game.resources.every(Boolean)) {
+  const [energy, oxygen, radiation] = game.resources;
+  if (game.index < missions.length-1 && energy > 0 && oxygen > 0 && radiation < 100) {
     game.index++;
     scene('explore');
   } else {
@@ -235,23 +214,26 @@ function next() {
 }
 
 function results() {
-  const [energy, supplies, safety] = game.resources;
+  const [energy, oxygen, radiation] = game.resources;
   const complete = game.log.filter(entry => entry.success).length;
   const finalRepair = game.log.length === 5 && game.log[4].success;
-  const baseStatus = energy === 0 ? 'sin energía' : supplies === 0 ? 'sin suministros' : finalRepair ? 'operativa' : 'en modo de emergencia';
-  const crewStatus = safety >= 70 ? 'a salvo' : safety > 0 ? 'necesita observación médica' : 'requiere atención urgente';
+  const baseStatus = energy === 0 ? 'sin energía' : oxygen === 0 ? 'sin oxígeno' : finalRepair ? 'operativa' : 'en modo de emergencia';
+  const crewStatus = oxygen === 0 || radiation >= 100 ? 'necesita atención urgente' : radiation < 25 ? 'está a salvo' : 'necesita observación médica';
   show('results', `${header()}<section class="panel"><p class="kicker">INFORME LUNAR</p>
     <h1 tabindex="-1">Resultados de la misión</h1>
-    <p><strong>${complete}/5 objetivos completados.</strong> Base ${baseStatus}. La tripulación está ${crewStatus === 'a salvo' ? crewStatus : 'bajo evaluación'}.</p>
-    ${safety < 70 ? `<p>La tripulación ${crewStatus}.</p>` : ''}
+    <p><strong>${complete}/5 objetivos completados.</strong> Base ${baseStatus}. La tripulación ${crewStatus}.</p>
     <div class="stats">${stats()}</div>
     <h2>Decisiones de la expedición</h2>
     <ol class="log">${game.log.map(entry => `<li><strong>${entry.title}</strong><br>${entry.name}. ${entry.explanation}</li>`).join('')}</ol>
     <button class="primary" data-action="begin">Volver a jugar</button>
-    <button data-action="start">Inicio</button></section>`);
+    <button data-action="returnToStart">Inicio</button></section>`);
 }
 
-const actions = { start, destinations, briefing, begin, interact, next, help: () => { pressed.clear(); help.showModal(); } };
+const actions = {
+  advance, selectMoon, selectMars, continueMoon, begin, interact, next,
+  returnToStart: () => location.assign('index.html'),
+  help: () => { pressed.clear(); help.showModal(); }
+};
 app.addEventListener('click', event => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
@@ -263,8 +245,12 @@ app.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (help.open) return;
   const key = event.key.toLowerCase();
-  if (screen === 'start' && key === 'enter' && !event.target.closest('button')) {
-    destinations();
+  if (screen === 'ship' && (key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('button')) {
+    const advanceButton = app.querySelector('.dialog-content button');
+    if (advanceButton) {
+      event.preventDefault();
+      advanceButton.click();
+    }
   } else if (screen === 'map' && directions[key]) {
     event.preventDefault();
     pressed.set(key, directions[key]);
@@ -284,4 +270,4 @@ for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   app.addEventListener(eventName, event => pressed.delete(event.pointerId));
 }
 
-start();
+enterShip();

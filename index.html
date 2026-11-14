@@ -3,19 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090c20">
   <title>OUTPOST · Beyond the Mission</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="art.js"></script>
-  <script defer src="game.js"></script>
+  <style>
+    html,body { height: 100%; margin: 0; background: #070716; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; }
+    a { position: fixed; bottom: 12px; right: 12px; padding: 8px; color: #bfe0ff; background: #10182e; font: 14px monospace; }
+    a[hidden] { display: none; }
+  </style>
+  <script defer src="launch.js"></script>
 </head>
 <body>
-  <main id="app"></main>
-  <dialog id="help" aria-labelledby="help-title">
-    <h2 id="help-title">Cómo jugar</h2>
-    <p>Muévete con las flechas, WASD o los botones en pantalla. Acércate al objetivo marcado y pulsa <kbd>E</kbd> o «Interactuar».</p>
-    <p>Completa cinco misiones. Cada decisión cambia la energía, los suministros o la seguridad de la tripulación.</p>
-    <form method="dialog"><button class="primary">Entendido</button></form>
-  </dialog>
+  <iframe id="opening" title="OUTPOST · Pantalla de inicio y cinemática"></iframe>
+  <a href="juego.html" id="offline" hidden>Ir a la nave</a>
+  <noscript><a href="juego.html">Ir a la nave</a></noscript>
 </body>
 </html>
