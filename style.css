@@ -54,3 +54,12 @@ dialog::backdrop { background: #030612d9; }
 @media (max-width: 750px) {
   .dashboard { grid-template-columns: 1fr; }
 }
+
+.crew-player {
+  display: block;
+  width: 23px;
+  aspect-ratio: 32 / 48;
+  margin: 0 0 5px 5px;
+  background: url('assets/player-sprite.png') left / 700% 100% no-repeat;
+  image-rendering: pixelated;
+}

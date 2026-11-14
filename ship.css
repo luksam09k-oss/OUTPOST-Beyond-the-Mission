@@ -12,7 +12,6 @@ body:has(.ship) {
   position: relative;
   isolation: isolate;
   container-type: inline-size;
-  aspect-ratio: 16 / 9;
   background: #0a0a25;
   overflow: hidden;
   color: #edf5ff;
@@ -21,8 +20,8 @@ body:has(.ship) {
   animation: ship-arrival .65s ease-out both;
 }
 .ship-room {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  aspect-ratio: 16 / 9;
   background: url('assets/nave.webp') center / 100% 100%;
 }
 .ship-light {
@@ -41,42 +40,46 @@ body:has(.ship) {
 }
 .ship-actor {
   position: absolute;
-  bottom: 27%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%) scaleX(var(--facing, 1));
   filter: drop-shadow(0 .55cqw 0 #111029a0);
   transition: filter .22s;
 }
-.ship-neil {
-  left: 30%;
-  width: 8.6%;
+.ship-actor span {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) scaleX(var(--facing, 1));
+  padding: .1em .4em;
+  background: #0a112ce8;
+  color: #edf5ff;
+  font-size: clamp(9px, 1.12cqw, 15px);
+  white-space: nowrap;
+}
+.ship-neil,.ship-player {
+  width: 6.8%;
   aspect-ratio: 32 / 48;
   background-image: url('assets/neil-sprite.png');
-  background-size: 700% 100%;
-  animation: neil-arrival 1.15s steps(12, end) both, neil-walk .575s steps(6, end) 2;
 }
+.ship-player { background-image: url('assets/player-sprite.png'); background-size: 700% 100%; z-index: 1; }
+.ship-player span { color: var(--ship-gold); }
 .ship-curiosity {
-  left: 68%;
-  width: 15.5%;
+  width: 13.4%;
   aspect-ratio: 64 / 52;
   background-image: url('assets/curiosity-sprite.png');
   background-size: 1200% 100%;
-  animation: curiosity-arrival 1.15s steps(12, end) both,
-             rover-drive .575s steps(6, end) 2,
-             rover-idle 1.75s 1.15s steps(6, end) infinite;
+  animation: rover-idle 1.75s steps(6, end) infinite;
 }
 .ship[data-speaker="neil"] .ship-curiosity,
 .ship[data-speaker="curiosity"] .ship-neil {
   filter: brightness(.67) drop-shadow(0 .55cqw 0 #111029a0);
 }
-.ship-content {
-  position: absolute;
-  z-index: 1;
-  left: 4%;
-  right: 4%;
-  bottom: 3%;
-}
+.ship-content { position: relative; z-index: 2; margin: -15% 4% 0; padding-bottom: 8px; }
+.ship-overlay:empty { display: none; }
+.ship-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 8px; }
+.ship-controls button { touch-action: none; padding: 6px 9px; }
+.ship-hint { margin: 4px 0 0; font-size: clamp(11px, 1.4cqw, 16px); }
 .ship-dialog,.ship-destination {
   background: linear-gradient(110deg, #151d46ec, #0a112cec);
   border: 2px solid #90c7ff;
@@ -138,16 +141,10 @@ body:has(.ship) {
 @keyframes panel-arrival { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes cabin-light { from { opacity: .22; } to { opacity: .85; } }
 @keyframes ship-prompt { 50% { opacity: .35; } }
-@keyframes neil-arrival { from { left: 23%; } to { left: 30%; } }
-@keyframes curiosity-arrival { from { left: 75%; } to { left: 68%; } }
-@keyframes neil-walk { from { background-position-x: 16.6667%; } to { background-position-x: 116.6667%; } }
-@keyframes rover-drive { from { background-position-x: 54.54545%; } to { background-position-x: 109.0909%; } }
 @keyframes rover-idle { from { background-position-x: 0; } to { background-position-x: 54.54545%; } }
 
 @media (max-width: 640px) and (orientation: portrait) {
-  .ship { aspect-ratio: auto; }
-  .ship-room { position: relative; aspect-ratio: 16 / 9; }
-  .ship-content { position: relative; inset: auto; margin: 0 12px 14px; }
+  .ship-content { margin: -9% 12px 0; }
   .ship-dialog { min-height: 125px; padding: 12px 10px 10px 26%; }
   .dialog-portrait { width: 24%; height: 100%; }
   .ship-destination { padding: 10px; }

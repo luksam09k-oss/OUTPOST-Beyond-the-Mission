@@ -3,18 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c20">
   <title>OUTPOST · Beyond the Mission</title>
-  <style>
-    html,body { height: 100%; margin: 0; background: #070716; }
-    iframe { display: block; width: 100%; height: 100%; border: 0; }
-    a { position: fixed; bottom: 12px; right: 12px; padding: 8px; color: #bfe0ff; background: #10182e; font: 14px monospace; }
-    a[hidden] { display: none; }
-  </style>
-  <script defer src="launch.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="opening.css">
+  <script defer src="opening.js"></script>
+  <script defer src="art.js"></script>
+  <link rel="stylesheet" href="ship.css">
+  <script defer src="ship.js"></script>
+  <script defer src="game.js"></script>
 </head>
 <body>
-  <iframe id="opening" title="OUTPOST · Pantalla de inicio y cinemática"></iframe>
-  <a href="juego.html" id="offline" hidden>Ir a la nave</a>
-  <noscript><a href="juego.html">Ir a la nave</a></noscript>
+  <main id="app"></main>
+  <template id="opening-template">
+    <section id="stage" aria-label="Pantalla de inicio">
+  <canvas id="c" width="320" height="180"></canvas>
+  <div class="scan"></div><div class="vig"></div>
+
+  <div class="badge"><i>NASA</i><b></b><div>NASA<br>SPACE APPS<br>CHALLENGE 2026</div></div>
+
+  <div class="hero">
+    <svg class="orb" viewBox="0 0 160 90" aria-hidden="true">
+      <g transform="rotate(-6 80 31.5)">
+        <path class="arc" pathLength="100" d="M140 31.5A60 13.5 0 1 1 20 31.5A60 13.5 0 1 1 140 31.5Z"/>
+        <path class="arc b" pathLength="100" d="M146 31.5A66 17.5 0 1 1 14 31.5A66 17.5 0 1 1 146 31.5Z"/>
+        <circle r="1.1" fill="#fff"><animateMotion dur="9s" repeatCount="indefinite" path="M140 31.5A60 13.5 0 1 1 20 31.5A60 13.5 0 1 1 140 31.5Z"/></circle>
+      </g>
+      <path class="spark" d="M139.7 21.2L140.7 24.2L143.7 25.2L140.7 26.2L139.7 29.2L138.7 26.2L135.7 25.2L138.7 24.2Z"/>
+    </svg>
+    <h1 class="logo" aria-label="OUTPOST">
+      <span class="l1" aria-hidden="true">OUTPOST:</span><span class="l2" aria-hidden="true">OUTPOST:</span>
+      <span class="l3" aria-hidden="true">OUTPOST:</span><span class="l4" aria-hidden="true">OUTPOST:</span>
+    </h1>
+    <p class="sub">Beyond the Mission</p>
+  </div>
+  <p class="tag">Cada decisión cuenta</p>
+  <button class="start" id="start"><em>COMENZAR MISIÓN</em></button>
+
+  <div class="hud" id="hud"></div>
+  <div class="load"><b>CARGANDO MISIÓN</b><div class="bar"><i id="bar"></i></div><small>Cada decisión cuenta</small></div>
+  <div class="wh" id="wh"></div>
+    </section>
+  </template>
+  <dialog id="help" aria-labelledby="help-title">
+    <h2 id="help-title">Cómo jugar</h2>
+    <p>Muévete con las flechas, WASD o los botones en pantalla. Acércate a un personaje o al objetivo marcado y pulsa <kbd>E</kbd> o «Interactuar».</p>
+    <p>Completa cinco misiones. Cada decisión cambia la energía, el oxígeno o la radiación acumulada.</p>
+    <form method="dialog"><button class="primary">Entendido</button></form>
+  </dialog>
 </body>
 </html>

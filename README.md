@@ -1,18 +1,7 @@
 # OUTPOST · Beyond the Mission
 
-Prototipo web de una expedición lunar. Tras la pantalla de inicio y su cinemática, Curiosity y Neil Armstrong te reciben en la nave. Elige la Luna para continuar con una tripulación de cinco personas.
+Abre `index.html` en el navegador. Desde ahí se juega todo, desde el despegue hasta el informe de la expedición. Mantén las carpetas y archivos juntos al descargar el proyecto.
 
-## Cómo abrirlo
-
-Sirve la carpeta con cualquier servidor HTTP estático y abre `index.html`. Por ejemplo, con Python instalado:
-
-```sh
-python -m http.server 8000
-```
-
-Entra a <http://localhost:8000>. `inicio.html` contiene la pantalla y cinemática originales. Si abres el proyecto directamente desde el disco y tu navegador bloquea la transición, usa «Ir a la nave» o abre `juego.html`.
-
-- En la nave, avanza el diálogo con el botón, Enter o la barra espaciadora.
-- En la Luna, muévete con WASD, las flechas o los botones en pantalla.
-- Acércate al marcador amarillo y pulsa **E** o **Interactuar**.
-- Revisa cómo cada decisión cambia la energía, el oxígeno y la radiación.
+- En la nave, muévete con WASD, las flechas o los botones en pantalla. Acércate a Neil o Curiosity y pulsa **E** o **Hablar**. También puedes moverte durante el diálogo.
+- Habla con ambos para elegir destino. La Luna está disponible.
+- En la Luna, acércate al objetivo marcado y pulsa **E** o **Interactuar**. Cada decisión afecta la energía, el oxígeno o la radiación.

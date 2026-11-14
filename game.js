@@ -41,7 +41,7 @@ const missions = [
     title: 'Alerta solar', location: 'Base lunar', target: 'entrada al refugio',
     action: 'Consultar la alerta', objective: 'Ve al refugio y avisa a los cinco tripulantes.',
     problem: 'Una alerta solar indica que podría aumentar la radiación. El equipo aún recoge datos afuera.',
-    x: 253, y: 146, outside: false,
+    x: 316, y: 142, outside: false,
     options: [
       ['Entrar todos al refugio', [-4, -5, 2], true, 'Las paredes del refugio reducen la exposición. Apagaste equipos secundarios para ahorrar energía.'],
       ['Cerrar el equipo antes de entrar', [-11, -8, 30], false, 'Guardaste los datos, pero la tripulación estuvo expuesta más tiempo. Hay que vigilar su estado.']
@@ -51,7 +51,7 @@ const missions = [
     title: 'Regreso seguro', location: 'Base lunar', target: 'soporte vital',
     action: 'Revisar soporte vital', objective: 'Restablece la circulación de aire y cierra la expedición.',
     problem: 'Un ventilador del soporte vital se averió. Queda una pieza de repuesto y un circuito de emergencia.',
-    x: 319, y: 120, outside: false,
+    x: 286, y: 140, outside: false,
     options: [
       ['Instalar el repuesto', [-9, -7, 0], true, 'La pieza nueva reparó el ventilador. La base puede seguir operando con normalidad.'],
       ['Activar el circuito de emergencia', [-3, -24, 0], false, 'El circuito de emergencia mantuvo el aire en circulación. El circuito gasta más oxígeno de reserva y la reparación queda pendiente.']
@@ -73,6 +73,7 @@ let game;
 let player;
 let frame;
 let phase;
+let launchOpening;
 
 function header() {
   return '<header class="top"><div class="brand">OUTPOST</div><button data-action="help">Cómo jugar</button></header>';
@@ -94,12 +95,38 @@ function show(next, html) {
   app.querySelector('h1')?.focus();
 }
 
+function start() {
+  show('opening', document.querySelector('#opening-template').innerHTML);
+  launchOpening = animateOpening(enterShip);
+}
+
+function movementButtons() {
+  return `<div class="directions" aria-label="Movimiento">
+    <button data-move="arrowleft" aria-label="Izquierda">←</button><button data-move="arrowup" aria-label="Arriba">↑</button>
+    <button data-move="arrowdown" aria-label="Abajo">↓</button><button data-move="arrowright" aria-label="Derecha">→</button>
+  </div>`;
+}
+
+function movePlayer(elapsed, speed, minX, maxX, minY, maxY) {
+  let dx = 0;
+  let dy = 0;
+  if (!help.open) {
+    for (const [x, y] of pressed.values()) { dx += x; dy += y; }
+  }
+  const length = Math.hypot(dx, dy);
+  player.moving = length > 0;
+  if (!length) return;
+  if (dx) player.facing = Math.sign(dx);
+  player.x = Math.max(minX, Math.min(maxX, player.x + dx / length * elapsed * speed));
+  player.y = Math.max(minY, Math.min(maxY, player.y + dy / length * elapsed * speed));
+}
+
 function briefing() {
   show('briefing', `${header()}<section class="panel">
     <p class="kicker">MISIÓN LUNAR</p><h1 tabindex="-1">Tripulación de la base</h1>
     ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
     <ul class="crew" aria-label="Cinco tripulantes">${crew.map((person, i) =>
-      `<li><canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas><strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
+      `<li>${i === 0 ? '<span class="crew-player" aria-hidden="true"></span>' : `<canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas>`}<strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
     <button class="primary" data-action="begin">Comenzar</button>
     </section>`);
 }
@@ -115,20 +142,19 @@ function begin() {
 }
 
 const base = { title: 'Base lunar', location: 'Base lunar', target: 'terminal de investigación',
-  action: 'Abrir expedición', objective: 'Reúnete con tu equipo y activa la terminal de investigación.', x: 65, y: 119 };
+  action: 'Abrir expedición', objective: 'Reúnete con tu equipo y activa la terminal de investigación.', x: 134, y: 143 };
 
 function scene(nextPhase) {
   phase = nextPhase;
   const mission = nextPhase === 'base' ? base : missions[game.index];
-  player = { x: mission.outside ? 52 : 180, y: 155, moving: false };
+  player = { x: mission.outside ? 52 : 188, y: 155, facing: 1, moving: false };
   show('map', `${header()}<p class="kicker">${nextPhase === 'base' ? 'ESTABLECIMIENTO' : `MISIÓN ${game.index+1} / 5 · ${mission.location.toUpperCase()}`}</p>
     <h1 tabindex="-1">${mission.title}</h1><div class="stats" id="stats">${stats()}</div>
     <div class="dashboard"><div>
-      <canvas class="stage" id="map" width="384" height="192" aria-label="Mapa de ${mission.location}"></canvas>
-      <div class="controls"><div class="directions" aria-label="Movimiento">
-        <button data-move="arrowleft" aria-label="Izquierda">←</button><button data-move="arrowup" aria-label="Arriba">↑</button>
-        <button data-move="arrowdown" aria-label="Abajo">↓</button><button data-move="arrowright" aria-label="Derecha">→</button>
-      </div><button class="primary" data-action="interact" disabled>Interactuar · E</button></div>
+      <canvas class="stage" id="map" width="384" height="${mission.outside ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
+      <div class="controls">${movementButtons()}
+        <button class="primary" data-action="interact" disabled>Interactuar · E</button>
+      </div>
     </div><section class="panel" id="mission-panel">
       <h2>Objetivo</h2><p>${mission.objective}</p><p id="hint" aria-live="polite">Acércate a ${mission.target}.</p>
     </section></div>`);
@@ -140,15 +166,7 @@ function scene(nextPhase) {
     const elapsed = lastTime ? Math.min(40, time-lastTime) : 0;
     lastTime = time;
     if ((phase === 'base' || phase === 'explore') && !help.open) {
-      let dx = 0;
-      let dy = 0;
-      for (const [x, y] of pressed.values()) { dx += x; dy += y; }
-      const length = Math.hypot(dx, dy);
-      player.moving = length > 0;
-      if (length) {
-        player.x = Math.max(12, Math.min(372, player.x + dx/length*elapsed*.1));
-        player.y = Math.max(mission.outside ? 97 : 113, Math.min(168, player.y + dy/length*elapsed*.1));
-      }
+      movePlayer(elapsed, .1, 12, 372, mission.outside ? 97 : 135, 168);
       const reachable = nearby(mission);
       interactButton.disabled = !reachable;
       const message = reachable ? `Pulsa E · ${mission.action}` : `Acércate a ${mission.target}.`;
@@ -230,8 +248,8 @@ function results() {
 }
 
 const actions = {
-  advance, selectMoon, selectMars, continueMoon, begin, interact, next,
-  returnToStart: () => location.assign('index.html'),
+  advance, talk, destinations: chooseDestination, backToShip, selectMoon, selectMars, begin, interact, next,
+  returnToStart: start,
   help: () => { pressed.clear(); help.showModal(); }
 };
 app.addEventListener('click', event => {
@@ -245,17 +263,21 @@ app.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (help.open) return;
   const key = event.key.toLowerCase();
-  if (screen === 'ship' && (key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('button')) {
+  if (screen === 'opening' && (key === 'enter' || key === ' ')) {
+    event.preventDefault();
+    launchOpening();
+  } else if ((screen === 'ship' || screen === 'map') && directions[key]) {
+    event.preventDefault();
+    pressed.set(key, directions[key]);
+  } else if (key === 'e' && !event.repeat) {
+    if (screen === 'ship') talk();
+    else interact();
+  } else if (screen === 'ship' && (key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('button')) {
     const advanceButton = app.querySelector('.dialog-content button');
     if (advanceButton) {
       event.preventDefault();
       advanceButton.click();
     }
-  } else if (screen === 'map' && directions[key]) {
-    event.preventDefault();
-    pressed.set(key, directions[key]);
-  } else if (key === 'e' && !event.repeat) {
-    interact();
   }
 });
 document.addEventListener('keyup', event => pressed.delete(event.key.toLowerCase()));
@@ -270,4 +292,4 @@ for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   app.addEventListener(eventName, event => pressed.delete(event.pointerId));
 }
 
-enterShip();
+start();

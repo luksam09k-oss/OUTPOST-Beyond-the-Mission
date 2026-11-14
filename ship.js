@@ -3,39 +3,98 @@ const speakers = {
   neil: { name: 'Neil Armstrong', image: 'assets/neil-retrato.webp' }
 };
 
-const welcome = [
-  ['curiosity', '¡Hola, exploradores! Bienvenidos a OUTPOST.'],
-  ['neil', 'Su misión será explorar el espacio y mantener a salvo a su tripulación.'],
-  ['curiosity', 'Deberán administrar tres recursos:', true],
-  ['neil', 'Cada decisión puede cambiar sus niveles. ¡Elijan sabiamente y protejan a su tripulación!'],
-  ['curiosity', '¿A dónde viajaremos?']
-];
+const introductions = {
+  curiosity: [
+    ['curiosity', '¡Hola, exploradores! Bienvenidos a OUTPOST.'],
+    ['curiosity', 'Deberán administrar tres recursos:', true],
+    ['curiosity', '¿A dónde viajaremos?']
+  ],
+  neil: [
+    ['neil', 'Su misión será explorar el espacio y mantener a salvo a su tripulación.'],
+    ['neil', 'Cada decisión puede cambiar sus niveles. ¡Elijan sabiamente y protejan a su tripulación!']
+  ]
+};
 const lunarIntroduction = ['neil', '¡Soy Neil Armstrong! En 1969 fui el primer ser humano en caminar sobre la Luna, durante la misión Apollo 11. ¡Prepárate para tu misión lunar!'];
+const shipCrew = [{ id: 'neil', x: 30, y: 68 }, { id: 'curiosity', x: 71, y: 68 }];
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let met;
+let dialogue;
 let dialogueLine;
 let typingFrame;
 let finishTyping;
+let choosingDestination;
 
 function enterShip() {
-  dialogueLine = 0;
+  met = new Set();
+  dialogue = null;
+  finishTyping = null;
+  choosingDestination = false;
+  player = { x: 50, y: 69, facing: 1, moving: false };
   show('ship', `
     <section class="ship" aria-label="Interior de la nave">
       <div class="ship-room" aria-hidden="true">
         <div class="ship-light"></div>
-        <div class="ship-actor ship-neil"></div>
-        <div class="ship-actor ship-curiosity"></div>
+        ${shipCrew.map(({ id, x, y }) => `<div class="ship-actor ship-${id}" style="left:${x}%;top:${y}%"><span>${speakers[id].name}</span></div>`).join('')}
+        <div class="ship-actor ship-player"><span>Tú</span></div>
         <div class="ship-scan"></div>
       </div>
-      <div class="ship-content"></div>
+      <div class="ship-content">
+        <div class="ship-overlay"></div>
+        <div class="ship-controls">
+          ${movementButtons()}
+          <button class="ship-button" data-action="talk" disabled>Hablar · E</button>
+          <button class="ship-button" data-action="destinations" hidden>Elegir destino</button>
+        </div>
+        <p class="ship-hint" aria-live="polite"></p>
+      </div>
     </section>`);
-  renderDialogue(welcome[0], 'Siguiente', 'advance');
+  const actor = app.querySelector('.ship-player');
+  const hint = app.querySelector('.ship-hint');
+  const talk = app.querySelector('[data-action="talk"]');
+  let lastTime = 0;
+
+  function tick(time) {
+    movePlayer(lastTime ? Math.min(40, time - lastTime) : 0, .032, 10, 90, 65, 74);
+    lastTime = time;
+    actor.style.left = player.x + '%';
+    actor.style.top = player.y + '%';
+    actor.style.setProperty('--facing', player.facing);
+    actor.style.backgroundPositionX = (player.moving ? (1 + Math.floor(time / 100) % 6) * 100 / 6 : 0) + '%';
+    const near = nearbySpeaker();
+    const message = near ? `Pulsa E para hablar con ${speakers[near.id].name}.` : 'Muévete con WASD o las flechas. Acércate a Neil o a Curiosity.';
+    talk.disabled = choosingDestination || (!near && !dialogue);
+    const talkLabel = dialogue ? 'Continuar · E' : 'Hablar · E';
+    if (talk.textContent !== talkLabel) talk.textContent = talkLabel;
+    if (hint.textContent !== message && !dialogue && !choosingDestination) hint.textContent = message;
+    hint.hidden = Boolean(dialogue || choosingDestination);
+    frame = requestAnimationFrame(tick);
+  }
+  tick(0);
+}
+
+function nearbySpeaker() {
+  return shipCrew.find(({ x, y }) => Math.hypot(player.x - x, (player.y - y) * 1.5) <= 9);
+}
+
+function talk() {
+  if (screen !== 'ship') return;
+  if (choosingDestination) return;
+  if (dialogue) {
+    advance();
+    return;
+  }
+  const near = nearbySpeaker();
+  if (!near) return;
+  dialogue = near.id;
+  dialogueLine = 0;
+  renderDialogue(introductions[dialogue][0], 'Siguiente · E', 'advance');
 }
 
 function renderDialogue([speaker, words, displayResources], button, action) {
   const { name, image } = speakers[speaker];
   const ship = app.querySelector('.ship');
-  const content = ship.querySelector('.ship-content');
+  const content = ship.querySelector('.ship-overlay');
   ship.dataset.speaker = speaker;
   content.innerHTML = `
     <div class="ship-dialog">
@@ -88,18 +147,32 @@ function advance() {
     finishTyping();
     return;
   }
-  dialogueLine++;
-  if (dialogueLine === welcome.length) {
-    chooseDestination();
+  if (dialogue === 'moon') {
+    briefing();
     return;
   }
-  renderDialogue(welcome[dialogueLine], dialogueLine === welcome.length - 1 ? 'Elegir destino' : 'Siguiente', 'advance');
+  if (!dialogue) return;
+  const lines = introductions[dialogue];
+  dialogueLine++;
+  if (dialogueLine < lines.length) {
+    renderDialogue(lines[dialogueLine], dialogueLine === lines.length - 1 ? 'Terminar · E' : 'Siguiente · E', 'advance');
+    return;
+  }
+  met.add(dialogue);
+  dialogue = null;
+  app.querySelector('.ship-overlay').replaceChildren();
+  delete app.querySelector('.ship').dataset.speaker;
+  if (met.size === shipCrew.length) {
+    app.querySelector('[data-action="destinations"]').hidden = false;
+    chooseDestination();
+  }
 }
 
 function chooseDestination() {
+  choosingDestination = true;
   const ship = app.querySelector('.ship');
   delete ship.dataset.speaker;
-  const content = ship.querySelector('.ship-content');
+  const content = ship.querySelector('.ship-overlay');
   content.innerHTML = `
     <div class="ship-destination">
       <h1 tabindex="-1">Elige tu destino</h1>
@@ -108,6 +181,7 @@ function chooseDestination() {
         <button class="ship-button" data-action="selectMars" aria-disabled="true"><strong>Marte</strong><small>Curiosity · No disponible</small></button>
       </div>
       <p class="ship-status" role="status"></p>
+      <button class="ship-button" data-action="backToShip">Volver a la nave</button>
     </div>`;
   content.querySelector('h1').focus({ preventScroll: true });
 }
@@ -116,11 +190,14 @@ function selectMars() {
   app.querySelector('.ship-status').textContent = 'Marte no está disponible en este prototipo. Puedes continuar hacia la Luna.';
 }
 
-function selectMoon() {
-  renderDialogue(lunarIntroduction, 'Continuar a la Luna', 'continueMoon');
+function backToShip() {
+  choosingDestination = false;
+  app.querySelector('.ship-overlay').replaceChildren();
+  app.querySelector('[data-action="destinations"]').focus();
 }
 
-function continueMoon() {
-  if (finishTyping) finishTyping();
-  else briefing();
+function selectMoon() {
+  choosingDestination = false;
+  dialogue = 'moon';
+  renderDialogue(lunarIntroduction, 'Continuar a la Luna', 'advance');
 }

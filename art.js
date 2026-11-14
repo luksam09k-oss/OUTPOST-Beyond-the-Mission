@@ -24,40 +24,37 @@ function starfield({ box }, width, height) {
   }
 }
 
-function drawMoon(canvas) {
-  const pen = painter(canvas);
-  starfield(pen, canvas.width, canvas.height);
-  const { box } = pen;
-  const craters = [[-21,-24,12], [18,14,17], [-30,20,7], [22,-30,9], [3,-12,6], [-4,37,9]];
-  for (let y = -56; y <= 56; y += 2) {
-    for (let x = -56; x <= 56; x += 2) {
-      if (x*x + y*y > 56*56) continue;
-      const crater = craters.some(([cx, cy, r]) => (x-cx)**2 + (y-cy)**2 < r*r);
-      const light = 4 - Math.floor((x+y+112)/46) - Number(crater);
-      const tones = ['#3a4166','#526189','#7788aa','#a1b4ca','#cbd9e8'];
-      box(142+x, 72+y, 2, 2, tones[Math.max(0, light)]);
-    }
-  }
+const lunarInterior = new Image();
+lunarInterior.src = 'assets/base-lunar.webp';
+
+const explorerSprite = new Image();
+explorerSprite.src = 'assets/player-sprite.png';
+
+function drawExplorer(ctx, player, time, scale = .63) {
+  const frameIndex = player.moving ? 1 + Math.floor(time / 100) % 6 : 0;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.translate(Math.round(player.x), Math.round(player.y));
+  ctx.scale(player.facing || 1, 1);
+  ctx.drawImage(explorerSprite, frameIndex * 32, 0, 32, 48, -16 * scale, -48 * scale, 32 * scale, 48 * scale);
+  ctx.restore();
 }
 
-function sprite({ box }, x, y, accent, robot = false, stride = 0) {
+function sprite({ box }, x, y, accent) {
   box(x+1, y+20, 15, 3, '#101327');
   box(x+2, y+9, 13, 10, '#161b32');
   box(x+4, y+10, 9, 7, '#a8b9dd');
   box(x+5, y+11, 7, 3, accent);
   box(x+2, y+11, 2, 5, '#ebedf5');
   box(x+13, y+11, 2, 5, '#7885af');
-  box(x+4, y+17, 3, 4 + stride, '#d7dfef');
-  box(x+10, y+17, 3, 4 - stride, '#8998bc');
+  box(x+4, y+17, 3, 4, '#d7dfef');
+  box(x+10, y+17, 3, 4, '#8998bc');
   box(x+2, y+2, 13, 8, '#d5def1');
   box(x+4, y+1, 9, 2, '#f6f8ff');
   box(x+5, y+4, 9, 5, '#172745');
   box(x+6, y+5, 2, 2, accent);
   box(x+11, y+5, 2, 2, accent);
-  if (robot) {
-    box(x+8, y-2, 1, 4, '#a8b9dd');
-    box(x+7, y-3, 3, 2, accent);
-  }
+
 }
 
 function consoleUnit({ box, label }, x, name, accent) {
@@ -77,8 +74,9 @@ function drawMap(canvas, player, mission, active, crew, time) {
   const pen = painter(canvas);
   const { box, label } = pen;
   const exterior = mission.outside;
-  starfield(pen, 384, 192);
+  const context = canvas.getContext('2d');
   if (exterior) {
+    starfield(pen, 384, 192);
     box(0, 76, 384, 116, '#444766');
     for (let x = 0; x < 384; x += 8) {
       box(x, 73 + Math.floor(Math.sin(x/25)*5), 8, 12, '#676987');
@@ -106,25 +104,13 @@ function drawMap(canvas, player, mission, active, crew, time) {
       box(298, 95, 4, 2, '#839abd');
     }
   } else {
-    box(0, 40, 384, 61, '#20294b');
-    box(0, 38, 384, 4, '#394a85');
-    box(0, 98, 384, 81, '#222b49');
-    for (let x = 0; x < 384; x += 24) {
-      box(x, 43, 2, 55, '#323c66');
-      box(x+5, 47, 14, 2, '#586183');
-      for (let y = 99; y < 168; y += 17) {
-        box(x+1, y+1, 22, 15, (x+y)%4 ? '#303958' : '#293451');
-        box(x+3, y+3, 2, 2, '#475172');
-      }
+    if (lunarInterior.naturalWidth) {
+      context.drawImage(lunarInterior, 0, 0, canvas.width, canvas.height);
+    } else {
+      box(0, 0, canvas.width, canvas.height, '#161c3d');
+      box(0, 132, canvas.width, 43, '#303958');
     }
-    box(0, 171, 384, 7, '#171d34');
-    for (let x = 0; x < 384; x += 10) {
-      for (let y = 0; y < 6; y++) box(x+y, 171+y, 4, 1, '#b49258');
-    }
-    consoleUnit(pen, 65, 'INVESTIGACIÓN', '#89edff');
-    consoleUnit(pen, 192, 'LABORATORIO', '#bca5ff');
-    consoleUnit(pen, 319, 'SOPORTE VITAL', '#97e8b0');
-    crew.slice(1).forEach((member, i) => sprite(pen, 87+i*64, 100, member.color));
+    crew.slice(1).forEach((member, i) => sprite(pen, [84, 206, 249, 343][i], 122, member.color));
   }
 
   const { x, y } = mission;
@@ -137,6 +123,7 @@ function drawMap(canvas, player, mission, active, crew, time) {
     box(x-2, markerY+2, 5, 2, '#ffcc75');
     box(x, markerY+4, 1, 2, '#ffcc75');
   }
-  sprite(pen, player.x-8, player.y-20, crew[0].color, false, player.moving ? Math.floor(time/100)%3-1 : 0);
-  label('TÚ', Math.round(player.x), Math.round(player.y-24), '#fff1b9');
+  if (explorerSprite.naturalWidth) drawExplorer(context, player, time);
+  else sprite(pen, player.x-8, player.y-20, crew[0].color);
+  label('TÚ', Math.round(player.x), Math.round(player.y-33), '#fff1b9');
 }
