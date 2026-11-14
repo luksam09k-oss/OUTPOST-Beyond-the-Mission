@@ -1,5 +1,5 @@
-function animateOpening(onComplete) {
-  const cv = document.getElementById('c'), g = cv.getContext('2d'), W = 320, H = 180;
+function animateOpening(onComplete, backdrop) {
+  const cv = backdrop || document.getElementById('c'), g = cv.getContext('2d'), W = 320, H = 180;
   const stage = document.getElementById('stage'), hud = document.getElementById('hud'), bar = document.getElementById('bar'), wh = document.getElementById('wh');
   const rnd = (a, b) => a + Math.random() * (b - a), clamp = x => Math.min(1, Math.max(0, x)), ease = x => 1 - (1 - clamp(x)) ** 3;
   let mx = 0, tl = -1, shoot = null;
@@ -132,6 +132,7 @@ function animateOpening(onComplete) {
 
   /* ---------- bucle principal ---------- */
   function frame(now) {
+    if (!cv.isConnected) return;
     const t = now / 1000, tr = tl < 0 ? -1 : (now - tl) / 1000, rk = tr >= 0 && tr < 5.2, sp = tr >= 5.2, ts = tr - 5.2;
     const warp = rk ? clamp(tr / 2.4) : 0, cam = rk ? Math.pow(clamp(tr / 2.8), 2.2) * H * 1.6 : 0;
     g.fillStyle = '#0a0a2b'; g.fillRect(0, 0, W, H);
@@ -150,11 +151,21 @@ function animateOpening(onComplete) {
       if (!shoot && Math.random() < .004) shoot = { x: rnd(120, 300), y: rnd(5, 50), l: 0 };
       if (shoot) { shoot.x -= 3; shoot.y += 1.4; shoot.l++; for (let i = 0; i < 12; i++) { g.fillStyle = `rgba(255,255,255,${1 - i / 12})`; g.fillRect(shoot.x + i * 2.2 | 0, shoot.y - i | 0, 2, 1); } if (shoot.l > 40) shoot = null; }
     }
-    if (!sp) { g.save(); g.translate(0, cam | 0); scene(now, t); g.restore(); }
+    if (!sp) {
+      g.save();
+      if (backdrop) { g.translate(0, 20); g.scale(1, .9); }
+      else g.translate(0, cam | 0);
+      scene(now, t);
+      g.restore();
+    }
     if (rk) { rocket(t, tr); hud.textContent = 'ALTITUD ' + String(Math.round(tr * tr * 140)).padStart(5, '0') + ' KM'; }
     if (sp) { smoke.length = 0; constel(ts); }
     g.restore();
 
+    if (backdrop) {
+      if (!reducedMotion.matches) requestAnimationFrame(frame);
+      return;
+    }
     wh.style.opacity = tr < 0 ? 0 : clamp(1 - Math.abs(tr - 5.1) / .45);
     stage.classList.toggle('rk', rk && tr > .5); stage.classList.toggle('sp', sp);
     if (sp) {
@@ -167,6 +178,8 @@ function animateOpening(onComplete) {
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+
+  if (backdrop) return;
 
   /* ---------- interacción ---------- */
   stage.addEventListener('pointermove', e => { const r = stage.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; });

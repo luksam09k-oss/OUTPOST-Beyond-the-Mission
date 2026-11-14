@@ -127,3 +127,23 @@ function drawMap(canvas, player, mission, active, crew, time) {
   else sprite(pen, player.x-8, player.y-20, crew[0].color);
   label('TÚ', Math.round(player.x), Math.round(player.y-33), '#fff1b9');
 }
+
+function drawMissionSky(canvas) {
+  const pen = painter(canvas);
+  const { box } = pen;
+  starfield(pen, canvas.width, canvas.height);
+  const craters = [[-22, -16, 12], [11, -27, 10], [-8, 18, 15], [22, 4, 12]];
+  for (let y = -46; y <= 46; y += 2) {
+    for (let x = -46; x <= 46; x += 2) {
+      if (x*x + y*y > 46*46) continue;
+      const crater = craters.some(([cx, cy, radius]) => (x-cx)**2 + (y-cy)**2 < radius*radius);
+      const light = Math.max(0, Math.min(3, 2 - Math.floor((x+y) / 32) - Number(crater)));
+      box(292+x, 65+y, 2, 2, ['#1b2041', '#22294e', '#313963', '#414873'][light]);
+    }
+  }
+  for (let x = 0; x < canvas.width; x += 3) {
+    const y = 204 + Math.round(4 * Math.sin(x/23) + 3 * Math.sin(x/8));
+    box(x, y, 3, canvas.height-y, '#272d57');
+    box(x, y, 3, 1, '#454b76');
+  }
+}

@@ -61,7 +61,9 @@ body:has(.ship) {
   width: 6.8%;
   aspect-ratio: 32 / 48;
   background-image: url('assets/neil-sprite.png');
+  background-size: 100% 100%;
 }
+.ship-neil { width: 6.35%; }
 .ship-player { background-image: url('assets/player-sprite.png'); background-size: 700% 100%; z-index: 1; }
 .ship-player span { color: var(--ship-gold); }
 .ship-curiosity {
@@ -78,9 +80,10 @@ body:has(.ship) {
 .ship-content { position: relative; z-index: 2; margin: -15% 4% 0; padding-bottom: 8px; }
 .ship-overlay:empty { display: none; }
 .ship-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 8px; }
+.ship-controls[hidden] { display: none; }
 .ship-controls button { touch-action: none; padding: 6px 9px; }
 .ship-hint { margin: 4px 0 0; font-size: clamp(11px, 1.4cqw, 16px); }
-.ship-dialog,.ship-destination {
+.ship-dialog {
   background: linear-gradient(110deg, #151d46ec, #0a112cec);
   border: 2px solid #90c7ff;
   box-shadow: 0 0 0 3px #151b42, inset 0 0 0 2px #405987, 0 0 2cqw #5098ee50;
@@ -103,7 +106,7 @@ body:has(.ship) {
   image-rendering: pixelated;
   filter: drop-shadow(3px 0 #0a1227);
 }
-.dialog-name,.ship-destination h1 {
+.dialog-name {
   color: var(--ship-blue);
   font-size: clamp(15px, 2.15cqw, 32px);
   margin: 0 0 .4em;
@@ -128,11 +131,6 @@ body:has(.ship) {
 }
 .ship-button span { color: var(--ship-gold); animation: ship-prompt .9s steps(2, end) infinite; }
 .ship-button:hover:not(:disabled) { background: #20386a; color: white; }
-.ship-button[aria-disabled="true"] { border-color: #737fa0; color: #ccd5e7; cursor: help; }
-.ship-destination { padding: 1cqw 2cqw .65cqw; text-align: center; }
-.ship-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1cqw; }
-.ship-options small { display: block; font-weight: normal; margin-top: .2em; }
-.ship-status { min-height: 1.35em; margin: .4em 0 0; color: var(--ship-gold); font-size: clamp(11px, 1.22cqw, 16px); }
 .ship-meters { display: flex; flex-wrap: wrap; gap: .3em .65em; padding: 0; margin: 0 0 .6em; list-style: none; font-size: clamp(11px, 1.15cqw, 16px); }
 .ship-meters li { padding: .2em .4em; background: #0d1633; border: 1px solid #405987; }
 .ship-meters strong { color: var(--ship-gold); white-space: nowrap; }
@@ -147,8 +145,7 @@ body:has(.ship) {
   .ship-content { margin: -9% 12px 0; }
   .ship-dialog { min-height: 125px; padding: 12px 10px 10px 26%; }
   .dialog-portrait { width: 24%; height: 100%; }
-  .ship-destination { padding: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ship,.ship-light,.ship-actor,.ship-dialog,.ship-destination,.ship-button span { animation: none; }
+  .ship,.ship-light,.ship-actor,.ship-dialog,.ship-button span { animation: none; }
 }

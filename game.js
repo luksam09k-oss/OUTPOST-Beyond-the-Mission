@@ -75,8 +75,12 @@ let frame;
 let phase;
 let launchOpening;
 
+function nasaBadge() {
+  return '<div class="mission-badge"><span class="nasa-mark">NASA</span><span>NASA<br>Space Apps<br>Challenge 2026</span></div>';
+}
+
 function header() {
-  return '<header class="top"><div class="brand">OUTPOST</div><button data-action="help">Cómo jugar</button></header>';
+  return `<canvas class="mission-sky" width="384" height="216" aria-hidden="true"></canvas><header class="top"><div class="brand">OUTPOST</div>${nasaBadge()}<button class="console-button" data-action="help">Cómo jugar</button></header>`;
 }
 
 function guide(message) {
@@ -85,6 +89,7 @@ function guide(message) {
 
 function show(next, html) {
   screen = next;
+  app.dataset.screen = next;
   pressed.clear();
   cancelAnimationFrame(frame);
   app.innerHTML = html;
@@ -92,6 +97,8 @@ function show(next, html) {
     const id = canvas.dataset.portrait;
     sprite(painter(canvas), 5, 3, crew[Number(id)].color);
   });
+  const backdrop = app.querySelector('.mission-sky');
+  if (backdrop) drawMissionSky(backdrop);
   app.querySelector('h1')?.focus();
 }
 
@@ -122,18 +129,31 @@ function movePlayer(elapsed, speed, minX, maxX, minY, maxY) {
 }
 
 function briefing() {
-  show('briefing', `${header()}<section class="panel">
-    <p class="kicker">MISIÓN LUNAR</p><h1 tabindex="-1">Tripulación de la base</h1>
-    ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
-    <ul class="crew" aria-label="Cinco tripulantes">${crew.map((person, i) =>
-      `<li>${i === 0 ? '<span class="crew-player" aria-hidden="true"></span>' : `<canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas>`}<strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
-    <button class="primary" data-action="begin">Comenzar</button>
+  show('briefing', `
+    <section class="briefing" aria-labelledby="briefing-title">
+      <canvas class="briefing-sky" width="320" height="180" aria-hidden="true"></canvas>
+      ${nasaBadge()}
+      <div class="briefing-frame console-frame">
+        <p class="kicker briefing-tag">Misión lunar</p>
+        <div class="briefing-title">
+          <div class="briefing-orbit" aria-hidden="true"><span>✦</span></div>
+          <h1 id="briefing-title" tabindex="-1">Tripulación de la base</h1>
+        </div>
+        ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
+        <ul class="crew" aria-label="Cinco tripulantes">${crew.map((person, i) =>
+          `<li>${i === 0 ? '<span class="crew-player" aria-hidden="true"></span>' : `<canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas>`}<strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
+        <div class="briefing-action"><button class="console-button" data-action="begin">Comenzar misión</button></div>
+      </div>
     </section>`);
+  animateOpening(null, app.querySelector('.briefing-sky'));
 }
 
 function stats() {
-  return game.resources.map((value, i) => `<div class="stat">${resourceNames[i]} <strong>${value}%</strong>
-    <meter min="0" max="100" low="26" high="74" optimum="${i === 2 ? 0 : 100}" value="${value}" aria-label="${resourceNames[i]}"></meter></div>`).join('');
+  const icons = ['ϟ', 'O₂', '☢'];
+  return game.resources.map((value, i) => `<div class="stat console-frame" data-resource="${i}">
+    <span class="stat-icon" aria-hidden="true">${icons[i]}</span><span>${resourceNames[i]}</span><strong>${value}%</strong>
+    <meter min="0" max="100" low="26" high="74" optimum="${i === 2 ? 0 : 100}" value="${value}" aria-label="${resourceNames[i]}"></meter>
+  </div>`).join('');
 }
 
 function begin() {
@@ -148,16 +168,24 @@ function scene(nextPhase) {
   phase = nextPhase;
   const mission = nextPhase === 'base' ? base : missions[game.index];
   player = { x: mission.outside ? 52 : 188, y: 155, facing: 1, moving: false };
-  show('map', `${header()}<p class="kicker">${nextPhase === 'base' ? 'ESTABLECIMIENTO' : `MISIÓN ${game.index+1} / 5 · ${mission.location.toUpperCase()}`}</p>
-    <h1 tabindex="-1">${mission.title}</h1><div class="stats" id="stats">${stats()}</div>
-    <div class="dashboard"><div>
-      <canvas class="stage" id="map" width="384" height="${mission.outside ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
-      <div class="controls">${movementButtons()}
-        <button class="primary" data-action="interact" disabled>Interactuar · E</button>
+  show('map', `${header()}<section class="mission-heading">
+      <p class="kicker">${nextPhase === 'base' ? 'ESTABLECIMIENTO' : `MISIÓN ${game.index+1} / 5 · ${mission.location.toUpperCase()}`}</p>
+      <h1 tabindex="-1">${mission.title}</h1>
+    </section>
+    <div class="stats" id="stats">${stats()}</div>
+    <div class="dashboard">
+      <div class="map-frame console-frame">
+        <canvas id="map" width="384" height="${mission.outside ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
       </div>
-    </div><section class="panel" id="mission-panel">
-      <h2>Objetivo</h2><p>${mission.objective}</p><p id="hint" aria-live="polite">Acércate a ${mission.target}.</p>
-    </section></div>`);
+      <section class="panel objective console-frame" id="mission-panel">
+        <h2><span aria-hidden="true">⌖</span> Objetivo</h2>
+        <p>${mission.objective}</p><p id="hint" aria-live="polite">Acércate a ${mission.target}.</p>
+        <div class="objective-outpost" aria-hidden="true"><span></span></div>
+      </section>
+      <div class="controls">${movementButtons()}
+        <button class="console-button interact" data-action="interact" disabled>Interactuar · E</button>
+      </div>
+    </div>`);
   const canvas = document.querySelector('#map');
   const interactButton = app.querySelector('[data-action="interact"]');
   const hint = document.querySelector('#hint');
@@ -248,7 +276,7 @@ function results() {
 }
 
 const actions = {
-  advance, talk, destinations: chooseDestination, backToShip, selectMoon, selectMars, begin, interact, next,
+  advance, talk, begin, interact, next,
   returnToStart: start,
   help: () => { pressed.clear(); help.showModal(); }
 };
@@ -268,7 +296,7 @@ document.addEventListener('keydown', event => {
     launchOpening();
   } else if ((screen === 'ship' || screen === 'map') && directions[key]) {
     event.preventDefault();
-    pressed.set(key, directions[key]);
+    if (screen !== 'ship' || !dialogue) pressed.set(key, directions[key]);
   } else if (key === 'e' && !event.repeat) {
     if (screen === 'ship') talk();
     else interact();
