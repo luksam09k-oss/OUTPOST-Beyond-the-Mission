@@ -352,3 +352,35 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 @media (max-width: 760px) {
   .objective-outpost { display: none; }
 }
+
+.mission-dialogue {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  --ship-blue: #9ae7ff;
+  --ship-gold: #ffd27a;
+}
+.mission-dialogue[hidden] { display: none; }
+.mission-dialogue .ship-dialog {
+  min-height: 122px;
+  padding: clamp(10px, 1.5vw, 20px) clamp(10px, 2vw, 25px) 12px clamp(66px, 14%, 172px);
+  border-radius: 8px;
+}
+.mission-dialogue .dialog-portrait { width: clamp(56px, 12%, 150px); height: 100%; left: 4px; }
+.mission-dialogue .dialog-text { font-size: clamp(.9rem, 1.45vw, 1.22rem); }
+.mission-dialogue .kicker { margin-bottom: 4px; }
+.mission-dialogue .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mission-dialogue .choices button {
+  padding: 8px 10px;
+  border-color: #5079a4;
+  background: #162748;
+  line-height: 1.4;
+}
+.mission-dialogue .choices small { margin-top: 4px; }
+.mission-dialogue .choice-cost { color: #abe6ff; }
+.controls #hint { flex: 1; align-self: center; margin: 0; font-size: .9rem; }
+.dashboard .controls { grid-row: 3; }
+@media (max-width: 760px) {
+  .dashboard .objective { grid-row: 4; }
+  .mission-dialogue .choices { grid-template-columns: 1fr; }
+  .controls #hint { flex-basis: 100%; order: 1; }
+}

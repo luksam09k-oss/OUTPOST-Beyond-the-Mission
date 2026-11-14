@@ -147,3 +147,52 @@ function drawMissionSky(canvas) {
     box(x, y, 3, 1, '#454b76');
   }
 }
+
+const platformY = 180;
+const platformDoorX = 67;
+const platformOpen = new Image();
+platformOpen.src = 'assets/primer-contacto.webp';
+const platformMapped = new Image();
+platformMapped.src = 'assets/ruta-lunar.webp';
+const roverSprite = new Image();
+roverSprite.src = 'assets/curiosity-sprite.png';
+
+function drawPlatform(canvas, player, phase, time, shot) {
+  const ctx = canvas.getContext('2d');
+  const { box, label } = painter(canvas);
+  const background = phase === 'feedback' && platformMapped.naturalWidth ? platformMapped : platformOpen;
+  if (background.naturalWidth) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  } else {
+    box(0, 0, canvas.width, canvas.height, '#161c3d');
+    box(0, platformY, canvas.width, 12, '#7278ac');
+  }
+  if (phase === 'arrival' || phase === 'feedback') return;
+
+  if (phase === 'explore') {
+    const y = platformY - 43 - Math.round(Math.sin(time / 210) * 2);
+    box(125, y, 7, 2, '#ffdc7a');
+    box(127, y+2, 3, 2, '#ffdc7a');
+  }
+
+  const progress = shot ? Math.min(1, shot.elapsed / shot.duration) : 0;
+  const moverX = shot ? shot.startX + (352 - shot.startX) * Math.min(1, progress / .83) : player.x;
+  if (!shot || !shot.rover) {
+    const explorer = shot ? { x: moverX, y: platformY, facing: 1, moving: progress < .83 } : player;
+    if (explorerSprite.naturalWidth) drawExplorer(ctx, explorer, time, .66);
+    else sprite(painter(canvas), explorer.x-8, platformY-20, '#ffcd76');
+    if (!shot) label('TÚ', Math.round(player.x), platformY-35, '#fff1b9');
+  } else if (roverSprite.naturalWidth) {
+    const frameIndex = progress < .83 ? 6 + Math.floor(time / 95) % 6 : 0;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, Math.round(moverX)-21, platformY-34, 42, 34);
+  }
+
+  if (shot && progress >= .78 && !reducedMotion.matches) {
+    for (let i = 0; i < 3; i++) {
+      const width = Math.round(((shot.elapsed / 27 + i * 11) % 34) + 5);
+      box(Math.round(moverX)-width/2, platformY-44-i*3, width, 1, '#80f2ff');
+    }
+  }
+}

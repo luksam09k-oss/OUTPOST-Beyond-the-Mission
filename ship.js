@@ -91,22 +91,27 @@ function talk() {
 }
 
 function renderDialogue([speaker, words, displayResources], button) {
-  const { name, image } = speakers[speaker];
   const ship = app.querySelector('.ship');
-  const content = ship.querySelector('.ship-overlay');
   ship.dataset.speaker = speaker;
+  renderNovelDialogue(ship.querySelector('.ship-overlay'), speaker, words,
+    `${displayResources ? initialMeters() : ''}
+     <button class="ship-button" data-action="advance">${button} <span aria-hidden="true">▸</span></button>`, 'h1');
+}
+
+function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', title = '') {
+  const { name, image } = speakers[speaker];
   content.innerHTML = `
     <div class="ship-dialog">
       <img class="dialog-portrait" src="${image}" alt="">
       <div class="dialog-content">
-        <h1 class="dialog-name" tabindex="-1">${name}</h1>
+        ${title ? `<p class="kicker">${title}</p>` : ''}
+        <${heading} class="dialog-name" tabindex="-1">${name}</${heading}>
         <p class="sr-only">${words}</p>
         <p class="dialog-text" aria-hidden="true"></p>
-        ${displayResources ? initialMeters() : ''}
-        <button class="ship-button" data-action="advance">${button} <span aria-hidden="true">▸</span></button>
+        ${controls}
       </div>
     </div>`;
-  content.querySelector('h1').focus({ preventScroll: true });
+  content.querySelector('.dialog-name').focus({ preventScroll: heading === 'h1' });
   const text = content.querySelector('.dialog-text');
   text.textContent = words;
   if (reducedMotion.matches) return;

@@ -6,15 +6,17 @@ const crew = [
   { name: 'Noa', role: 'Médica', color: '#ff9aa9' }
 ];
 
+const reconnaissanceExplanation = 'Ambas opciones mantienen el consumo de oxígeno de la tripulación. El rover utiliza energía para desplazarse sin exponer a los astronautas; la exploración tripulada requiere sistemas de soporte vital y aumenta la exposición a la radiación lunar.';
+
 const missions = [
   {
-    title: 'Primer contacto lunar', location: 'Superficie lunar', target: 'trípode de observación',
-    action: 'Fotografiar el terreno', objective: 'Fotografía los alrededores para trazar un mapa de la base.',
-    problem: 'El polvo sobre los paneles reduce la energía disponible. ¿Cómo fotografías la zona?',
-    x: 134, y: 131, outside: true,
+    title: 'Primer contacto', location: 'Plataforma lunar', target: 'la terminal de exploración',
+    action: 'Revisar el terreno', objective: 'Reconocer el terreno lunar y seleccionar una ruta de exploración.',
+    problem: 'La tripulación de cinco astronautas debe estudiar el terreno antes de desplazarse. NASA utiliza instrumentos como LOLA y LROC para analizar elevaciones, pendientes, iluminación y características de la superficie.',
+    x: 128, y: platformY, outside: true, platform: true,
     options: [
-      ['Hacer un mapa detallado', [-25, 0, 0], true, 'El equipo de fotografía consumió energía de las baterías. El mapa detallado está listo.'],
-      ['Hacer un mapa básico', [-9, 0, 0], true, 'Unas pocas fotos bastaron para trazar una ruta. Ahorraste energía y el mapa tiene menos detalles.']
+      ['Exploración robótica', [-10, -10, 5], true, reconnaissanceExplanation, 'Enviar un rover robótico para reconocer el terreno mientras los cinco astronautas permanecen en una zona protegida.'],
+      ['Exploración con astronauta', [-12, -10, 10], true, reconnaissanceExplanation, 'Enviar a un astronauta de la tripulación para reconocer el terreno directamente y seleccionar una ruta de exploración, mientras los otros cuatro permanecen en la zona protegida.']
     ]
   },
   {
@@ -74,6 +76,7 @@ let player;
 let frame;
 let phase;
 let launchOpening;
+let reconnaissance;
 
 function nasaBadge() {
   return '<div class="mission-badge"><span class="nasa-mark">NASA</span><span>NASA<br>Space Apps<br>Challenge 2026</span></div>';
@@ -107,7 +110,10 @@ function start() {
   launchOpening = animateOpening(enterShip);
 }
 
-function movementButtons() {
+function movementButtons(horizontalOnly = false) {
+  if (horizontalOnly) return `<div class="directions" aria-label="Movimiento horizontal">
+    <button data-move="arrowleft" aria-label="Izquierda">←</button><button data-move="arrowright" aria-label="Derecha">→</button>
+  </div>`;
   return `<div class="directions" aria-label="Movimiento">
     <button data-move="arrowleft" aria-label="Izquierda">←</button><button data-move="arrowup" aria-label="Arriba">↑</button>
     <button data-move="arrowdown" aria-label="Abajo">↓</button><button data-move="arrowright" aria-label="Derecha">→</button>
@@ -139,7 +145,7 @@ function briefing() {
           <div class="briefing-orbit" aria-hidden="true"><span>✦</span></div>
           <h1 id="briefing-title" tabindex="-1">Tripulación de la base</h1>
         </div>
-        ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar fotografiando el terreno.')}
+        ${guide('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar reconociendo el terreno para elegir una ruta de exploración.')}
         <ul class="crew" aria-label="Cinco tripulantes">${crew.map((person, i) =>
           `<li>${i === 0 ? '<span class="crew-player" aria-hidden="true"></span>' : `<canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas>`}<strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
         <div class="briefing-action"><button class="console-button" data-action="begin">Comenzar misión</button></div>
@@ -165,9 +171,11 @@ const base = { title: 'Base lunar', location: 'Base lunar', target: 'terminal de
   action: 'Abrir expedición', objective: 'Reúnete con tu equipo y activa la terminal de investigación.', x: 134, y: 143 };
 
 function scene(nextPhase) {
-  phase = nextPhase;
   const mission = nextPhase === 'base' ? base : missions[game.index];
-  player = { x: mission.outside ? 52 : 188, y: 155, facing: 1, moving: false };
+  phase = mission.platform ? 'arrival' : nextPhase;
+  reconnaissance = null;
+  player = { x: mission.platform ? platformDoorX : mission.outside ? 52 : 188,
+    y: mission.platform ? platformY : 155, facing: 1, moving: false };
   show('map', `${header()}<section class="mission-heading">
       <p class="kicker">${nextPhase === 'base' ? 'ESTABLECIMIENTO' : `MISIÓN ${game.index+1} / 5 · ${mission.location.toUpperCase()}`}</p>
       <h1 tabindex="-1">${mission.title}</h1>
@@ -175,34 +183,55 @@ function scene(nextPhase) {
     <div class="stats" id="stats">${stats()}</div>
     <div class="dashboard">
       <div class="map-frame console-frame">
-        <canvas id="map" width="384" height="${mission.outside ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
+        <canvas id="map" width="384" height="${mission.outside && !mission.platform ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
       </div>
       <section class="panel objective console-frame" id="mission-panel">
         <h2><span aria-hidden="true">⌖</span> Objetivo</h2>
-        <p>${mission.objective}</p><p id="hint" aria-live="polite">Acércate a ${mission.target}.</p>
+        <p>${mission.objective}</p>
         <div class="objective-outpost" aria-hidden="true"><span></span></div>
       </section>
-      <div class="controls">${movementButtons()}
+      <div class="mission-dialogue" hidden></div>
+      <div class="controls">${movementButtons(mission.platform)}
+        <p id="hint" aria-live="polite"></p>
         <button class="console-button interact" data-action="interact" disabled>Interactuar · E</button>
       </div>
     </div>`);
   const canvas = document.querySelector('#map');
   const interactButton = app.querySelector('[data-action="interact"]');
   const hint = document.querySelector('#hint');
-  let lastTime = 0;
+  const movement = app.querySelectorAll('[data-move]');
+  let lastTime;
+  let scenerySince;
   function tick(time) {
-    const elapsed = lastTime ? Math.min(40, time-lastTime) : 0;
+    const elapsed = lastTime === undefined ? 0 : Math.min(40, time-lastTime);
     lastTime = time;
-    if ((phase === 'base' || phase === 'explore') && !help.open) {
-      movePlayer(elapsed, .1, 12, 372, mission.outside ? 97 : 135, 168);
-      const reachable = nearby(mission);
-      interactButton.disabled = !reachable;
-      const message = reachable ? `Pulsa E · ${mission.action}` : `Acércate a ${mission.target}.`;
-      if (hint.textContent !== message) hint.textContent = message;
+    if (phase === 'arrival') {
+      if (platformOpen.complete) scenerySince ??= time;
+      drawPlatform(canvas, player, 'arrival', time, null);
+      if (scenerySince !== undefined && time-scenerySince >= 850) explainMission(mission);
+    } else if (mission.platform) {
+      if (phase === 'explore') movePlayer(elapsed, .1, 48, 366, platformY, platformY);
+      if (phase === 'cinematic' && !help.open) {
+        reconnaissance.elapsed += elapsed;
+        if (reconnaissance.elapsed >= reconnaissance.duration) applyDecision(reconnaissance.option);
+      }
+      drawPlatform(canvas, player, phase, time, reconnaissance);
+    } else {
+      if (phase === 'base' || phase === 'explore') {
+        movePlayer(elapsed, .1, 12, 372, mission.outside ? 97 : 135, 168);
+      }
+      drawMap(canvas, player, mission, phase === 'base' || phase === 'explore', crew, time);
     }
-    drawMap(canvas, player, mission, phase === 'base' || phase === 'explore', crew, time);
+
+    const canMove = allowsMovement();
+    movement.forEach(button => { button.disabled = !canMove; });
+    const reachable = canMove && nearby(mission);
+    interactButton.disabled = !reachable;
+    const message = reachable ? `Pulsa E · ${mission.action}` : canMove ? `Acércate a ${mission.target}.` : '';
+    if (hint.textContent !== message) hint.textContent = message;
     frame = requestAnimationFrame(tick);
   }
+  if (nextPhase === 'explore' && !mission.platform) explainMission(mission);
   frame = requestAnimationFrame(tick);
 }
 
@@ -221,12 +250,37 @@ function interact() {
   phase = 'decision';
   pressed.clear();
   player.moving = false;
-  app.querySelector('[data-action="interact"]').disabled = true;
-  const panel = document.querySelector('#mission-panel');
-  panel.innerHTML = `<p class="kicker">${mission.action.toUpperCase()}</p><h2 tabindex="-1">Decisión</h2><p>${mission.problem}</p>
-    <div class="choices">${mission.options.map(([name, costs], i) =>
-      `<button data-action="choose" data-option="${i}">${name}<small>${changes(costs)}</small></button>`).join('')}</div>`;
-  panel.querySelector('h2').focus();
+  const choices = `<div class="choices">${mission.options.map(([name, costs, , , description], i) =>
+    `<button data-action="choose" data-option="${i}">
+      ${mission.platform ? ['A · ', 'B · '][i] : ''}${name}
+      ${description ? `<small>${description}</small>` : ''}
+      <small class="choice-cost">${changes(costs)}</small>
+    </button>`).join('')}</div>`;
+  missionDialogue(mission.problem, choices, mission.action);
+}
+
+function missionDialogue(words, controls, title) {
+  const overlay = app.querySelector('.mission-dialogue');
+  overlay.hidden = false;
+  renderNovelDialogue(overlay, 'neil', words, controls, 'h2', title);
+}
+
+function missionContinue(action, label) {
+  return `<button class="ship-button" data-action="${action}">${label} <span aria-hidden="true">▸</span></button>`;
+}
+
+function explainMission(mission) {
+  phase = 'briefing';
+  missionDialogue(mission.objective, missionContinue('explore', 'Continuar · E'), mission.title);
+}
+
+function explore() {
+  if (phase !== 'briefing') return;
+  phase = 'explore';
+  pressed.clear();
+  const overlay = app.querySelector('.mission-dialogue');
+  overlay.hidden = true;
+  app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 
 function changes(delta) {
@@ -235,17 +289,34 @@ function changes(delta) {
 
 function choose(option) {
   if (phase !== 'decision') return;
+  if (finishTyping) finishTyping();
+  const mission = missions[game.index];
+  if (!mission.platform) {
+    applyDecision(option);
+    return;
+  }
+
+  phase = 'cinematic';
+  const rover = option === 0;
+  reconnaissance = { option, rover, elapsed: 0, duration: reducedMotion.matches ? 240 : 4800,
+    startX: rover ? platformDoorX : player.x };
+  const overlay = app.querySelector('.mission-dialogue');
+  overlay.hidden = true;
+  app.querySelector('.mission-heading h1').focus({ preventScroll: true });
+}
+
+function applyDecision(option) {
   const mission = missions[game.index];
   const [name, delta, success, explanation] = mission.options[option];
-  game.resources = game.resources.map((value, i) => Math.min(100, Math.max(0, value + delta[i])));
+  const before = game.resources;
+  game.resources = before.map((value, i) => Math.min(100, Math.max(0, value + delta[i])));
+  const applied = game.resources.map((value, i) => value - before[i]);
   game.log.push({ title: mission.title, name, success, explanation });
   phase = 'feedback';
   document.querySelector('#stats').innerHTML = stats();
-  const panel = document.querySelector('#mission-panel');
-  panel.innerHTML = `<h2 tabindex="-1">${success ? 'Objetivo completado' : 'Objetivo parcial'}</h2>
-    ${guide(explanation)}<p>${changes(delta)}</p>
-    <button class="primary" data-action="next">${game.index === 4 ? 'Ver resultados' : 'Siguiente misión'}</button>`;
-  panel.querySelector('h2').focus();
+  const continuation = missionContinue('next', game.index === missions.length - 1 ? 'Ver resultados' : 'Siguiente misión · E');
+  missionDialogue(explanation, `<p class="choice-cost">${changes(applied)}</p>${continuation}`,
+    success ? 'Objetivo completado' : 'Objetivo parcial');
 }
 
 function next() {
@@ -276,7 +347,7 @@ function results() {
 }
 
 const actions = {
-  advance, talk, begin, interact, next,
+  advance, talk, begin, interact, next, explore,
   returnToStart: start,
   help: () => { pressed.clear(); help.showModal(); }
 };
@@ -284,7 +355,8 @@ app.addEventListener('click', event => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
   const action = button.dataset.action;
-  if (action === 'choose') choose(Number(button.dataset.option));
+  if ((action === 'explore' || action === 'next') && finishTyping) finishTyping();
+  else if (action === 'choose') choose(Number(button.dataset.option));
   else actions[action]();
 });
 
@@ -296,10 +368,17 @@ document.addEventListener('keydown', event => {
     launchOpening();
   } else if ((screen === 'ship' || screen === 'map') && directions[key]) {
     event.preventDefault();
-    if (screen !== 'ship' || !dialogue) pressed.set(key, directions[key]);
+    if (allowsMovement() && !(screen === 'map' && phase === 'explore' && missions[game.index].platform && directions[key][1])) {
+      pressed.set(key, directions[key]);
+    }
   } else if (key === 'e' && !event.repeat) {
     if (screen === 'ship') talk();
-    else interact();
+    else if (screen === 'map') {
+      if (finishTyping) finishTyping();
+      else if (phase === 'briefing') explore();
+      else if (phase === 'feedback') next();
+      else interact();
+    }
   } else if (screen === 'ship' && (key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('button')) {
     const advanceButton = app.querySelector('.dialog-content button');
     if (advanceButton) {
@@ -310,9 +389,14 @@ document.addEventListener('keydown', event => {
 });
 document.addEventListener('keyup', event => pressed.delete(event.key.toLowerCase()));
 window.addEventListener('blur', () => pressed.clear());
+function allowsMovement() {
+  if (screen === 'ship') return !dialogue;
+  return screen === 'map' && (phase === 'base' || phase === 'explore');
+}
+
 app.addEventListener('pointerdown', event => {
   const button = event.target.closest('[data-move]');
-  if (!button) return;
+  if (!button || help.open || !allowsMovement()) return;
   button.setPointerCapture(event.pointerId);
   pressed.set(event.pointerId, directions[button.dataset.move]);
 });
