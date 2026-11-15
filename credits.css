@@ -1,0 +1,57 @@
+.screen-credits {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 4px clamp(6px, 2vw, 24px);
+  color: #eff7ff;
+}
+.team-credit,
+.support-credit {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  line-height: 1.15;
+}
+.team-credit { grid-column: 2; }
+.team-credit img {
+  display: block;
+  width: clamp(56px, 8cqw, 84px);
+  height: auto;
+  border: 1px solid #aac9ea;
+  border-radius: 6px;
+}
+.team-credit strong {
+  padding-left: .18em;
+  font-size: clamp(12px, 1.3vw, 17px);
+  letter-spacing: .18em;
+}
+.support-credit {
+  grid-column: 3;
+  justify-self: end;
+  padding: 5px;
+  border: 1px solid #426494;
+  border-radius: 7px;
+  background: #0d1935;
+  font-size: clamp(10px, 1.2vw, 14px);
+  text-align: center;
+}
+.support-logos { display: flex; gap: 4px; }
+.support-logos img {
+  display: block;
+  width: clamp(20px, 3.2vw, 32px);
+  height: auto;
+}
+
+/* The lunar report leaves the upper part of the scene free for credits. */
+.stage > .screen-credits {
+  position: absolute;
+  inset: 6px 0 auto;
+  align-items: start;
+  pointer-events: none;
+}
+.stage .team-credit strong {
+  padding: 2px 5px 2px calc(5px + .18em);
+  border-radius: 3px;
+  background: #0d1935;
+}

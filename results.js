@@ -1,3 +1,4 @@
+localizeMarkup(document.querySelector('.screen-credits'));
 document.title = t('OUTPOST · Informe lunar', 'OUTPOST · Lunar Report');
 const reportContent = document.querySelector('.report-content');
 const reportActions = document.querySelector('.report-actions');
