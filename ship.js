@@ -1,5 +1,6 @@
 const speakers = {
   curiosity: { name: 'Curiosity', image: 'assets/curiosity-retrato.webp' },
+  director: { name: t('Directora Vanessa', 'Director Vanessa'), image: 'assets/directora-retrato.webp' },
   neil: { name: 'Neil Armstrong', image: 'assets/neil-retrato.webp' }
 };
 
@@ -56,7 +57,7 @@ function enterShip() {
     actor.style.backgroundPositionX = (player.moving ? (1 + Math.floor(time / 100) % 6) * 100 / 6 : 0) + '%';
     const near = nearbySpeaker();
     const message = near
-      ? (near.id === 'neil' ? t('E · Neil Armstrong · La Luna', 'E · Neil Armstrong · Moon') : t('E · Curiosity · Marte (no disponible)', 'E · Curiosity · Mars (unavailable)'))
+      ? (near.id === 'neil' ? t('E · Neil Armstrong · La Luna', 'E · Neil Armstrong · Moon') : t('E · Curiosity · Marte', 'E · Curiosity · Mars'))
       : t('Muévete con WASD o las flechas y acércate a Neil o Curiosity para elegir destino.', 'Use WASD or the arrows and approach Neil or Curiosity to choose a destination.');
     talk.disabled = !near || Boolean(dialogue);
     if (!dialogue && hint.textContent !== message) hint.textContent = message;
@@ -87,7 +88,7 @@ function talk() {
     renderDialogue(lunarIntroduction, t('Continuar a la Luna · E', 'Continue to the Moon · E'));
   } else {
     dialogue = 'mars';
-    renderDialogue(['curiosity', t('Marte todavía no está disponible. Puedes continuar con Neil hacia la Luna.', 'Mars is not available yet. Talk to Neil to continue to the Moon.')], t('Volver a la nave · E', 'Return to ship · E'));
+    renderDialogue(['curiosity', t('¡Vamos a Marte! Te guiaré por Jezero: primero exploraremos, después afrontaremos el polvo y probaremos un pequeño generador de oxígeno.', 'Let’s go to Mars! I will guide you through Jezero: explore the terrain, face the dust and test a small oxygen generator.')], t('Continuar a Marte · E', 'Continue to Mars · E'));
   }
 }
 
@@ -161,7 +162,8 @@ function advance() {
     finishTyping();
     return;
   }
-  if (dialogue === 'moon') {
+  if (dialogue === 'moon' || dialogue === 'mars') {
+    selectDestination(dialogue);
     briefing();
     return;
   }

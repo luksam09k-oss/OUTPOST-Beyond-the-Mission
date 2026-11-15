@@ -1,0 +1,20 @@
+body { min-height:0;height:100dvh;overflow:hidden; }
+#app.finale-layout { width:min(1400px,100%);height:100dvh;padding:10px;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:8px; }
+.finale-header { display:flex;align-items:center;justify-content:space-between;gap:16px; }
+.finale-header h1 { font-size:clamp(15px,2.5vw,26px);margin:0; }
+.finale-header .kicker { margin:0 0 5px;font-size:10px;color:#ffcc86; }
+.finale-header img { width:clamp(40px,7dvh,64px); }
+.finale-world { min-height:0;min-width:0;display:grid;place-items:center;container-type:size;background:#090e24;border:1px solid #647eab;border-radius:8px;overflow:hidden; }
+#finale-scene { width:min(100cqw,177.778cqh);height:auto;aspect-ratio:16/9;image-rendering:pixelated; }
+.finale-dialogue { max-height:47dvh; }
+.finale-controls { display:flex;align-items:center;justify-content:space-between;gap:8px; }
+.finale-controls[hidden] { display:none; }
+.finale-controls p { margin:0;font-size:13px; }
+.pad { display:flex;gap:5px;flex-shrink:0; }
+.pad button { padding:6px 12px;touch-action:none; }
+.final-resource-list { display:flex;flex-wrap:wrap;gap:8px 20px;list-style:none;padding:0;font-size:14px;margin:8px 0; }
+.final-actions { display:flex;gap:8px;flex-wrap:wrap;align-items:center; }
+.final-actions a { padding:6px 10px;border:1px solid #94c5ff;color:#d3eaff;text-decoration:none;font-size:13px; }
+.finale-report { display:none;overflow:auto;min-height:0; }
+.finale-report[open] { display:block; }
+@media(max-width:600px) { .finale-controls { flex-direction:column; }.pad button { padding:5px 10px; }.finale-controls p { font-size:12px; }.finale-dialogue .ship-button { padding:6px 9px;font-size:13px; } }

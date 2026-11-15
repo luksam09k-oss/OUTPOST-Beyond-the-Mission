@@ -1,0 +1,224 @@
+{
+  "layer": "JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd",
+  "title": "MRO HiRISE, Jezero Mosaic, Controlled",
+  "body": "Mars",
+  "capabilities": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/WMTSCapabilities.xml",
+  "matrixSet": "default028mm",
+  "crs": "urn:ogc:def:crs:EPSG::104905",
+  "coordinateUnits": "degrees",
+  "matrices": [
+    {
+      "id": "12",
+      "columns": 8192,
+      "rows": 4096,
+      "origin": [
+        -180.0,
+        90.0
+      ],
+      "tileSize": 256,
+      "scaleDenominator": 68170.80964308465
+    },
+    {
+      "id": "13",
+      "columns": 16384,
+      "rows": 8192,
+      "origin": [
+        -180.0,
+        90.0
+      ],
+      "tileSize": 256,
+      "scaleDenominator": 34085.404821542324
+    }
+  ],
+  "tiles": [
+    {
+      "z": "12",
+      "row": 1627,
+      "col": 5857,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/12/1627/5857.png",
+      "file": "data/mars/tiles/12-1627-5857.png",
+      "bounds": [
+        -2659.940390026268,
+        772.4234021006397,
+        -188.89750086077856,
+        3377.268508105308
+      ],
+      "sha256": "0aa9ef1ac5daef4969b4935ca530ce26fa59fc78cb3bd36620c88d194098de33"
+    },
+    {
+      "z": "12",
+      "row": 1627,
+      "col": 5858,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/12/1627/5858.png",
+      "file": "data/mars/tiles/12-1627-5858.png",
+      "bounds": [
+        -188.89750086077856,
+        772.4234021006397,
+        2282.1453883047107,
+        3377.268508105308
+      ],
+      "sha256": "691fcd476ac149e0fcf5daf7ad021809a8f99f00d598bff8e4981110c58232d8"
+    },
+    {
+      "z": "12",
+      "row": 1628,
+      "col": 5857,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/12/1628/5857.png",
+      "file": "data/mars/tiles/12-1628-5857.png",
+      "bounds": [
+        -2659.940390026268,
+        -1832.4217039040282,
+        -188.89750086077856,
+        772.4234021006397
+      ],
+      "sha256": "1381bed48d9b7bcedad65f96b9d6410eee33878c669d3e1600b01f9eaeae864b"
+    },
+    {
+      "z": "12",
+      "row": 1628,
+      "col": 5858,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/12/1628/5858.png",
+      "file": "data/mars/tiles/12-1628-5858.png",
+      "bounds": [
+        -188.89750086077856,
+        -1832.4217039040282,
+        2282.1453883047107,
+        772.4234021006397
+      ],
+      "sha256": "0f08e43ac387bda74941de83356ea52c962d11d268e22bfe812caa619ad46678"
+    },
+    {
+      "z": "13",
+      "row": 3255,
+      "col": 11714,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3255/11714.png",
+      "file": "data/mars/tiles/13-3255-11714.png",
+      "bounds": [
+        -2659.940390026268,
+        772.4234021006397,
+        -1424.4189454435232,
+        2074.8459551029737
+      ],
+      "sha256": "6f1d77c302ad31f43dfa695da3103e8e5916ecb3f9322487d535fd1d93685543"
+    },
+    {
+      "z": "13",
+      "row": 3255,
+      "col": 11715,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3255/11715.png",
+      "file": "data/mars/tiles/13-3255-11715.png",
+      "bounds": [
+        -1424.4189454435232,
+        772.4234021006397,
+        -188.89750086077856,
+        2074.8459551029737
+      ],
+      "sha256": "2e8c91340ae115121f326c994c0f563fa6e3cd1d55b79726045dba5695fb06ee"
+    },
+    {
+      "z": "13",
+      "row": 3255,
+      "col": 11716,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3255/11716.png",
+      "file": "data/mars/tiles/13-3255-11716.png",
+      "bounds": [
+        -188.89750086077856,
+        772.4234021006397,
+        1046.623943721966,
+        2074.8459551029737
+      ],
+      "sha256": "3aada4af64ffb2b8a8ea629ae39abe9ca84862f08eba051d6d5c4aba688ae8d0"
+    },
+    {
+      "z": "13",
+      "row": 3256,
+      "col": 11714,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3256/11714.png",
+      "file": "data/mars/tiles/13-3256-11714.png",
+      "bounds": [
+        -2659.940390026268,
+        -529.9991509016942,
+        -1424.4189454435232,
+        772.4234021006397
+      ],
+      "sha256": "c0e9bc105d1ac68667f9157eadd6362c531f575ead01f5f5bae2adb83461417b"
+    },
+    {
+      "z": "13",
+      "row": 3256,
+      "col": 11715,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3256/11715.png",
+      "file": "data/mars/tiles/13-3256-11715.png",
+      "bounds": [
+        -1424.4189454435232,
+        -529.9991509016942,
+        -188.89750086077856,
+        772.4234021006397
+      ],
+      "sha256": "59ddf796e388722d0ef4a7089ba20d58d70ea623d5d17890b40edd7d50b4a7e4"
+    },
+    {
+      "z": "13",
+      "row": 3256,
+      "col": 11716,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3256/11716.png",
+      "file": "data/mars/tiles/13-3256-11716.png",
+      "bounds": [
+        -188.89750086077856,
+        -529.9991509016942,
+        1046.623943721966,
+        772.4234021006397
+      ],
+      "sha256": "f62aa9293208218c83462906091b5d5023b657a37d3aebd7fea52027960d1bfa"
+    },
+    {
+      "z": "13",
+      "row": 3257,
+      "col": 11714,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3257/11714.png",
+      "file": "data/mars/tiles/13-3257-11714.png",
+      "bounds": [
+        -2659.940390026268,
+        -1832.4217039040282,
+        -1424.4189454435232,
+        -529.9991509016942
+      ],
+      "sha256": "0dd11ac600b77f4c68b53b438126e25ff048a71fa4957e51fd0626f18f5b7e6e"
+    },
+    {
+      "z": "13",
+      "row": 3257,
+      "col": 11715,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3257/11715.png",
+      "file": "data/mars/tiles/13-3257-11715.png",
+      "bounds": [
+        -1424.4189454435232,
+        -1832.4217039040282,
+        -188.89750086077856,
+        -529.9991509016942
+      ],
+      "sha256": "26060d543d174b1300631baff5d8236ff441beedb82ded83c3aa23d4b8aa3c28"
+    },
+    {
+      "z": "13",
+      "row": 3257,
+      "col": 11716,
+      "url": "https://trek.nasa.gov/tiles/Mars/EQ/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd/1.0.0/default/default028mm/13/3257/11716.png",
+      "file": "data/mars/tiles/13-3257-11716.png",
+      "bounds": [
+        -188.89750086077856,
+        -1832.4217039040282,
+        1046.623943721966,
+        -529.9991509016942
+      ],
+      "sha256": "903c338eef827c86ecd722d8aeffbf60471c6fca1e5d77bd5fa64b2e6212a98d"
+    }
+  ],
+  "bounds": [
+    77.405,
+    18.43,
+    77.448,
+    18.465
+  ],
+  "downloadedAt": "2026-11-15T16:36:42.537634+00:00"
+}

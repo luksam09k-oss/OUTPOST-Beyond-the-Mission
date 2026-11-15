@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#090c20">
+  <title>OUTPOST · Regreso de Marte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="ship.css"><link rel="stylesheet" href="mars-finale.css">
+  <script defer src="i18n.js"></script><script defer src="ship.js"></script>
+  <script defer src="finale/astronaut-sprite.js"></script><script defer src="finale/vanessa-sprite.js"></script><script defer src="finale/interior-fx.js"></script><script defer src="finale/scene.js"></script><script defer src="mars-finale.js"></script>
+</head>
+<body>
+  <main id="app" class="finale-layout">
+    <header class="finale-header"><div><p class="kicker" data-en="RETURN FROM MARS">REGRESO DE MARTE</p><h1>Space Center Houston</h1></div><img src="assets/nasa-space-apps.webp" alt="NASA Space Apps Challenge"></header>
+    <section class="finale-world"><canvas id="finale-scene" width="640" height="360" aria-label="Camina hasta la entrada y habla con la directora" data-label-en="Walk to the entrance and talk to the director"></canvas></section>
+    <div class="finale-dialogue dialogue-dock" hidden></div>
+    <div class="finale-controls"><p id="finale-status" role="status"></p><div class="pad"><button data-k="left" aria-label="Izquierda" data-label-en="Left">←</button><button data-k="right" aria-label="Derecha" data-label-en="Right">→</button><button data-k="jump" aria-label="Saltar" data-label-en="Jump">↑</button><button data-k="act" data-en="Interact · E">Interactuar · E</button></div></div>
+  </main>
+</body>
+</html>

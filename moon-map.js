@@ -68,7 +68,7 @@ const MoonMap = (() => {
       }
     }
     session.tiles.set(key, result);
-    session.logs.push({ service: 'Moon Trek GetTile', url: entry.url, time: result.time, status: result.status, source: result.source,
+    session.logs.push({ service: (session.service || 'Moon Trek') + ' GetTile', url: entry.url, time: result.time, status: result.status, source: result.source,
       error: result.error, z: entry.z, row: entry.row, col: entry.col, cache: entry.file, cacheSHA256: entry.sha256 });
     return result;
   }
@@ -189,5 +189,5 @@ const MoonMap = (() => {
     dialog.querySelector('[data-api-log]').textContent = JSON.stringify(session.logs, null, 2);
   }
 
-  return { load, capabilities, mount, technical, updateApiDetails, escape };
+  return { load, capabilities, mount, technical, updateApiDetails, escape, tile };
 })();

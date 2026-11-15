@@ -94,9 +94,9 @@ npm install
 npm test
 ```
 
-Las pruebas validan las cuatro rutas y todas sus muestras, coordenadas/píxeles WMTS, hashes PNG, consumo, éxito y fallo, carga de red/caché/error y **256 combinaciones de expedición**, con persistencia de pérdida del rover y bloqueo del movimiento durante diálogos y cinemáticas. Las pruebas de DOM usan respuestas controladas; no sustituyen una prueba visual en navegador.
+Las pruebas validan las cuatro rutas y todas sus muestras, coordenadas/píxeles WMTS, hashes PNG, consumo, éxito y fallo, carga de red/caché/error y **64 combinaciones de expedición lunar**, con persistencia de pérdida del rover y bloqueo del movimiento durante diálogos y cinemáticas. Las pruebas de DOM usan respuestas controladas; no sustituyen una prueba visual en navegador.
 
-Comprobaciones directas realizadas el 15 de noviembre de 2026: metadatos oficiales HTTP 200, ambos GeoTIFF descargados, 25 mosaicos oficiales HTTP 200 y PNG decodificados. También se revisó una composición cartográfica de las cuatro rutas. **La comprobación visual final del HTML en navegador quedó pendiente:** los navegadores disponibles rechazaron la conexión al servidor local. No se afirma que se haya comprobado visualmente cada resolución de pantalla.
+Comprobaciones directas realizadas el 15 de noviembre de 2026: metadatos oficiales HTTP 200, ambos GeoTIFF descargados, 25 mosaicos oficiales HTTP 200 y PNG decodificados. También se revisó una composición cartográfica de las cuatro rutas. **En esa revisión inicial, la comprobación visual del HTML lunar quedó pendiente:** los navegadores disponibles rechazaron la conexión al servidor local. No se afirma que se haya comprobado visualmente cada resolución de pantalla.
 
 Para regenerar los datos (Python con `numpy scipy rasterio pyproj requests Pillow`):
 
@@ -107,3 +107,11 @@ python scripts/cache-moon-trek.py
 ```
 
 Los TIFF originales no se incluyen en Git. El catálogo original de la capa y las capacidades verificadas sí se conservan para trazabilidad. No hay claves ni servicios privados.
+
+## Campaña de Marte
+
+Curiosity abre tres misiones independientes de las lunares: reconocimiento de Jezero, tormenta de polvo y producción experimental de oxígeno. Se conservan los controles, recursos, guardado, diálogos de novela visual y la campaña de Neil en la Luna. Marte termina en `mars-finale.html`, una adaptación de la escena del Space Center suministrada por el autor, con Vanessa, su retrato y un diálogo que responde a las decisiones de la partida.
+
+Las fuentes, extractos y límites del modelo están documentados en [data/mars/README.md](data/mars/README.md) y en «Ver más información» durante cada misión. Los registros son históricos; los costes, la tormenta y sus resultados son simulados. El logo visible es NASA Space Apps Challenge.
+
+La suite actual comprueba 64 combinaciones lunares y 32 marcianas, persistencia, ambas decisiones, bloqueo del robot, éxito/fallo del mantenimiento, consumo, consultas WMTS con red/caché/error, extractos científicos y el final. Revisión visual de Marte realizada en navegador a 1280×800, 390×844 y 844×390. Mars Trek sirvió imágenes en línea; PDS Search no permitió la lectura desde el navegador y el panel mostró el respaldo histórico sin afirmar una conexión exitosa.

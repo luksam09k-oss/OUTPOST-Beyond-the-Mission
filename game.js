@@ -6,7 +6,7 @@ const crew = [
   { name: 'Noa', role: t('Médica', 'Medic'), color: '#ff9aa9' }
 ];
 
-const missions = [
+const lunarMissions = [
   {
     id: 'contact', title: missionTitles.contact, location: t('Plataforma lunar', 'Lunar platform'), target: t('la terminal de exploración', 'the exploration terminal'),
     action: t('Revisar el terreno', 'Survey the terrain'), objective: t('Reconocer el terreno lunar y seleccionar una ruta de exploración.', 'Survey the lunar terrain and select a route.'),
@@ -34,6 +34,10 @@ const missions = [
     x: 316, y: 142, options: []
   }
 ];
+
+let missions = lunarMissions;
+let destination = 'moon';
+function selectDestination(value) { destination = value === 'mars' ? 'mars' : 'moon'; missions = destination === 'mars' ? marsMissions : lunarMissions; }
 
 const initialResources = [100, 100, 0];
 const directions = {
@@ -118,7 +122,7 @@ function briefing() {
       <canvas class="briefing-sky" width="320" height="180" aria-hidden="true"></canvas>
       ${nasaBadge()}
       <div class="briefing-frame console-frame">
-        <p class="kicker briefing-tag">${t('Misión lunar', 'Lunar Mission')}</p>
+        <p class="kicker briefing-tag">${destination === 'mars' ? t('Misión marciana', 'Mars Mission') : t('Misión lunar', 'Lunar Mission')}</p>
         <div class="briefing-title">
           <div class="briefing-orbit" aria-hidden="true"><span>✦</span></div>
           <h1 id="briefing-title" tabindex="-1">${t('Tripulación de la base', 'Base Crew')}</h1>
@@ -128,8 +132,8 @@ function briefing() {
       </div>
       <div class="briefing-dialogue dialogue-dock"></div>
     </section>`);
-  renderNovelDialogue(app.querySelector('.briefing-dialogue'), 'neil',
-    t('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar reconociendo el terreno para elegir una ruta de exploración.',
+  renderNovelDialogue(app.querySelector('.briefing-dialogue'), destination === 'mars' ? 'curiosity' : 'neil',
+    destination === 'mars' ? t('Bienvenidos a Jezero. Exploraremos el terreno, protegeremos la base del polvo y probaremos cómo producir oxígeno. Cinco tripulantes, tres misiones: cada decisión cuenta.', 'Welcome to Jezero. Survey the terrain, protect the base from dust and try producing oxygen. Five crew members, three missions: every decision counts.') : t('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar reconociendo el terreno para elegir una ruta de exploración.',
       'Your crew must study the lunar soil and keep the base safe. Start by surveying the terrain and picking a route.'),
     dialogueContinue('begin', t('Comenzar misión · E', 'Start mission · E')));
   animateOpening(null, app.querySelector('.briefing-sky'));
@@ -146,7 +150,8 @@ function stats() {
 function begin() {
   solarRun = undefined;
   solarLoading = undefined;
-  game = { index: 0, log: [], resources: [...initialResources], roverAvailable: true, reconnaissanceData: false };
+  resetMars();
+  game = { destination, index: 0, log: [], resources: [...initialResources], roverAvailable: true, reconnaissanceData: false };
   terrainLoadId++;terrainMap?.dispose();terrainSession=null;terrainRoute=null;terrainResult=null;
   try {
     localStorage.removeItem('outpost-expedition');
@@ -159,6 +164,7 @@ const base = { title: t('Base lunar', 'Lunar Base'), location: t('Base lunar', '
   action: t('Abrir expedición', 'Start expedition'), objective: t('Reúnete con tu equipo y activa la terminal de investigación.', 'Meet your crew and activate the research terminal.'), x: 134, y: 143 };
 
 function scene(nextPhase) {
+  if (destination === 'mars') return marsScene(nextPhase);
   const mission = nextPhase === 'base' ? base : missions[game.index];
   if (mission.id === 'solar' && !solarRun) solarLoading ??= Solar.load();
   phase = mission.platform === 'first-contact' ? 'arrival' : nextPhase;
@@ -251,6 +257,7 @@ function nearby(mission) {
 }
 
 function interact() {
+  if (destination === 'mars') return marsInteract();
   if (screen !== 'map' || help.open) return;
   const mission = phase === 'base' ? base : missions[game.index];
   if ((phase !== 'base' && phase !== 'explore') || !nearby(mission)) return;
@@ -281,7 +288,7 @@ function interact() {
 function missionDialogue(words, controls, title) {
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = false;
-  renderNovelDialogue(overlay, 'neil', words, controls, 'h2', title);
+  renderNovelDialogue(overlay, destination === 'mars' ? 'curiosity' : 'neil', words, controls, 'h2', title);
 }
 
 function explainMission(mission) {
@@ -303,6 +310,7 @@ function changes(delta) {
 }
 
 function choose(option) {
+  if (destination === 'mars') return marsChoose(option);
   if (phase !== 'decision') return;
   if (finishTyping) finishTyping();
   const mission = missions[game.index];
@@ -371,10 +379,11 @@ function results() {
 }
 
 function openReport() {
-  location.assign(`results.html?lang=${language}`);
+  location.assign(`${destination === 'mars' ? 'mars-finale.html' : 'results.html'}?lang=${language}`);
 }
 
 const actions = {
+  marsAnalysis, marsRouteShort: () => marsRouteSelect(0), marsRouteLong: () => marsRouteSelect(1), marsInfo, marsView,
   advance, talk, begin, interact, next, explore, terrainAnalysis, terrainDecision, scienceInfo, resumeExpedition, solarDecision, solarInfo,
   returnToStart: start,
   help: () => { pressed.clear(); help.showModal(); }

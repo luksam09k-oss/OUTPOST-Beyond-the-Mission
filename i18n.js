@@ -21,13 +21,13 @@ const missionTitles = {
 };
 const missionOrder = Object.keys(missionTitles);
 
-function expeditionLog(log) {
+function expeditionLog(log, destination = 'moon') {
   const legacyOrder = ['contact', 'crater', 'resources', 'solar', 'return'];
   const byMission = new Map(log.map((entry, index) => {
     const id = entry.id ?? legacyOrder[index];
     return [id, { ...entry, id }];
   }));
-  return missionOrder.map(id => byMission.get(id)).filter(Boolean);
+  return (destination === 'mars' ? ['mars-contact', 'dust', 'oxygen'] : missionOrder).map(id => byMission.get(id)).filter(Boolean);
 }
 
 function localizeMarkup(root) {

@@ -158,7 +158,8 @@ function scienceInfo() {
 
 function showTechnicalDialog(information, api, {
   title = t('Detalles técnicos', 'Technical details'),
-  informationTitle = t('Información', 'Information')
+  informationTitle = t('Información', 'Information'),
+  apiTitle = t('API de NASA', 'NASA APIs')
 } = {}) {
   pressed.clear();
   const dialog = document.querySelector('#science-info');
@@ -167,7 +168,7 @@ function showTechnicalDialog(information, api, {
       <form method="dialog"><button aria-label="${t('Cerrar detalles técnicos', 'Close technical details')}">${t('Cerrar ×', 'Close ×')}</button></form></header>
     <div class="science-tabs" role="tablist" aria-label="${title}">
       <button id="science-information-tab" role="tab" aria-selected="true" aria-controls="science-information" autofocus>${informationTitle}</button>
-      <button id="science-api-tab" role="tab" aria-selected="false" aria-controls="science-api" tabindex="-1">${t('API de NASA', 'NASA APIs')}</button>
+      <button id="science-api-tab" role="tab" aria-selected="false" aria-controls="science-api" tabindex="-1">${apiTitle}</button>
     </div>
     <section id="science-information" class="science-details" role="tabpanel" aria-labelledby="science-information-tab" tabindex="0">
       ${information}
@@ -195,12 +196,14 @@ function showTechnicalDialog(information, api, {
   dialog.showModal();
   return dialog;
 }
-function persistExpedition() { try { localStorage.setItem('outpost-expedition',JSON.stringify({game,routeId:terrainRoute?.id,result:terrainResult,version:1,scientificAudit:terrainSession ? {timestamp:terrainSession.timestamp,logs:terrainSession.logs,mapStatus:terrainSession.mapStatus,capabilitiesStatus:terrainSession.capabilitiesStatus} : null})); } catch {} }
+function persistExpedition() { try { if (destination === 'mars' && marsSession) game.mars.audit = {timestamp: marsSession.timestamp, logs: marsSession.logs, mapStatus: marsSession.mapStatus}; localStorage.setItem('outpost-expedition',JSON.stringify({game,routeId:terrainRoute?.id,result:terrainResult,version:1,scientificAudit:terrainSession ? {timestamp:terrainSession.timestamp,logs:terrainSession.logs,mapStatus:terrainSession.mapStatus,capabilitiesStatus:terrainSession.capabilitiesStatus} : null})); } catch {} }
 async function resumeExpedition() {
   let saved;try {saved=JSON.parse(localStorage.getItem('outpost-expedition'));}catch{return;}
   if(!saved || saved.version!==1 || !saved.game?.log?.length)return;
   game = saved.game;
-  game.log = expeditionLog(game.log);
+  selectDestination(game.destination || 'moon');
+  game.log = expeditionLog(game.log, destination);
+  if (destination === 'mars') { resetMars(); continueExpedition(); return; }
   solarRun = game.solar;
   terrainResult = saved.result;
   terrainRoute = null;
