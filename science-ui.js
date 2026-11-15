@@ -142,7 +142,7 @@ function finishTerrainJourney() {
   const resourceSummary = changes(r.applied) || t('Sin cambios de recursos', 'No resource changes');
   missionDialogue(why, `<p class="choice-cost">${minutes} ${t('min simulados', 'simulated min')} · ${resourceSummary}</p>
     <div class="result-actions"><button class="ship-button" data-action="scienceInfo" aria-haspopup="dialog">${t('Ver más información', 'More information')}</button>
-    ${missionContinue('next',t('Siguiente misión · E','Next mission · E'))}</div>`, reconnaissanceStatus(r));
+    ${dialogueContinue('next',t('Siguiente misión · E','Next mission · E'))}</div>`, reconnaissanceStatus(r));
 }
 function scienceInfo() {
   if (!terrainSession || !terrainRoute) return;

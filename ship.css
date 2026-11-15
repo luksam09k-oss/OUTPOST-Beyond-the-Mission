@@ -83,38 +83,62 @@ body:has(.ship) {
 .ship-controls[hidden] { display: none; }
 .ship-controls button { touch-action: none; padding: 6px 9px; }
 .ship-hint { margin: 4px 0 0; font-size: clamp(11px, 1.4cqw, 16px); }
-.ship-dialog {
-  background: linear-gradient(110deg, #151d46ec, #0a112cec);
-  border: 2px solid #90c7ff;
-  box-shadow: 0 0 0 3px #151b42, inset 0 0 0 2px #405987, 0 0 2cqw #5098ee50;
-  border-radius: .85cqw;
-  animation: panel-arrival .2s ease-out both;
+.dialogue-dock {
+  width: min(100%, 1360px);
+  justify-self: center;
+  margin-inline: auto;
+  padding: 3px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #5379ad #101632;
 }
 .ship-dialog {
+  --ship-blue: #8ccfff;
+  --ship-gold: #ffd27a;
+  --portrait-width: clamp(58px, 11vw, 144px);
   position: relative;
-  min-height: 15cqw;
-  padding: 1.35cqw 1.6cqw 1.3cqw 22%;
+  min-height: clamp(90px, 18dvh, 142px);
+  padding: clamp(8px, 1.5dvh, 16px) clamp(8px, 1.35vw, 18px) 10px calc(var(--portrait-width) + 9px);
+  background: linear-gradient(110deg, #151d46, #0d142f);
+  border: 2px solid #90c7ff;
+  box-shadow: inset 0 0 0 2px #405987, 0 0 3px #5098ee50;
+  border-radius: clamp(8px, 1vw, 15px);
+  animation: panel-arrival .2s ease-out both;
 }
 .dialog-portrait {
   position: absolute;
-  left: 1.5%;
+  left: 0;
   bottom: 0;
-  width: 19%;
-  height: max(14cqw, 101%);
-  object-fit: contain;
-  object-position: bottom center;
-  image-rendering: pixelated;
-  filter: drop-shadow(3px 0 #0a1227);
+  width: var(--portrait-width);
+  height: min(100%, clamp(88px, 18dvh, 142px));
+  container-type: size;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.dialog-portrait .portrait-art { width: min(100%, 98cqh); }
+.portrait-art { position: relative; display: block; line-height: 0; }
+.portrait-art img { width: 100%; height: auto; display: block; image-rendering: pixelated; }
+.portrait-neil::after {
+  content: "";
+  position: absolute;
+  left: 16%;
+  top: 74.1%;
+  width: 15%;
+  aspect-ratio: 1;
+  border-radius: 36%;
+  background: #cdd2d9 url('assets/nasa-space-apps.webp') center / 92% auto no-repeat;
 }
 .dialog-name {
   color: var(--ship-blue);
-  font-size: clamp(15px, 2.15cqw, 32px);
-  margin: 0 0 .4em;
+  font-size: clamp(17px, 3vmin, 24px);
+  margin: 0 0 .35em;
   outline: none;
   text-shadow: 2px 2px #273f7c;
 }
 .dialog-text {
-  font: 500 clamp(13px, 1.65cqw, 24px)/1.4 system-ui, sans-serif;
+  font: 600 clamp(13px, 2.2vmin, 18px)/1.4 system-ui, sans-serif;
   color: #f2f5ff;
   margin: 0 0 .55em;
 }
@@ -126,7 +150,7 @@ body:has(.ship) {
   background: #101c40;
   border: 2px solid #75baff;
   box-shadow: inset 0 0 0 2px #233c6a;
-  font-size: clamp(12px, 1.3cqw, 19px);
+  font-size: clamp(12px, 1.6vmin, 16px);
   padding: .38em .8em;
 }
 .ship-button span { color: var(--ship-gold); animation: ship-prompt .9s steps(2, end) infinite; }
@@ -142,9 +166,7 @@ body:has(.ship) {
 @keyframes rover-idle { from { background-position-x: 0; } to { background-position-x: 54.54545%; } }
 
 @media (max-width: 640px) and (orientation: portrait) {
-  .ship-content { margin: -9% 12px 0; }
-  .ship-dialog { min-height: 125px; padding: 12px 10px 10px 26%; }
-  .dialog-portrait { width: 24%; height: 100%; }
+  .ship-dialog { --portrait-width: clamp(54px, 16vw, 98px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .ship,.ship-light,.ship-actor,.ship-dialog,.ship-button span { animation: none; }

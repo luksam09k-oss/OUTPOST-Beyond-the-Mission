@@ -52,15 +52,11 @@ let launchOpening;
 let reconnaissance;
 
 function nasaBadge() {
-  return '<div class="mission-badge"><img class="nasa-mark" src="assets/nasa-wordmark.png" alt="NASA"><span>Space Apps<br>Challenge 2026</span></div>';
+  return '<img class="mission-badge" src="assets/nasa-space-apps.webp" alt="NASA Space Apps Challenge 2026">';
 }
 
 function header() {
   return `<canvas class="mission-sky" width="384" height="216" aria-hidden="true"></canvas><header class="top"><div class="brand">OUTPOST</div>${nasaBadge()}<button class="console-button" data-action="help">${t('Cómo jugar', 'How to play')}</button></header>`;
-}
-
-function guide(message) {
-  return `<div class="guide">${portraitArt(speakers.neil)}<div><strong>Neil Armstrong</strong><p>${message}</p></div></div>`;
 }
 
 function show(next, html) {
@@ -68,6 +64,7 @@ function show(next, html) {
   app.dataset.screen = next;
   pressed.clear();
   cancelAnimationFrame(frame);
+  if (finishTyping) finishTyping();
   app.innerHTML = html;
   app.querySelectorAll('[data-portrait]').forEach(canvas => {
     const id = canvas.dataset.portrait;
@@ -126,12 +123,15 @@ function briefing() {
           <div class="briefing-orbit" aria-hidden="true"><span>✦</span></div>
           <h1 id="briefing-title" tabindex="-1">${t('Tripulación de la base', 'Base Crew')}</h1>
         </div>
-        ${guide(t('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar reconociendo el terreno para elegir una ruta de exploración.', 'Your crew must study the lunar soil and keep the base safe. Start by surveying the terrain and picking a route.'))}
         <ul class="crew" aria-label="${t('Cinco tripulantes', 'Five crew members')}">${crew.map((person, i) =>
           `<li>${i === 0 ? '<span class="crew-player" aria-hidden="true"></span>' : `<canvas width="26" height="26" data-portrait="${i}" aria-hidden="true"></canvas>`}<strong>${person.name}</strong><small>${person.role}</small></li>`).join('')}</ul>
-        <div class="briefing-action"><button class="console-button" data-action="begin">${t('Comenzar misión', 'Start mission')}</button></div>
       </div>
+      <div class="briefing-dialogue dialogue-dock"></div>
     </section>`);
+  renderNovelDialogue(app.querySelector('.briefing-dialogue'), 'neil',
+    t('Tu equipo debe estudiar el suelo lunar y mantener segura la base. Vamos a empezar reconociendo el terreno para elegir una ruta de exploración.',
+      'Your crew must study the lunar soil and keep the base safe. Start by surveying the terrain and picking a route.'),
+    dialogueContinue('begin', t('Comenzar misión · E', 'Start mission · E')));
   animateOpening(null, app.querySelector('.briefing-sky'));
 }
 
@@ -174,7 +174,7 @@ function scene(nextPhase) {
       <div class="mission-viewport">
         <div class="map-frame">
           <img class="map-backdrop" alt="" fetchpriority="high">
-          <span class="map-wordmark" aria-hidden="true"></span>
+          <span class="map-emblem" aria-hidden="true"></span>
           <canvas id="map" width="384" height="216" aria-label="${t('Mapa de', 'Map of')} ${mission.location}"></canvas>
           <section class="panel objective console-frame" id="mission-panel">
             <h2><span aria-hidden="true">⌖</span> ${t('Objetivo', 'Objective')}</h2>
@@ -182,7 +182,7 @@ function scene(nextPhase) {
           </section>
         </div>
       </div>
-      <div class="mission-dialogue" hidden></div>
+      <div class="mission-dialogue dialogue-dock" hidden></div>
       <div class="controls">${movementButtons(mission.platform)}
         <p id="hint" aria-live="polite"></p>
         <button class="console-button interact" data-action="interact" disabled>${t('Interactuar · E', 'Interact · E')}</button>
@@ -264,7 +264,7 @@ function interact() {
     phase='feedback';
     const explanation=t('El rover se perdió en Primer contacto. Los cinco astronautas permanecen protegidos; aplazamos la exploración del cráter hasta disponer de otro vehículo. No se obtienen datos nuevos ni se cobran costes de una salida que no ocurrió.', 'The rover was lost during First Contact. The crew is safe, but crater exploration will wait until we have another rover. The canceled trip used no resources.');
     game.log.push({id:mission.id,title:mission.title,name:t('Exploración aplazada · sin rover', 'Exploration postponed · no rover'),success:false,explanation});persistExpedition();
-    missionDialogue(explanation,missionContinue('next',t('Siguiente misión · E', 'Next mission · E')),t('Rover no disponible', 'Rover unavailable'));return;
+    missionDialogue(explanation,dialogueContinue('next',t('Siguiente misión · E', 'Next mission · E')),t('Rover no disponible', 'Rover unavailable'));return;
   }
   phase = 'decision';
   pressed.clear();
@@ -284,13 +284,9 @@ function missionDialogue(words, controls, title) {
   renderNovelDialogue(overlay, 'neil', words, controls, 'h2', title);
 }
 
-function missionContinue(action, label) {
-  return `<button class="ship-button" data-action="${action}">${label} <span aria-hidden="true">▸</span></button>`;
-}
-
 function explainMission(mission) {
   phase = 'briefing';
-  missionDialogue(mission.objective, missionContinue('explore', t('Continuar · E', 'Continue · E')), mission.title);
+  missionDialogue(mission.objective, dialogueContinue('explore', t('Continuar · E', 'Continue · E')), mission.title);
 }
 
 function explore() {
@@ -344,7 +340,7 @@ function applyDecision(option) {
   persistExpedition();
   phase = 'feedback';
   document.querySelector('#stats').innerHTML = stats();
-  const continuation = missionContinue('next', game.index === missions.length - 1 ? t('Ver resultados', 'View results') : t('Siguiente misión · E', 'Next mission · E'));
+  const continuation = dialogueContinue('next', game.index === missions.length - 1 ? t('Ver resultados', 'View results') : t('Siguiente misión · E', 'Next mission · E'));
   const benefit = mission.explanation ? `<p class="mission-benefit"><strong>${t('Beneficio', 'Benefit')}</strong> · ${explanation}</p>` : '';
   missionDialogue(mission.explanation || explanation, `${benefit}<p class="choice-cost">${changes(applied)}</p>${continuation}`,
     success ? t('Objetivo completado', 'Objective complete') : t('Objetivo parcial', 'Partial objective'));
@@ -387,7 +383,7 @@ app.addEventListener('click', event => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
   const action = button.dataset.action;
-  if ((action === 'explore' || action === 'next') && finishTyping) finishTyping();
+  if (button.hasAttribute('data-dialogue-continue') && finishTyping) finishTyping();
   else if (action === 'choose') choose(Number(button.dataset.option));
   else actions[action]?.();
 });
@@ -404,15 +400,13 @@ document.addEventListener('keydown', event => {
       pressed.set(key, directions[key]);
     }
   } else if (key === 'e' && !event.repeat) {
-    if (screen === 'ship') talk();
-    else if (screen === 'map') {
-      if (finishTyping) finishTyping();
-      else if (phase === 'briefing') explore();
-      else if (phase === 'feedback') next();
-      else interact();
-    }
-  } else if (screen === 'ship' && (key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('button')) {
-    const advanceButton = app.querySelector('.dialog-content button');
+    const advanceButton = app.querySelector('.dialogue-dock:not([hidden]) [data-dialogue-continue]');
+    if (advanceButton) advanceButton.click();
+    else if (finishTyping) finishTyping();
+    else if (screen === 'ship') talk();
+    else if (screen === 'map') interact();
+  } else if ((key === 'enter' || key === ' ') && !event.repeat && !event.target.closest('a, button')) {
+    const advanceButton = app.querySelector('.dialogue-dock:not([hidden]) [data-dialogue-continue]');
     if (advanceButton) {
       event.preventDefault();
       advanceButton.click();

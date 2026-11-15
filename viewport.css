@@ -1,4 +1,4 @@
-/* The scene uses the available row or column while preserving its own aspect ratio. */
+/* Fit the scene above the dialogue while preserving its aspect ratio. */
 body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   min-height: 0;
   height: 100dvh;
@@ -19,8 +19,7 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   flex: none;
 }
 #app[data-screen="map"] .top button { padding: 4px 9px; font-size: 13px; }
-#app[data-screen="map"] .top .nasa-mark { width: 42px; }
-#app[data-screen="map"] .top .mission-badge { font-size: 10px; }
+#app[data-screen="map"] .top .mission-badge { width: clamp(26px, 5dvh, 42px); }
 .mission-heading { flex: none; }
 #app[data-screen="map"] .mission-heading h1 { font-size: clamp(16px, 2vw, 26px); margin: 0; }
 #app[data-screen="map"] .mission-heading .kicker { font-size: 10px; margin: 0 0 3px; }
@@ -58,11 +57,7 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
 .mission-console .controls #hint { font-size: 12px; }
 .cinematic-controls :is(.directions, .interact) { display: none; }
 
-.mission-dialogue { grid-area: dialogue; max-height: 48dvh; overflow: auto; }
-.mission-dialogue .ship-dialog { padding: 8px 12px 8px 84px; min-height: 0; }
-.mission-dialogue .dialog-name { font-size: 17px; margin-bottom: 4px; }
-.mission-dialogue .dialog-portrait { width: 75px; height: 100%; }
-.mission-dialogue .dialog-text { font-size: clamp(13px, 1.5vmin, 16px); line-height: 1.35; margin-bottom: 6px; }
+.mission-dialogue { grid-area: dialogue; max-height: 48dvh; }
 .mission-dialogue .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .mission-dialogue .choices button { font-size: 13px; line-height: 1.3; padding: 6px 8px; }
 .mission-dialogue .choices small { font-size: 12px; margin-top: 3px; }
@@ -84,41 +79,16 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
 
 #app[data-screen="ship"] { width: 100%; height: 100dvh; padding: 6px; }
 .ship { height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; }
-.ship-content { width: min(1300px, 98%); max-height: 50dvh; overflow: auto; margin: 4px auto 0; padding: 1px; }
-.ship-content .ship-dialog { padding: 8px 12px 8px clamp(76px, 14vw, 150px); min-height: 0; }
-.ship-content .dialog-portrait { width: clamp(66px, 12vw, 130px); height: 100%; left: 4px; }
-.ship-content .dialog-name { font-size: clamp(17px, 3vmin, 24px); }
-.ship-content .dialog-text { font-size: clamp(13px, 2.2vmin, 18px); }
-.ship-content .ship-button { font-size: 14px; }
+.ship-content { width: 100%; margin: 4px auto 0; padding: 0; }
+.ship-overlay { max-height: 50dvh; }
 .ship-content .ship-hint { font-size: 13px; }
 .ship-content .ship-controls { margin: 0; }
 .resume-expedition { position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%); z-index: 10; background: #0c153b; font-size: 12px; }
 
-@media (min-width: 520px) and (min-aspect-ratio: 3/2) {
-  .mission-console:has(.mission-dialogue:not([hidden])) {
-    grid-template: "stats stats" auto "world dialogue" minmax(0, 1fr) "controls controls" auto
-      / minmax(0, 1fr) clamp(208px, 28vw, 370px);
-  }
-  .mission-dialogue { max-height: 100%; align-self: center; }
-  .mission-dialogue .ship-dialog { padding: 8px; }
-  .mission-dialogue .dialog-content { min-height: 34px; }
-  .mission-dialogue .dialog-portrait { position: relative; float: right; width: 38px; height: 39px; left: auto; }
-  .mission-dialogue .choices { grid-template-columns: 1fr; clear: both; }
-  .ship:has(.ship-overlay .ship-dialog) {
-    grid-template: minmax(0, 1fr) / minmax(0, 1fr) clamp(208px, 28vw, 380px);
-  }
-  .ship:has(.ship-overlay .ship-dialog) .ship-content { max-height: 100%; align-self: center; }
-  .ship-content .ship-dialog { padding: 8px; }
-  .ship-content .dialog-portrait { position: relative; float: right; width: 36px; height: 37px; left: auto; }
-}
 @media (max-width: 760px), (max-height: 640px) {
-  #app[data-screen="map"] .top { grid-template-columns: 1fr auto; }
-  #app[data-screen="map"] .top .mission-badge { display: none; }
   .mission-viewport .objective { width: min(44%, 280px); }
   .mission-viewport .objective h2 { font-size: 11px; }
   .mission-viewport .objective p { font-size: 10px; }
-  .briefing { padding: 25px 12px 12px; }
-  .briefing > .mission-badge { display: none; }
   .briefing-frame { padding: 20px 12px 12px; }
   .briefing-title { margin-bottom: 8px; }
   .briefing-title h1 { font-size: clamp(15px, 3vmin, 26px); }
@@ -126,12 +96,9 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   .briefing .crew li { padding: 4px 2px; }
   .briefing .crew canvas { width: min(35px, 7vmin); }
   .briefing .crew-player { width: min(24px, 4.5vmin); }
-  .briefing-action .console-button { font-size: 11px; padding: .6em 1em; }
 }
 @media (max-width: 560px) {
   .mission-dialogue .choices { grid-template-columns: 1fr; }
-  .mission-dialogue .dialog-portrait { display: none; }
-  .mission-dialogue .ship-dialog { padding: 7px; }
   .mission-console .controls #hint { flex: 1 0 100%; order: 1; margin: 0; }
   .mission-console > .stats .stat { padding-inline: 4px; }
   .briefing .crew { grid-template-columns: repeat(5, minmax(0, 1fr)); }
@@ -139,7 +106,8 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   .briefing .crew small { font-size: 9px; }
 }
 @media (max-height: 440px) and (orientation: landscape) {
-  .mission-dialogue .ship-dialog { padding: 6px; }
+  .mission-dialogue { max-height: 55dvh; }
+  .ship-dialog { --portrait-width: clamp(58px, 18dvh, 84px); }
   .mission-dialogue .dialog-text,.mission-dialogue .choices button,.mission-dialogue .choice-cost { font-size: 12px; }
   .mission-dialogue .choices small { font-size: 11px; }
   .mission-dialogue .choices button { padding: 4px 6px; }
@@ -147,25 +115,24 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   .terrain-layout { grid-template-rows: minmax(0, 1fr); }
 }
 
-.map-wordmark {
-  display:none;
-  position:absolute;
-  transform:translate(-50%,-50%);
-  border:1px solid #7b94bd;
-  border-radius:2px;
-  background:#182543 url('assets/nasa-wordmark.png') center / 84% auto no-repeat;
+.map-emblem {
+  display: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 12%;
+  background: #a0a1d2 url('assets/nasa-space-apps.webp') center / contain no-repeat;
 }
-.map-frame:is([data-backdrop="primer-contacto"],[data-backdrop="ruta-lunar"]) .map-wordmark {
-  display:block;left:8.25%;top:63.7%;width:7.6%;height:12%;
+.map-frame:is([data-backdrop="primer-contacto"], [data-backdrop="ruta-lunar"]) .map-emblem {
+  display: block;
+  left: 8.23%;
+  top: 63.4%;
+  width: 7.1%;
+  height: 11.5%;
 }
-.map-frame[data-backdrop="puesto-crater"] .map-wordmark {
-  display:block;left:10.9%;top:31.5%;width:6.2%;height:9.6%;
-}
-.dialog-portrait { container-type:size; display:flex; justify-content:center; align-items:flex-end; }
-.dialog-portrait .portrait-art { width:min(100%, 98cqh); }
-.portrait-art { position:relative; display:block; line-height:0; }
-.portrait-art img { width:100%; height:auto; display:block; image-rendering:pixelated; }
-.portrait-neil::after {
-  content:""; position:absolute; left:14.8%; top:73.2%; width:13%; height:14%;
-  border-radius:50%; transform:rotate(-8deg); background:#132441 url('assets/nasa-wordmark.png') center / 90% auto no-repeat;
+.map-frame[data-backdrop="puesto-crater"] .map-emblem {
+  display: block;
+  left: 10.85%;
+  top: 31.5%;
+  width: 5.2%;
+  height: 9%;
 }

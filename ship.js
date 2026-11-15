@@ -22,7 +22,6 @@ let finishTyping;
 function enterShip() {
   dialogue = 'intro';
   dialogueLine = 0;
-  finishTyping = null;
   player = { x: 50, y: 69, facing: 1, moving: false };
   show('ship', `
     <section class="ship" aria-label="${t('Interior de la nave', 'Ship interior')}">
@@ -35,7 +34,7 @@ function enterShip() {
       </div>
       </div>
       <div class="ship-content">
-        <div class="ship-overlay"></div>
+        <div class="ship-overlay dialogue-dock"></div>
         <div class="ship-controls" hidden>
           ${movementButtons()}
           <button class="ship-button" data-action="talk" disabled>${t('Hablar · E', 'Talk · E')}</button>
@@ -85,10 +84,10 @@ function talk() {
   app.querySelector('.ship-hint').hidden = true;
   if (near.id === 'neil') {
     dialogue = 'moon';
-    renderDialogue(lunarIntroduction, t('Continuar a la Luna', 'Continue to the Moon'));
+    renderDialogue(lunarIntroduction, t('Continuar a la Luna · E', 'Continue to the Moon · E'));
   } else {
     dialogue = 'mars';
-    renderDialogue(['curiosity', t('Marte todavía no está disponible. Puedes continuar con Neil hacia la Luna.', 'Mars is not available yet. Talk to Neil to continue to the Moon.')], t('Volver a la nave', 'Return to ship'));
+    renderDialogue(['curiosity', t('Marte todavía no está disponible. Puedes continuar con Neil hacia la Luna.', 'Mars is not available yet. Talk to Neil to continue to the Moon.')], t('Volver a la nave · E', 'Return to ship · E'));
   }
 }
 
@@ -96,8 +95,11 @@ function renderDialogue([speaker, words, displayResources], button) {
   const ship = app.querySelector('.ship');
   ship.dataset.speaker = speaker;
   renderNovelDialogue(ship.querySelector('.ship-overlay'), speaker, words,
-    `${displayResources ? initialMeters() : ''}
-     <button class="ship-button" data-action="advance">${button} <span aria-hidden="true">▸</span></button>`, 'h1');
+    `${displayResources ? initialMeters() : ''}${dialogueContinue('advance', button)}`, 'h1');
+}
+
+function dialogueContinue(action, label) {
+  return `<button class="ship-button" data-action="${action}" data-dialogue-continue>${label} <span aria-hidden="true">▸</span></button>`;
 }
 
 function portraitArt({ image, name }) {
@@ -118,6 +120,7 @@ function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', 
         ${controls}
       </div>
     </div>`;
+  content.scrollTop = 0;
   content.querySelector('.dialog-name').focus({ preventScroll: true });
   const text = content.querySelector('.dialog-text');
   text.textContent = words;
