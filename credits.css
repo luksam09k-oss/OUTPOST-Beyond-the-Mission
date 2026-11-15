@@ -16,10 +16,9 @@
 .team-credit { grid-column: 2; }
 .team-credit img {
   display: block;
-  width: clamp(56px, 8cqw, 84px);
+  width: clamp(84px, 12cqw, 150px);
   height: auto;
-  border: 1px solid #aac9ea;
-  border-radius: 6px;
+  filter: drop-shadow(0 2px 5px #79a7ed55);
 }
 .team-credit strong {
   padding-left: .18em;
@@ -50,9 +49,4 @@
   inset: 6px 0 auto;
   align-items: start;
   pointer-events: none;
-}
-.stage .team-credit strong {
-  padding: 2px 5px 2px calc(5px + .18em);
-  border-radius: 3px;
-  background: #0d1935;
 }
