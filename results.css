@@ -1,7 +1,7 @@
 :root{color-scheme:dark;background:#05050f;color:#f1f7ff;font-family:"Courier New",monospace}
 *{box-sizing:border-box}
-body{margin:0;min-height:100svh;display:grid;place-items:center}
-.stage{position:relative;width:min(100%,calc(100svh * 1672 / 941));aspect-ratio:1672/941;overflow:hidden;background:#07071a;container-type:inline-size}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;overflow:hidden}
+.stage{position:relative;width:min(100%,calc(100dvh * 1672 / 941));aspect-ratio:1672/941;overflow:hidden;background:#07071a;container-type:inline-size}
 .world,.world img,.world canvas,.vig{position:absolute;inset:0;width:100%;height:100%}
 .world img,.world canvas{display:block;image-rendering:pixelated}
 .world{will-change:transform;animation:world-in 1.4s ease-out both}
@@ -25,12 +25,18 @@ body{margin:0;min-height:100svh;display:grid;place-items:center}
 .report-actions :focus-visible{outline:2px solid #ffd88a;outline-offset:2px}
 .report [hidden]{display:none}
 .report [data-reveal]:not([hidden]){animation:report-in .38s ease-out both}
+.report .reveal-instantly [data-reveal]:not([hidden]){animation:none}
 @keyframes world-in{from{opacity:0}to{opacity:1}}
 @keyframes report-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @media(max-width:720px) and (orientation:portrait){
-  body{display:block}
-  .stage{min-height:100svh;aspect-ratio:auto;overflow:visible}
-  .world,.vig{height:auto;aspect-ratio:1672/941}
-  .report{position:relative;inset:auto;margin:0 14px;top:0;transform:translateY(28vw);min-height:310px;padding:14px;font-size:14px}
+  .stage{height:100dvh;aspect-ratio:auto}
+  .world,.vig{bottom:auto;height:auto;aspect-ratio:1672/941}
+  .report{inset:min(36vw,40dvh) 10px auto;padding:12px;font-size:13px;max-height:calc(100dvh - min(36vw,40dvh) - 10px)}
+}
+@media(max-height:540px) and (orientation:landscape){
+  .report{top:43%;left:52%;bottom:2%;padding:5px 7px;font-size:11px;line-height:1.2}
+  .report h1{font-size:15px;margin:0}
+  .report dl,.report ol{margin:.35em 0}
+  .report-actions{gap:4px;margin-top:.3em}
 }
 @media(prefers-reduced-motion:reduce){.world,.report [data-reveal]:not([hidden]){animation:none}}

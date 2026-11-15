@@ -21,30 +21,32 @@ async function solarAnalysis() {
   const { level } = solarRun;
   app.querySelector('.mission-console').dataset.solar = level;
   const estimate = Solar.plan(solarRun, 0);
-  const status = level === 'high' ?
-    t('El equipo exterior debe refugiarse de inmediato.', 'The crew outside must take shelter immediately.') :
+  const highAlertOrder = level === 'high';
+  const status = highAlertOrder ?
+    t('Con esta alerta no hay tiempo para asegurar los equipos. Hay que evacuar ya.',
+      'With an alert this high, there is no time to secure the equipment. We need to evacuate now.') :
     t('Cada minuto afuera aumenta la exposición. Aún hay tiempo para asegurar los equipos.', 'Every minute outside adds exposure. There is still time to secure the equipment.');
-  const recommendation = level === 'high' ?
-    t('Recomendación: evacuar ahora.', 'Recommendation: evacuate now.') :
-    t('Recomendación: prioriza a la tripulación.', 'Recommendation: put the crew first.');
+  if (highAlertOrder) phase = 'decision';
+  const action = highAlertOrder
+    ? `<button class="ship-button" data-action="choose" data-option="0">${solarNames[0]}</button>`
+    : missionContinue('solarDecision', t('Elegir acción', 'Choose an action'));
   missionDialogue(status, `<p class="choice-cost">${t('Dosis de fondo estimada al evacuar', 'Estimated background dose if evacuated')} · ${doseLabel(estimate.dose)}</p>
-    <p>${recommendation}</p>
     <div class="result-actions"><button class="ship-button" data-action="solarInfo">${t('Ver más información', 'More information')}</button>
-    ${missionContinue('solarDecision', t('Elegir acción', 'Choose an action'))}</div>`,
+    ${action}</div>`,
     `${t('Nivel de alerta', 'Alert level')} · ${solarLevels[level]}`);
 }
 
 function doseLabel(dose) {
   if (dose === null) return t('Sin referencia disponible', 'Reference unavailable');
-  return `${numberText(dose, 1)} μGy (${t('simulación', 'simulation')})`;
+  return `${numberText(dose, 1)} μGy`;
 }
 
 function solarDecision() {
   if (phase !== 'solar-analysis' || !solarRun) return;
   phase = 'decision';
-  const choices = solarNames.map((name, option) => {
+  const choices = solarNames.flatMap((name, option) => {
     const plan = Solar.plan(solarRun, option);
-    if (!plan) return `<button disabled>${name}<small>${t('Bloqueada por alerta alta', 'Locked due to high alert')}</small></button>`;
+    if (!plan) return [];
     const note = option === 0 ? t('Menos exposición. Podrían perderse datos.', 'Less exposure. Some data may be lost.') :
       t('Conserva los datos. Más tiempo afuera.', 'Preserves data. More time outside.');
     return `<button data-action="choose" data-option="${option}">${name}<small>${note}</small>
@@ -62,7 +64,6 @@ function startSolarEvacuation(option) {
   reconnaissance = { solar: true, elapsed: 0, duration: reducedMotion.matches ? 200 : option === 0 ? 2700 : 4200 };
   phase = 'cinematic';
   app.querySelector('.mission-dialogue').hidden = true;
-  scheduleViewportFit();
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 
@@ -109,15 +110,16 @@ function finishSolarEvacuation() {
   phase = 'feedback';
   app.querySelector('#stats').innerHTML = stats();
   delete app.querySelector('.mission-console').dataset.solar;
-  missionDialogue(message, `<p class="choice-cost">${changes(result.applied)} · ${doseLabel(result.dose)}</p>
+  missionDialogue(message, `<p class="choice-cost">${changes(result.applied)}<br>${t('Dosis estimada', 'Estimated dose')} · ${doseLabel(result.dose)}</p>
     <div class="result-actions"><button class="ship-button" data-action="solarInfo">${t('Ver más información', 'More information')}</button>
-    ${missionContinue('next', t('Siguiente misión · E', 'Next mission · E'))}</div>`,
+    ${missionContinue('next', t('Ver informe final · E', 'View final report · E'))}</div>`,
   t('Evacuación completada', 'Evacuation complete'));
 }
 
 function solarInfo() {
   if (!solarRun) return;
   const { event, measurement, eventSource, measurementSource, result } = solarRun;
+  const variation = numberText(Solar.settings.variation * 100);
   const sourceNames = {
     recent: t('Registro reciente consultado en línea', 'Recent record fetched online'),
     historical: t('Registro histórico consultado en línea', 'Historical record fetched online'),
@@ -135,7 +137,7 @@ function solarInfo() {
       'The DONKI catalog supplies a reference event. The alert is a simulation setting, not a current warning or a measurement of event intensity.')}</p>
     ${result ? `<p>${t('El traje y el soporte vital consumieron oxígeno. El traslado, los equipos y el cierre del refugio usaron energía.',
       'The suit and life support used oxygen. Moving the crew, running equipment and sealing the shelter used energy.')}</p>
-      <p>${numberText(result.outside)} ${t('min fuera', 'min outside')} · ${numberText(result.shelterMinutes)} ${t('min bajo refugio', 'min in shelter')} · ${doseLabel(result.dose)}</p>` : ''}`;
+      <p>${numberText(result.outside)} ${t('min fuera', 'min outside')} · ${numberText(result.shelterMinutes)} ${t('min bajo refugio', 'min in shelter')} · ${t('Dosis simulada', 'Simulated dose')} · ${doseLabel(result.dose)}</p>` : ''}`;
   const api = `<h3>DONKI · SEP</h3>
     <p>${sourceNames[eventSource]}${event ? ` · <a href="${MoonMap.escape(event.link)}" target="_blank" rel="noopener">${MoonMap.escape(event.sepID)}</a>
       · ${MoonMap.escape(event.eventTime)} (UTC)` : ''}</p>
@@ -147,8 +149,8 @@ function solarInfo() {
       t('CRaTER mide en órbita lunar desde LRO. Sus valores sirven de referencia para la dosis de fondo simulada, con diferencias respecto a la superficie y al cuerpo humano.',
       'CRaTER measures from lunar orbit aboard LRO. Its readings are a baseline for the simulated background dose, with differences from the surface and the human body.')}</p>
     <details><summary>${t('Fórmula y supuestos', 'Formula and assumptions')}</summary>
-      <p>${t('Dosis (μGy) = tasa de referencia × (horas fuera + horas dentro × 0,25) × variación (±15 %). El blindaje de 0,25 es un supuesto del juego. La actividad solar influye en el indicador de riesgo por separado y el modelo excluye la dosis adicional de un SEP.',
-      'Dose (μGy) = reference rate × (hours outside + hours inside × 0.25) × variation (±15%). The 0.25 shielding factor is a game assumption. Solar activity influences the risk meter separately, and the model excludes any additional SEP dose.')}</p></details>
+      <p>${t(`Dosis simulada (μGy) = tasa de referencia × (horas fuera + horas dentro × 0,25) × variación (±${variation} %). El blindaje de 0,25 es un supuesto del juego. La actividad solar modifica el indicador de riesgo por separado y el cálculo de dosis solo incluye radiación de fondo.`,
+      `Simulated dose (μGy) = reference rate × (hours outside + hours inside × 0.25) × variation (±${variation}%). The 0.25 shielding factor is a game assumption. Solar activity affects the risk meter separately, and the dose calculation covers background radiation only.`)}</p></details>
     <details><summary>${t('Consultas y registros originales', 'Queries and original records')}</summary>
       <ul>${solarRun.queries.map(q => `<li><a href="${MoonMap.escape(q.url)}" target="_blank" rel="noopener">${q.url.includes('/DONKI/') ? 'DONKI SEP' : 'RadLab'}</a>
         · ${states[q.state]} ${q.http || ''} · ${MoonMap.escape(q.checkedAt)} · ${q.count}</li>`).join('')}</ul>

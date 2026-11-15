@@ -10,7 +10,7 @@ w.requestAnimationFrame=()=>1;w.cancelAnimationFrame=()=>{};
 w.fetch=async url=>({ok:true,status:200,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))});
 w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
 w.HTMLDialogElement.prototype.close=function(){this.open=false;};
-for(const file of ['i18n.js','opening.js','art.js','ship.js','science.js','moon-map.js','science-ui.js','viewport.js','solar.js','solar-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+for(const file of ['i18n.js','opening.js','art.js','ship.js','science.js','moon-map.js','science-ui.js','solar.js','solar-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 const run=s=>vm.runInContext(s,context);
 run('openReport = () => {}');
 const data=JSON.parse(fs.readFileSync(path.join(root,'data/nasa/routes.json')));w.testData=data;
@@ -20,7 +20,7 @@ for(let i=0;i<5;i++)run('advance()');assert.equal(run('allowsMovement()'),true);
 run('player.x=71;player.y=68;talk()');assert(run("app.textContent.includes('Marte todavía no está disponible')"));run('advance()');
 run('player.x=30;player.y=68;talk();advance()');assert.equal(run('screen'),'briefing');assert.equal(w.document.querySelectorAll('.crew li').length,5);
 let paths=0;
-for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;failure<2;failure++)for(let mask=0;mask<16;mask++) {
+for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;failure<2;failure++)for(let mask=0;mask<4;mask++) {
  run(`begin(); terrainRoute=testData.routes[${route}];terrainSession={data:testData,manifest:{},logs:[]};
  scene('explore');phase='decision';terrainResult=LunarScience.outcome(terrainRoute,${mode?'"astronaut"':'"rover"'},()=>${failure?0:.999});
  reconnaissance={scientific:true,rover:${mode===0},elapsed:9000,duration:9000};finishTerrainJourney();`);
@@ -33,7 +33,7 @@ for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;f
  }
  const stored=JSON.parse(w.localStorage.getItem('outpost-expedition'));assert.equal(stored.game.roverAvailable,!(failure&&mode===0));
  run('next()');
- for(let mission=1;mission<5;mission++) {
+ for(let mission=1;mission<3;mission++) {
   if(run('screen')==='results')break;
   run('explore();player.x=missions[game.index].x;player.y=missions[game.index].y');
   if (mission === 2) {
@@ -48,7 +48,9 @@ for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;f
   run('next()');
  }
  assert.equal(run('screen'),'results');
- assert(JSON.parse(w.sessionStorage.getItem('outpost-report')).finished);
+ const report = JSON.parse(w.sessionStorage.getItem('outpost-report'));
+ assert(report.finished);
+ assert.deepEqual(report.log.map(entry => entry.id), ['contact', 'crater', 'solar']);
  assert(run('game.resources.every(v=>v>=0&&v<=100)'));
  assert.equal(run('game.roverAvailable'),!(failure&&mode===0));
  paths++;
@@ -80,11 +82,16 @@ async function checkSciencePanels() {
  run(`begin(); game.index = 2; scene('explore'); solarRun = {
    level: 'high', measurement: { instrument_id: 'CRaTER-D1D2', absorbed_dose_rate: 13, timestamp: '2020-05-09T00:59:58' },
    event: null, eventSource: 'none', measurementSource: 'cache', queries: []
- }; phase = 'solar-analysis'; solarDecision(); choose(1);`);
+ };`);
+ await run('solarAnalysis()');
+ run('choose(1)');
  assert.equal(run('phase'), 'decision');
- assert.equal(w.document.querySelector('.choices button:last-child').disabled, true);
+ assert.deepEqual([...w.document.querySelectorAll('[data-action="choose"]')].map(button => button.dataset.option), ['0']);
+ assert.match(w.document.querySelector('.dialog-text').textContent, /no hay tiempo para asegurar los equipos/);
+ assert.doesNotMatch(w.document.querySelector('.choice-cost').textContent, /simulación/i);
  run('solarInfo()');
  assert.match(dialog.textContent, /órbita lunar/);
+ assert.match(dialog.textContent, /Dosis simulada.*±25 %/);
  dialog.close();
  run('choose(0); finishSolarEvacuation()');
  assert.match(w.document.querySelector('.mission-dialogue').textContent, /Evacuación completada/);

@@ -16,16 +16,16 @@ if (!report || !Array.isArray(report.log) || report.resources?.length !== 3) {
   reportActions.innerHTML = `<a href="index.html?lang=${language}">${t('Inicio', 'Home')}</a>`;
 } else {
   const [energy, oxygen, radiation] = report.resources;
-  const count = report.log.filter(entry => entry.success).length;
-  const repair = report.log.some(entry => entry.id === 'return' && entry.success);
+  const log = expeditionLog(report.log);
+  const count = log.filter(entry => entry.success).length;
   const baseStatus = energy === 0 ? t('Base sin energía.', 'Base out of power.') :
     oxygen === 0 ? t('Base sin oxígeno.', 'Base out of oxygen.') :
-    repair ? t('Base operativa.', 'Base operational.') : t('Base en modo de emergencia.', 'Base in emergency mode.');
+    t('Base operativa.', 'Base operational.');
   const crewStatus = oxygen === 0 || radiation >= 100 ? t('La tripulación necesita atención urgente.', 'The crew needs urgent care.') :
     radiation >= 25 ? t('La tripulación queda en observación.', 'The crew remains under observation.') :
       t('La tripulación está a salvo.', 'The crew is safe.');
   const objectives = missionOrder.map(id => {
-    const entry = report.log.find(item => item.id === id);
+    const entry = log.find(item => item.id === id);
     const status = entry ? entry.success ? t('Completo', 'Complete') : t('Parcial', 'Partial') : t('Pendiente', 'Pending');
     return `<li data-reveal hidden><span>${missionTitles[id]}</span><span>${status}</span></li>`;
   }).join('');
@@ -39,21 +39,18 @@ if (!report || !Array.isArray(report.log) || report.resources?.length !== 3) {
     <a href="index.html?lang=${language}&replay=1">${t('Volver a jugar', 'Play again')}</a>`;
   const skip = document.querySelector('#show-all');
   const items = [...reportContent.querySelectorAll('[data-reveal]')];
-  let timer;
+  let timer, nextItem = 0;
   function showAll() {
     clearTimeout(timer);
+    reportContent.classList.add('reveal-instantly');
     for (const item of items) item.hidden = false;
-    skip.disabled = true;
+    skip.hidden = true;
   }
   skip.addEventListener('click', showAll);
   function revealNext() {
-    const item = items.find(node => node.hidden);
-    if (!item) {
-      skip.disabled = true;
-      return;
-    }
-    item.hidden = false;
-    timer = setTimeout(revealNext, 430);
+    items[nextItem++].hidden = false;
+    if (nextItem === items.length) skip.hidden = true;
+    else timer = setTimeout(revealNext, 430);
   }
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) showAll();
   else timer = setTimeout(revealNext, 600);

@@ -17,11 +17,18 @@ const resourceNames = [t('Energía', 'Energy'), t('Oxígeno', 'Oxygen'), t('Radi
 const missionTitles = {
   contact: t('Primer contacto', 'First Contact'),
   crater: t('Explorando el cráter', 'Exploring the Crater'),
-  solar: t('Alerta solar', 'Solar Alert'),
-  resources: t('Buscando recursos', 'Searching for Resources'),
-  return: t('Regreso seguro', 'Safe Return')
+  solar: t('Alerta solar', 'Solar Alert')
 };
 const missionOrder = Object.keys(missionTitles);
+
+function expeditionLog(log) {
+  const legacyOrder = ['contact', 'crater', 'resources', 'solar', 'return'];
+  const byMission = new Map(log.map((entry, index) => {
+    const id = entry.id ?? legacyOrder[index];
+    return [id, { ...entry, id }];
+  }));
+  return missionOrder.map(id => byMission.get(id)).filter(Boolean);
+}
 
 function localizeMarkup(root) {
   for (const node of root.querySelectorAll('[data-en]')) {

@@ -26,11 +26,13 @@ function enterShip() {
   player = { x: 50, y: 69, facing: 1, moving: false };
   show('ship', `
     <section class="ship" aria-label="${t('Interior de la nave', 'Ship interior')}">
-      <div class="ship-room" aria-hidden="true">
+      <div class="ship-scene" aria-hidden="true">
+      <div class="ship-room">
         <div class="ship-light"></div>
         ${shipCrew.map(({ id, x, y }) => `<div class="ship-actor ship-${id}" style="left:${x}%;top:${y}%"><span>${speakers[id].name}</span></div>`).join('')}
         <div class="ship-actor ship-player"><span>${t('Tú', 'You')}</span></div>
         <div class="ship-scan"></div>
+      </div>
       </div>
       <div class="ship-content">
         <div class="ship-overlay"></div>
@@ -119,7 +121,6 @@ function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', 
   content.querySelector('.dialog-name').focus({ preventScroll: true });
   const text = content.querySelector('.dialog-text');
   text.textContent = words;
-  scheduleViewportFit();
   if (reducedMotion.matches) return;
 
   // Keep the complete line in the layout so the panel never jumps while it types.

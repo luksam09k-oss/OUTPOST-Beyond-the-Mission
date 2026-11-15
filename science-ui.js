@@ -94,7 +94,7 @@ function startTerrainJourney(option) {
   reconnaissance.scientific = true;
   reconnaissance.duration = reducedMotion.matches ? 900 : 9000;
   const mini=document.createElement('div');mini.className='journey-map';
-  app.querySelector('.mission-viewport').append(mini);
+  app.querySelector('.map-frame').append(mini);
   terrainSession.progress=0;terrainSession.lost=false;
   terrainMap=MoonMap.mount(mini,terrainSession,terrainRoute,true);
 }
@@ -200,8 +200,7 @@ async function resumeExpedition() {
   let saved;try {saved=JSON.parse(localStorage.getItem('outpost-expedition'));}catch{return;}
   if(!saved || saved.version!==1 || !saved.game?.log?.length)return;
   game = saved.game;
-  const oldOrder = ['contact', 'crater', 'resources', 'solar', 'return'];
-  game.log.forEach((entry, index) => { entry.id ??= oldOrder[index]; });
+  game.log = expeditionLog(game.log);
   solarRun = game.solar;
   terrainResult = saved.result;
   terrainRoute = null;

@@ -32,26 +32,6 @@ const missions = [
     action: t('Consultar la alerta', 'Check the alert'),
     objective: t('Protege a la tripulación ante la actividad solar.', 'Protect the crew during solar activity.'),
     x: 316, y: 142, options: []
-  },
-  {
-    id: 'resources', title: missionTitles.resources, location: t('Zona polar', 'Polar region'), target: t('el sensor del terreno', 'the terrain sensor'), backdrop: 'polar',
-    action: t('Examinar terreno frío', 'Inspect the cold terrain'), objective: t('Busca indicios de hielo en el suelo de una zona sombreada.', 'Look for signs of ice in the ground of a shadowed area.'),
-    problem: t('El sensor detectó una señal débil. Para comprobarla tendrás que quedarte más tiempo fuera y gastar oxígeno del traje.', 'The sensor detected a weak signal. Confirming it means staying outside longer and using suit oxygen.'),
-    x: 267, y: 174, outside: true,
-    options: [
-      [t('Usar el escáner y perforar', 'Scan and drill'), [-21, -27, 0], true, t('El análisis encontró indicios de hielo. Buscarlo a mayor profundidad te costó baterías y parte de la reserva de oxígeno.', 'The survey found signs of ice. Drilling deeper used extra battery power and part of the oxygen reserve.')],
-      [t('Marcar el punto en el mapa', 'Mark the spot on the map'), [-5, -5, 0], false, t('Guardaste la ubicación para otra salida. Una señal débil necesita más mediciones.', 'You saved the location for another trip. A weak signal needs more measurements.')]
-    ]
-  },
-  {
-    id: 'return', title: missionTitles.return, location: t('Base lunar', 'Lunar Base'), target: t('los controles de soporte vital', 'the life support controls'),
-    action: t('Revisar soporte vital', 'Check life support'), objective: t('Restablece la circulación de aire y cierra la expedición.', 'Restore airflow and finish the expedition.'),
-    problem: t('Un ventilador del soporte vital se averió. Queda una pieza de repuesto y un circuito de emergencia.', 'A life support fan broke. One spare part and an emergency circuit are available.'),
-    x: 286, y: 140, outside: false,
-    options: [
-      [t('Instalar el repuesto', 'Install the spare part'), [-9, -7, 0], true, t('La pieza nueva reparó el ventilador. La base puede seguir operando con normalidad.', 'The new part fixed the fan. The base can keep operating normally.')],
-      [t('Activar el circuito de emergencia', 'Use the emergency circuit'), [-3, -24, 0], false, t('El circuito de emergencia mantuvo el aire en circulación. El circuito gasta más oxígeno de reserva y la reparación queda pendiente.', 'The emergency circuit kept air moving. It uses more reserve oxygen, and the fan still needs repair.')]
-    ]
   }
 ];
 
@@ -96,7 +76,6 @@ function show(next, html) {
   const backdrop = app.querySelector('.mission-sky');
   if (backdrop) drawMissionSky(backdrop);
   app.querySelector('h1')?.focus({ preventScroll: true });
-  scheduleViewportFit();
 }
 
 function start() {
@@ -184,8 +163,8 @@ function scene(nextPhase) {
   if (mission.id === 'solar' && !solarRun) solarLoading ??= Solar.load();
   phase = mission.platform === 'first-contact' ? 'arrival' : nextPhase;
   reconnaissance = null;
-  player = { x: mission.platform === 'first-contact' ? platformDoorX : mission.platform ? 62 : mission.outside ? 52 : 188,
-    y: mission.platform ? mission.y : mission.outside ? 180 : 155, facing: 1, moving: false };
+  player = { x: mission.platform === 'first-contact' ? platformDoorX : mission.platform ? 62 : 188,
+    y: mission.platform ? mission.y : 155, facing: 1, moving: false };
   show('map', `${header()}<section class="mission-heading">
       <p class="kicker">${nextPhase === 'base' ? t('ESTABLECIMIENTO', 'BASE SETUP') : `${t('MISIÓN', 'MISSION')} ${game.index+1} / ${missions.length} · ${mission.location.toUpperCase()}`}</p>
       <h1 tabindex="-1">${mission.title}</h1>
@@ -197,12 +176,11 @@ function scene(nextPhase) {
           <img class="map-backdrop" alt="" fetchpriority="high">
           <span class="map-wordmark" aria-hidden="true"></span>
           <canvas id="map" width="384" height="216" aria-label="${t('Mapa de', 'Map of')} ${mission.location}"></canvas>
+          <section class="panel objective console-frame" id="mission-panel">
+            <h2><span aria-hidden="true">⌖</span> ${t('Objetivo', 'Objective')}</h2>
+            <p>${mission.objective}</p>
+          </section>
         </div>
-        <section class="panel objective console-frame" id="mission-panel">
-          <h2><span aria-hidden="true">⌖</span> ${t('Objetivo', 'Objective')}</h2>
-          <p>${mission.objective}</p>
-          <div class="objective-outpost" aria-hidden="true"><span></span></div>
-        </section>
       </div>
       <div class="mission-dialogue" hidden></div>
       <div class="controls">${movementButtons(mission.platform)}
@@ -213,7 +191,7 @@ function scene(nextPhase) {
   const canvas = document.querySelector('#map');
   const backdrop = app.querySelector('.map-backdrop');
   const missionImage = mission.platform === 'first-contact' ? platformOpen : mission.platform ? craterOutpost
-    : mission.backdrop === 'polar' ? craterInterior : lunarInterior;
+    : lunarInterior;
   setMapBackdrop(backdrop, missionImage);
   const interactButton = app.querySelector('[data-action="interact"]');
   const hint = document.querySelector('#hint');
@@ -247,13 +225,16 @@ function scene(nextPhase) {
       drawPlatform(canvas, player, mission, phase, time, reconnaissance);
     } else {
       if (phase === 'base' || phase === 'explore') {
-        movePlayer(elapsed, .1, 12, 372, mission.outside ? 164 : 135, mission.outside ? 193 : 168);
+        movePlayer(elapsed, .1, 12, 372, 135, 168);
       }
       if (reconnaissance?.solar && phase === 'feedback') drawEvacuation(canvas, 1, time);
       else drawMap(canvas, player, mission, phase === 'base' || phase === 'explore', crew, time);
     }
 
     const canMove = allowsMovement();
+    const controls = hint.parentElement;
+    controls.hidden = !canMove && phase !== 'cinematic';
+    controls.classList.toggle('cinematic-controls', phase === 'cinematic');
     movement.forEach(button => { button.disabled = !canMove; });
     const reachable = canMove && nearby(mission);
     interactButton.disabled = !reachable;
@@ -301,7 +282,6 @@ function missionDialogue(words, controls, title) {
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = false;
   renderNovelDialogue(overlay, 'neil', words, controls, 'h2', title);
-  scheduleViewportFit();
 }
 
 function missionContinue(action, label) {
@@ -319,7 +299,6 @@ function explore() {
   pressed.clear();
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = true;
-  scheduleViewportFit();
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 
@@ -352,7 +331,6 @@ function choose(option) {
   }
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = true;
-  scheduleViewportFit();
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 

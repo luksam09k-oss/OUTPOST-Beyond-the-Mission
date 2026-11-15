@@ -1,6 +1,6 @@
 # OUTPOST · Beyond the Mission
 
-Juego en HTML, CSS y JavaScript. **`index.html` es la entrada única.** Incluye inicio, nave, selección lunar, cinco tripulantes, las cinco misiones, informes y el análisis científico de Primer contacto. Marte sigue sin estar disponible.
+Juego en HTML, CSS y JavaScript. **`index.html` es la entrada única.** Incluye inicio, nave, selección lunar, cinco tripulantes, las tres misiones, informes y el análisis científico de Primer contacto. Marte sigue sin estar disponible.
 
 Para ejecutar la integración de datos, sirve esta carpeta por HTTP (por ejemplo con GitHub Pages o `python3 -m http.server 8080`) y abre `http://localhost:8080`. Abrir `index.html` mediante `file://` no permite consultar los JSON locales en la mayoría de navegadores; se muestra un error recuperable, no datos inventados. El juego no necesita una clave NASA ni un backend.
 
@@ -82,7 +82,7 @@ Estos porcentajes son **puntos de un juego, no dosis ni predicciones de NASA**. 
 
 - [NASA DONKI SEP](https://ccmc.gsfc.nasa.gov/tools/DONKI/) busca registros de los últimos 30 días. Si faltan registros observados, consulta mayo de 2024 y usa una copia local fechada como respaldo. El 15 de noviembre de 2026, la consulta reciente devolvió una lista vacía y el archivo devolvió eventos observados.
 - [NASA RadLab](https://visualization.osdr.nasa.gov/radlab/gui/data-api/) consulta ventanas históricas acotadas para LND y CRaTER. LND no devolvió registros en la ventana consultada. CRaTER-D1D2 devolvió 48 mediciones orbitales de LRO del 9 y 10 de mayo de 2020 en μGy/h. RadLab no entregó permiso CORS para el origen del juego en la prueba HTTP, por lo que el navegador puede usar las mediciones originales incluidas en la copia local.
-- La dosis absorbida de fondo se simula en μGy con la tasa de referencia, el tiempo fuera, el tiempo bajo un blindaje supuesto del 25 % de transmisión y una variación de ±15 %. El registro solar modifica la probabilidad de la alerta simulada. La alerta y el indicador de radiación del juego no calculan la dosis adicional de un evento SEP.
+- La dosis absorbida de fondo se simula en μGy con la tasa de referencia, el tiempo fuera, el tiempo bajo un blindaje supuesto del 25 % de transmisión y una variación de ±25 %. El registro solar modifica la probabilidad de la alerta simulada. La alerta y el indicador de radiación del juego no calculan la dosis adicional de un evento SEP.
 - La alerta alta bloquea la opción de asegurar equipos. «Ver más información» muestra fuentes, fechas, consultas y supuestos.
 
 El idioma se elige en la portada y se recuerda entre sesiones. El informe final vive en `results.html`. Recibe el estado de la expedición y muestra el resumen, los recursos y cada objetivo por turnos bajo la Tierra.

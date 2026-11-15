@@ -4,7 +4,7 @@ const Solar = (() => {
   const craterUrl = radlab + '?instrument=CRaTER&timestamp%3E=2020-05-09&timestamp%3C2020-05-11&absorbed_dose_rate&format=json';
   const sepUrl = (start, end) => `https://api.nasa.gov/DONKI/SEP?startDate=${start}&endDate=${end}&api_key=DEMO_KEY`;
   const archiveUrl = sepUrl('2024-05-09', '2024-05-20');
-  const settings = { duration: 40, exitMinutes: [4, 14], shelter: .25, variation: .15 };
+  const settings = { duration: 40, exitMinutes: [4, 14], shelter: .25, variation: .25 };
   const day = 86400000;
 
   function events(payload) {
