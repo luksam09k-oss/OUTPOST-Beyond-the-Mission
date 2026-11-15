@@ -13,20 +13,22 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   gap: 5px;
 }
 #app[data-screen="map"] .top {
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: clamp(6px, 2vw, 16px);
   margin: 0;
   padding: 0 5px 3px;
   flex: none;
 }
+#app[data-screen="map"] .top .brand { max-width: 100%; overflow-wrap: anywhere; }
 #app[data-screen="map"] .top button { padding: 4px 9px; font-size: 13px; }
-#app[data-screen="map"] .top .mission-badge { width: clamp(26px, 5dvh, 42px); }
+#app[data-screen="map"] .top .mission-badge { width: clamp(26px, 7dvh, 56px); }
 .mission-heading { flex: none; }
 #app[data-screen="map"] .mission-heading h1 { font-size: clamp(16px, 2vw, 26px); margin: 0; }
 #app[data-screen="map"] .mission-heading .kicker { font-size: 10px; margin: 0 0 3px; }
 .mission-console {
   position: relative;
   display: grid;
-  grid-template: "stats" auto "world" minmax(0, 1fr) "dialogue" auto "controls" auto / minmax(0, 1fr);
+  grid-template: "stats" auto "objective" auto "world" minmax(0, 1fr) "dialogue" auto "controls" auto / minmax(0, 1fr);
   align-items: stretch;
   flex: 1;
   min-height: 0;
@@ -64,18 +66,19 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
 .mission-dialogue .ship-button { font-size: 13px; padding: 5px 8px; }
 .mission-dialogue .kicker { font-size: 10px; }
 .mission-dialogue :is(.choice-cost, .mission-benefit) { font-size: 13px; margin-bottom: 7px; }
-.mission-viewport .objective {
-  position: absolute;
-  top: 4%;
-  right: 2%;
-  width: min(34%, 320px);
-  padding: 7px;
+.mission-console > .objective {
+  grid-area: objective;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 10px;
+  padding: 5px 8px;
   --frame-edge: #84c3de;
   --frame-fill: #101d37eb;
 }
-.mission-viewport .objective h2 { font-size: 14px; margin-bottom: 4px; padding-bottom: 3px; }
-.mission-viewport .objective p { font-size: 12px; line-height: 1.3; margin: 0; }
-.mission-console:has(.mission-dialogue:not([hidden]), .journey-map, .cinematic-controls) .objective { display: none; }
+.mission-console > .objective h2 { font-size: 13px; margin: 0; border: 0; padding: 0; }
+.mission-console > .objective p { font-size: 12px; line-height: 1.3; margin: 0; }
+.mission-console:has(.mission-dialogue:not([hidden]), .journey-map, .cinematic-controls, .terrain-panel) > .objective { display: none; }
 
 #app[data-screen="ship"] { width: 100%; height: 100dvh; padding: 6px; }
 .ship { height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; }
@@ -83,19 +86,25 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
 .ship-overlay { max-height: 50dvh; }
 .ship-content .ship-hint { font-size: 13px; }
 .ship-content .ship-controls { margin: 0; }
-.resume-expedition { position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%); z-index: 10; background: #0c153b; font-size: 12px; }
+.resume-expedition { position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%); z-index: 10; background: #0c153b; max-width: calc(100% - 16px); width: max-content; padding: 4px 8px; font-size: clamp(10px, 1.2cqw, 14px); }
 
 @media (max-width: 760px), (max-height: 640px) {
-  .mission-viewport .objective { width: min(44%, 280px); }
-  .mission-viewport .objective h2 { font-size: 11px; }
-  .mission-viewport .objective p { font-size: 10px; }
-  .briefing-frame { padding: 20px 12px 12px; }
+  .briefing-frame { padding: 12px; }
   .briefing-title { margin-bottom: 8px; }
   .briefing-title h1 { font-size: clamp(15px, 3vmin, 26px); }
-  .briefing .crew { gap: 4px; margin: 8px 0; }
+  .briefing .crew { gap: 4px; margin: 0; }
   .briefing .crew li { padding: 4px 2px; }
   .briefing .crew canvas { width: min(35px, 7vmin); }
   .briefing .crew-player { width: min(24px, 4.5vmin); }
+}
+@media (max-height: 440px) and (orientation: landscape) {
+  .briefing { gap: 5px; padding-block: 6px; }
+  .briefing > .mission-badge { width: 32px; }
+  .briefing-frame { padding: 8px 12px; }
+  .briefing-tag { margin-bottom: 4px; font-size: 13px; }
+  .briefing-title { margin-bottom: 4px; }
+  .briefing .crew canvas, .briefing .crew-player { margin-bottom: 0; }
+  .briefing-dialogue .dialog-text { font-size: 12px; }
 }
 @media (max-width: 560px) {
   .mission-dialogue .choices { grid-template-columns: 1fr; }
@@ -104,6 +113,11 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
   .briefing .crew { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .briefing .crew strong { font-size: 11px; }
   .briefing .crew small { font-size: 9px; }
+}
+@media (max-width: 400px) and (orientation: portrait) {
+  .briefing .crew { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .briefing .crew small { font-size: 10px; }
+  .briefing > .mission-badge { width: 40px; }
 }
 @media (max-height: 440px) and (orientation: landscape) {
   .mission-dialogue { max-height: 55dvh; }

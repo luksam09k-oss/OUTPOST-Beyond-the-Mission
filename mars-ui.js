@@ -38,8 +38,8 @@ function marsScene(nextPhase) {
   player={x:62,y:181,facing:1,moving:false};
   show('map',`${header()}<section class="mission-heading"><p class="kicker">${nextPhase==='base'?t('ESTABLECIMIENTO · MARTE','BASE SETUP · MARS'):`${t('MISIÓN','MISSION')} ${game.index+1} / 3 · MARTE`}</p><h1 tabindex="-1">${mission.title}</h1></section>
     <div class="dashboard mission-console mars-console"><div class="stats" id="stats">${stats()}</div>
+      <section class="panel objective console-frame"><h2>⌖ ${t('Objetivo','Objective')}</h2><p>${mission.objective}</p></section>
       <div class="mission-viewport"><div class="map-frame"><img class="map-backdrop" alt=""><canvas id="map" width="384" height="216" aria-label="${mission.location}"></canvas>
-        <section class="panel objective console-frame"><h2>⌖ ${t('Objetivo','Objective')}</h2><p>${mission.objective}</p></section>
         ${mission.id==='dust'?`<button class="mars-view" data-action="marsView">${t('Ver exterior','View outside')}</button>`:''}</div></div>
       <div class="mission-dialogue dialogue-dock" hidden></div><div class="controls">${movementButtons(true)}<p id="hint" aria-live="polite"></p><button class="console-button interact" data-action="interact" disabled>${t('Interactuar · E','Interact · E')}</button></div></div>`);
   marsBackdrop();

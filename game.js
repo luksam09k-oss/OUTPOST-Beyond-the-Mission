@@ -177,15 +177,15 @@ function scene(nextPhase) {
     </section>
     <div class="dashboard mission-console">
       <div class="stats" id="stats">${stats()}</div>
+      <section class="panel objective console-frame" id="mission-panel">
+        <h2><span aria-hidden="true">⌖</span> ${t('Objetivo', 'Objective')}</h2>
+        <p>${mission.objective}</p>
+      </section>
       <div class="mission-viewport">
         <div class="map-frame">
           <img class="map-backdrop" alt="" fetchpriority="high">
           <span class="map-emblem" aria-hidden="true"></span>
           <canvas id="map" width="384" height="216" aria-label="${t('Mapa de', 'Map of')} ${mission.location}"></canvas>
-          <section class="panel objective console-frame" id="mission-panel">
-            <h2><span aria-hidden="true">⌖</span> ${t('Objetivo', 'Objective')}</h2>
-            <p>${mission.objective}</p>
-          </section>
         </div>
       </div>
       <div class="mission-dialogue dialogue-dock" hidden></div>

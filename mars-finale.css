@@ -3,7 +3,7 @@ body { min-height:0;height:100dvh;overflow:hidden; }
 .finale-header { display:flex;align-items:center;justify-content:space-between;gap:16px; }
 .finale-header h1 { font-size:clamp(15px,2.5vw,26px);margin:0; }
 .finale-header .kicker { margin:0 0 5px;font-size:10px;color:#ffcc86; }
-.finale-header img { width:clamp(40px,7dvh,64px); }
+.finale-header img { display:block;width:clamp(40px,7dvh,64px);height:auto;aspect-ratio:1;object-fit:contain;flex-shrink:0; }
 .finale-world { min-height:0;min-width:0;display:grid;place-items:center;container-type:size;background:#090e24;border:1px solid #647eab;border-radius:8px;overflow:hidden; }
 #finale-scene { width:min(100cqw,177.778cqh);height:auto;aspect-ratio:16/9;image-rendering:pixelated; }
 .finale-dialogue { max-height:47dvh; }

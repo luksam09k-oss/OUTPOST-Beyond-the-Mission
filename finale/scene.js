@@ -8,7 +8,7 @@ const SpaceCenterScene=(()=>{
 const CFG={W:320,H:180,VW:640,VH:360,GROUND:328,SPEED:2,START_X:240,MIN_X:24,MAX_X:616,
   DOOR:{x1:408,x2:500},DOOR_IN:{x1:556,x2:620},TALK:56,PROMPT:t('[E] ENTRAR','[E] ENTER')};
 let scene='out',fade=0;const INT=new Image();INT.src='finale/interior.png';
-const BRAND=new Image();BRAND.src='assets/nasa-space-apps.webp';BRAND.onload=()=>{if(ctx)build();};
+const BRAND=new Image();BRAND.src='assets/nasa-space-apps.webp';
 let dialogueActive=false;
 const V={x:300,dir:1,mode:'wait',t:0}; // Vanessa: wait → walk → gone (dentro)
 const say=m=>opts.onStatus&&opts.onStatus(m);
@@ -24,7 +24,14 @@ let seed=11;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
 const clouds=[{x:20,y:10,s:2,v:.05},{x:200,y:26,s:1,v:.03},{x:120,y:4,s:1,v:.04},{x:290,y:36,s:2,v:.06}];
 const cloud=(x,y,s)=>{R(x,y+3*s,18*s,3*s,'#fff');R(x+3*s,y,8*s,3*s,'#fff');R(x+9*s,y+s,6*s,2*s,'#fff');R(x,y+5*s,18*s,s,'#d6e6fa')};
 
-function logo(cx,cy,r){ if(BRAND.naturalWidth)T.drawImage(BRAND,cx-r,cy-r,r*2,r*2); }
+function drawBadge(x, y, size) {
+  if (!BRAND.naturalWidth) return;
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(BRAND, x, y, size, size);
+  ctx.restore();
+}
 const bush=(x,y)=>{R(x,y,1,8,'#4a3320');disc(x-3,y-2,4,'#d96aa7');disc(x+3,y-3,4,'#e88bbf');disc(x,y-6,4,'#d96aa7');disc(x,y+6,5,'#3a7a3a')};
 
 function build(){
@@ -45,7 +52,6 @@ function build(){
   disc(57,96,5,'#e8eaee');disc(57,96,3,'#262932');R(55,96,6,2,'#e8eaee');
   tx('Space',66,92,8,'#fff');tx('Center',66,101,8,'#fff');tx('Houston',66,110,8,'#fff');
   [88,92,96].forEach(y=>R(106,y,18,1,'#9aa0ac'));R(106,102,14,1,'#9aa0ac');
-  logo(146,97,10);
 
   // muro blanco inferior, puerta y papelera
   R(44,120,136,18,'#d6dae0');for(let x=44;x<180;x+=17)R(x,120,1,18,'#c3c8cf');R(44,136,136,2,'#9aa0a8');
@@ -58,7 +64,6 @@ function build(){
   disc(262,96,9,'#0e2a44');disc(282,92,11,'#0e2a44');disc(302,98,9,'#0e2a44');disc(246,100,6,'#0e2a44');
   for(let gx=192;gx<W;gx+=16)R(gx,56,1,56,'#0b1d3a');
   for(let gy=56;gy<112;gy+=14)R(192,gy,128,1,'#0b1d3a');
-  logo(186,98,0+9);
   R(172,110,148,2,'#f0f2f5');R(172,112,148,8,'#2e323c');
 
   // entrada con arco azul
@@ -154,20 +159,25 @@ function frame(now){
     clouds.forEach(c=>{c.x+=c.v*dt;if(c.x>W+20)c.x=-40;cloud(Math.round(c.x),c.y,c.s)});
     wx.drawImage(fgC,0,0);flags(now);
     ctx.drawImage(wc,0,0,CFG.VW,CFG.VH);
+    drawBadge(264, 168, 56);
+    drawBadge(352, 174, 44);
     if(V.mode!=='gone')vanessa(now);
   }else{
     ctx.fillStyle='#172343';ctx.fillRect(0,0,CFG.VW,CFG.VH);
     if(INT.naturalWidth)ctx.drawImage(INT,0,0,CFG.VW,CFG.VH);
     ctx.fillStyle='#24234f';ctx.fillRect(9,116,65,70);
-    if(BRAND.naturalWidth)ctx.drawImage(BRAND,14,124,56,56);
+    drawBadge(14, 124, 56);
     fx(now);vanessa(now)
   }
   player(now,dt);
   if(scene==='in')vignette();
   const pr=dialogueActive?'':atDoor()?(scene==='out'?CFG.PROMPT:t('[E] SALIR','[E] EXIT')):nearV()?t('[E] HABLAR','[E] TALK'):'';
   if(pr&&Math.floor(now/400)%2===0){
-    const px=Math.round(P.x)-34,py=CFG.GROUND-FRAME_H-8;
-    ctx.font='bold 14px monospace';ctx.fillStyle='#141a33';ctx.fillText(pr,px+1,py+1);ctx.fillStyle='#ffcc33';ctx.fillText(pr,px,py);
+    ctx.font='bold 14px monospace';
+    const width = ctx.measureText(pr).width;
+    const px = Math.max(4, Math.min(CFG.VW - width - 4, Math.round(P.x - width / 2)));
+    const py = CFG.GROUND - FRAME_H - 8;
+    ctx.fillStyle='#141a33';ctx.fillText(pr,px+1,py+1);ctx.fillStyle='#ffcc33';ctx.fillText(pr,px,py);
   }
   if(fade>0){ctx.fillStyle='rgba(5,6,15,'+fade+')';ctx.fillRect(0,0,CFG.VW,CFG.VH)}
   raf=requestAnimationFrame(frame);

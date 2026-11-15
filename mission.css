@@ -41,6 +41,9 @@
   display: block;
   width: clamp(32px, 4vw, 66px);
   height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  flex-shrink: 0;
   filter: drop-shadow(0 0 10px #387ae83d);
 }
 
@@ -53,14 +56,15 @@
   grid-template-rows: auto minmax(min-content, 1fr) auto;
   gap: clamp(8px, 2dvh, 24px);
   min-height: 100dvh;
-  padding: 6px clamp(6px, 2vw, 30px);
+  padding: clamp(8px, 2dvh, 20px) clamp(8px, 2vw, 30px);
   overflow: hidden;
   background: #0a0a2b;
 }
 .briefing-sky { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
 .briefing > .mission-badge { justify-self: end; }
 .briefing-frame {
-  width: min(94%, 1100px);
+  width: min(100%, 1100px);
+  min-width: 0;
   margin: 0 auto;
   padding: clamp(22px, 3vw, 46px) clamp(14px, 3.4vw, 54px) clamp(16px, 2.2vw, 36px);
   --frame-edge: #5cbcf8;
@@ -71,21 +75,19 @@
   filter: drop-shadow(0 0 13px #3595ff55);
 }
 .briefing-tag {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  padding: .45em 1.5em;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto clamp(8px, 2dvh, 18px);
+  padding: .35em 1em;
   border: 2px solid #78cdff;
   background: #162952;
+  text-align: center;
   text-transform: uppercase;
   font: 400 clamp(13px, 2vw, 27px)/1.2 "Silkscreen", "Courier New", monospace;
   letter-spacing: .17em;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
-.briefing-title { position: relative; text-align: center; margin: 0 0 clamp(15px, 2.8vw, 36px); }
+.briefing-title { position: relative; isolation: isolate; text-align: center; margin: 0 0 clamp(8px, 2dvh, 24px); }
 .briefing-title h1 {
   position: relative;
   margin: 0;
@@ -95,7 +97,8 @@
 }
 .briefing-orbit {
   position: absolute;
-  inset: -23% 5%;
+  z-index: -1;
+  inset: 0 5%;
   border: 2px solid #84ccffad;
   border-top-color: transparent;
   border-radius: 50%;
@@ -106,7 +109,7 @@
 .briefing-orbit span {
   position: absolute;
   right: 0;
-  top: 45%;
+  top: 0;
   font-size: clamp(16px, 2.1vw, 35px);
   color: #e1f7ff;
   text-shadow: 0 0 12px #8edbff;
@@ -115,7 +118,7 @@
 @keyframes orbit-float { to { transform: rotate(-2deg) translateY(-3px); } }
 @keyframes orbit-star { 50% { opacity: .58; transform: scale(.75); } }
 
-.briefing .crew { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(6px, 1vw, 16px); margin: clamp(14px, 2.4vw, 32px) 0; }
+.briefing .crew { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(6px, 1vw, 16px); margin: 0; }
 .briefing .crew li {
   display: grid;
   justify-items: center;
