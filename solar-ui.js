@@ -29,7 +29,7 @@ async function solarAnalysis() {
   if (highAlertOrder) phase = 'decision';
   const action = highAlertOrder
     ? `<button class="ship-button" data-action="choose" data-option="0">${solarNames[0]}</button>`
-    : missionContinue('solarDecision', t('Elegir acción', 'Choose an action'));
+    : dialogueContinue('solarDecision', t('Elegir acción · E', 'Choose an action · E'));
   missionDialogue(status, `<p class="choice-cost">${t('Dosis de fondo estimada al evacuar', 'Estimated background dose if evacuated')} · ${doseLabel(estimate.dose)}</p>
     <div class="result-actions"><button class="ship-button" data-action="solarInfo">${t('Ver más información', 'More information')}</button>
     ${action}</div>`,
@@ -112,7 +112,7 @@ function finishSolarEvacuation() {
   delete app.querySelector('.mission-console').dataset.solar;
   missionDialogue(message, `<p class="choice-cost">${changes(result.applied)}<br>${t('Dosis estimada', 'Estimated dose')} · ${doseLabel(result.dose)}</p>
     <div class="result-actions"><button class="ship-button" data-action="solarInfo">${t('Ver más información', 'More information')}</button>
-    ${missionContinue('next', t('Ver informe final · E', 'View final report · E'))}</div>`,
+    ${dialogueContinue('next', t('Ver informe final · E', 'View final report · E'))}</div>`,
   t('Evacuación completada', 'Evacuation complete'));
 }
 

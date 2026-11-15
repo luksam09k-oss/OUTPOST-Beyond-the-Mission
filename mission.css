@@ -38,23 +38,11 @@
 }
 
 .mission-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(7px, 1vw, 16px);
-  color: #f1f4ff;
-  font: 400 clamp(10px, 1.35vw, 17px)/1.13 "Silkscreen", "Courier New", monospace;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.nasa-mark {
   display: block;
-  flex: 0 0 auto;
   width: clamp(32px, 4vw, 66px);
   height: auto;
   filter: drop-shadow(0 0 10px #387ae83d);
 }
-.mission-badge > span { border-left: 2px solid #e9ecff; padding-left: clamp(7px, 1vw, 16px); }
 
 #app[data-screen="briefing"] { width: 100%; padding: 0; }
 .briefing {
@@ -62,15 +50,17 @@
   isolation: isolate;
   display: grid;
   align-items: center;
+  grid-template-rows: auto minmax(min-content, 1fr) auto;
+  gap: clamp(8px, 2dvh, 24px);
   min-height: 100dvh;
-  padding: clamp(75px, 10vh, 120px) clamp(18px, 11vw, 185px) clamp(58px, 13vh, 150px);
+  padding: 6px clamp(6px, 2vw, 30px);
   overflow: hidden;
   background: #0a0a2b;
 }
 .briefing-sky { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
-.briefing > .mission-badge { position: absolute; top: clamp(10px, 2vh, 24px); right: 3vw; }
+.briefing > .mission-badge { justify-self: end; }
 .briefing-frame {
-  width: min(100%, 1360px);
+  width: min(94%, 1100px);
   margin: 0 auto;
   padding: clamp(22px, 3vw, 46px) clamp(14px, 3.4vw, 54px) clamp(16px, 2.2vw, 36px);
   --frame-edge: #5cbcf8;
@@ -125,22 +115,6 @@
 @keyframes orbit-float { to { transform: rotate(-2deg) translateY(-3px); } }
 @keyframes orbit-star { 50% { opacity: .58; transform: scale(.75); } }
 
-.briefing .guide {
-  border: 1px solid #75c5ff;
-  background: linear-gradient(100deg, #202e58, #141b40);
-  padding: 8px clamp(8px, 1.4vw, 20px) 0;
-  gap: clamp(9px, 1.6vw, 22px);
-  align-items: center;
-}
-.briefing .guide .portrait-art {
-  align-self: end;
-  flex: 0 0 auto;
-  width: clamp(56px, 9.5vw, 140px);
-  filter: drop-shadow(0 0 5px #75c5ff);
-}
-.briefing .guide div { margin: 4px 0 8px; border-left: 3px solid #82e3fa; padding-left: clamp(8px, 1.3vw, 18px); }
-.briefing .guide strong { color: #e7f5ff; font-size: clamp(.9rem, 1.5vw, 1.3rem); }
-.briefing .guide p { color: #edf2ff; font-size: clamp(.8rem, 1.35vw, 1.15rem); margin-bottom: 0; }
 .briefing .crew { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(6px, 1vw, 16px); margin: clamp(14px, 2.4vw, 32px) 0; }
 .briefing .crew li {
   display: grid;
@@ -156,16 +130,6 @@
 .briefing .crew-player { width: clamp(21px, 3.2vw, 48px); margin-left: 0; }
 .briefing .crew strong { font-size: clamp(.82rem, 1.6vw, 1.45rem); }
 .briefing .crew small { font-size: clamp(.65rem, 1.15vw, 1rem); overflow-wrap: anywhere; }
-.briefing-action { text-align: center; }
-.briefing-action .console-button {
-  padding: .9em 1.5em;
-  text-transform: uppercase;
-  font: 700 clamp(12px, 1.6vw, 24px)/1.5 var(--pixel);
-  filter: drop-shadow(0 0 8px #62caff89);
-  animation: mission-pulse 2.8s ease-in-out infinite alternate;
-}
-@keyframes mission-pulse { to { filter: drop-shadow(0 0 13px #62caffc0); } }
-
 body:has(#app[data-screen="map"],#app[data-screen="results"]) {
   background: radial-gradient(ellipse at 76% 16%, #1e2455 0%, transparent 38%), #0c1028;
 }
@@ -241,8 +205,6 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 }
 @media (max-width: 460px) {
   .top { gap: 9px; }
-  .top .mission-badge { display: none; }
-  .top { grid-template-columns: 1fr auto; }
   .stat { grid-template-columns: 1fr; text-align: center; padding: 5px; }
   .stat-icon { display: none; }
   .stat meter { grid-column: 1; }
@@ -250,7 +212,7 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
   .controls button { min-width: 36px; padding-inline: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .briefing-orbit,.briefing-orbit span,.briefing-action .console-button { animation: none; }
+  .briefing-orbit,.briefing-orbit span { animation: none; }
 }
 
 #app:is([data-screen="map"],[data-screen="results"]) { isolation: isolate; }
@@ -327,20 +289,8 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
   .objective-outpost { display: none; }
 }
 
-.mission-dialogue {
-  --ship-blue: #9ae7ff;
-  --ship-gold: #ffd27a;
-}
 .mission-dialogue[hidden] { display: none; }
-.mission-dialogue .ship-dialog {
-  min-height: 122px;
-  padding: clamp(10px, 1.5vw, 20px) clamp(10px, 2vw, 25px) 12px clamp(66px, 14%, 172px);
-  border-radius: 8px;
-}
-.mission-dialogue .dialog-portrait { width: clamp(56px, 12%, 150px); height: 100%; left: 4px; }
-.mission-dialogue .dialog-text { font-size: clamp(.9rem, 1.45vw, 1.22rem); }
 .mission-dialogue .kicker { margin-bottom: 4px; }
-.mission-dialogue .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .mission-dialogue .choices button {
   padding: 8px 10px;
   border-color: #5079a4;
@@ -351,7 +301,6 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 .mission-dialogue .choice-cost { color: #abe6ff; }
 .controls #hint { flex: 1; align-self: center; margin: 0; font-size: .9rem; }
 @media (max-width: 760px) {
-  .mission-dialogue .choices { grid-template-columns: 1fr; }
   .controls #hint { flex-basis: 100%; order: 1; }
 }
 

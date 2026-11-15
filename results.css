@@ -7,7 +7,7 @@ body{margin:0;min-height:100dvh;display:grid;place-items:center;overflow:hidden}
 .world{will-change:transform;animation:world-in 1.4s ease-out both}
 .world canvas,.vig{pointer-events:none}
 .vig{background:radial-gradient(ellipse at 50% 45%,transparent 55%,#02021080)}
-.suit-mark{position:absolute;left:28.3%;top:66.8%;width:3.5%;height:2.25%;background:#151e4a url('assets/nasa-wordmark.png') center / 96% auto no-repeat}
+.suit-mark{position:absolute;left:25.15%;top:62.6%;width:10.2%;height:16.2%;border-radius:20%;background:#151e4a url('assets/nasa-space-apps.webp') center / contain no-repeat}
 .report{position:absolute;top:46.5%;left:56%;right:3.6%;bottom:4%;display:flex;flex-direction:column;justify-content:space-between;padding:1.25cqw 1.5cqw;background:linear-gradient(135deg,#101b36f5,#070f25e8);border:1px solid #70c9ec;border-radius:3px;box-shadow:0 0 25px #080d22a8;font-size:clamp(11px,1.05cqw,17px);line-height:1.35}
 .report-content{overflow:auto;min-height:0}
 .report h1{margin:0 0 .35em;font-size:clamp(14px,1.85cqw,31px);color:#b9edff;line-height:1.1}

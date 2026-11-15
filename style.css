@@ -28,9 +28,6 @@ button:disabled { opacity: .48; cursor: default; }
 .kicker { color: var(--cyan); font-weight: bold; letter-spacing: .09em; font-size: .85rem; }
 .panel { padding: clamp(13px, 3vw, 24px); background: var(--panel); border: 2px solid var(--line); }
 canvas { width: 100%; display: block; image-rendering: pixelated; background: #090d20; }
-.guide { display: flex; align-items: center; gap: 14px; border-left: 3px solid var(--cyan); padding-left: 12px; }
-.guide .portrait-art { flex: 0 0 56px; width: 56px; image-rendering: pixelated; }
-.guide p { margin: 4px 0; }
 .crew { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; list-style: none; padding: 0; margin: 16px 0 20px; }
 .crew li { padding: 10px; border: 1px solid var(--line); background: #18223c; }
 .crew small { display: block; color: var(--muted); }
