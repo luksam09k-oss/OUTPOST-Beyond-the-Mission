@@ -6,18 +6,14 @@ const crew = [
   { name: 'Noa', role: 'Médica', color: '#ff9aa9' }
 ];
 
-const reconnaissanceExplanation = 'Ambas opciones mantienen el consumo de oxígeno de la tripulación. El rover utiliza energía para desplazarse sin exponer a los astronautas; la exploración tripulada requiere sistemas de soporte vital y aumenta la exposición a la radiación lunar.';
-
 const missions = [
   {
     title: 'Primer contacto', location: 'Plataforma lunar', target: 'la terminal de exploración',
     action: 'Revisar el terreno', objective: 'Reconocer el terreno lunar y seleccionar una ruta de exploración.',
     problem: 'La tripulación de cinco astronautas debe estudiar el terreno antes de desplazarse. NASA utiliza instrumentos como LOLA y LROC para analizar elevaciones, pendientes, iluminación y características de la superficie.',
     x: 128, y: platformY, platform: 'first-contact',
-    options: [
-      ['Exploración robótica', [-10, -10, 5], true, reconnaissanceExplanation, 'Enviar un rover robótico para reconocer el terreno mientras los cinco astronautas permanecen en una zona protegida.'],
-      ['Exploración con astronauta', [-12, -10, 10], true, reconnaissanceExplanation, 'Enviar a un astronauta de la tripulación para reconocer el terreno directamente y seleccionar una ruta de exploración, mientras los otros cuatro permanecen en la zona protegida.']
-    ]
+    // Scientific decisions and costs are computed from LOLA in science-ui.js.
+    options: []
   },
   {
     title: 'Explorando el cráter', location: 'Polo sur lunar', target: 'la estación de escaneo',
@@ -103,12 +99,19 @@ function show(next, html) {
   });
   const backdrop = app.querySelector('.mission-sky');
   if (backdrop) drawMissionSky(backdrop);
-  app.querySelector('h1')?.focus();
+  app.querySelector('h1')?.focus({ preventScroll: true });
+  scheduleViewportFit();
 }
 
 function start() {
   show('opening', document.querySelector('#opening-template').innerHTML);
   launchOpening = animateOpening(enterShip);
+  try {
+    const saved=JSON.parse(localStorage.getItem('outpost-expedition'));
+    if(saved?.version===1 && saved.game?.log?.length) {
+      const resume=document.createElement('button');resume.className='resume-expedition';resume.dataset.action='resumeExpedition';resume.textContent='Continuar expedición guardada';app.querySelector('#stage').append(resume);
+    }
+  } catch {}
 }
 
 function movementButtons(horizontalOnly = false) {
@@ -124,7 +127,7 @@ function movementButtons(horizontalOnly = false) {
 function movePlayer(elapsed, speed, minX, maxX, minY, maxY) {
   let dx = 0;
   let dy = 0;
-  if (!help.open) {
+  if (!help.open && !document.querySelector('#science-info').open) {
     for (const [x, y] of pressed.values()) { dx += x; dy += y; }
   }
   const length = Math.hypot(dx, dy);
@@ -164,7 +167,9 @@ function stats() {
 }
 
 function begin() {
-  game = { index: 0, log: [], resources: [...initialResources] };
+  game = { index: 0, log: [], resources: [...initialResources], roverAvailable: true, reconnaissanceData: false };
+  terrainLoadId++;terrainMap?.dispose();terrainSession=null;terrainRoute=null;terrainResult=null;
+  try {localStorage.removeItem('outpost-expedition');}catch {}
   scene('base');
 }
 
@@ -182,12 +187,12 @@ function scene(nextPhase) {
       <h1 tabindex="-1">${mission.title}</h1>
     </section>
     <div class="dashboard mission-console">
+      <div class="stats" id="stats">${stats()}</div>
       <div class="mission-viewport">
         <div class="map-frame">
           <img class="map-backdrop" alt="" fetchpriority="high">
           <canvas id="map" width="384" height="216" aria-label="Mapa de ${mission.location}"></canvas>
         </div>
-        <div class="stats" id="stats">${stats()}</div>
         <section class="panel objective console-frame" id="mission-panel">
           <h2><span aria-hidden="true">⌖</span> Objetivo</h2>
           <p>${mission.objective}</p>
@@ -218,11 +223,15 @@ function scene(nextPhase) {
       if (scenerySince !== undefined && time-scenerySince >= 850) explainMission(mission);
     } else if (mission.platform) {
       if (phase === 'explore') movePlayer(elapsed, .1, 12, 372, mission.y, mission.y);
-      if (phase === 'cinematic' && !help.open && (!reconnaissance.route || backdrop.complete)) {
+      if (phase === 'cinematic' && !help.open && !document.querySelector('#science-info').open && (!reconnaissance.route || backdrop.complete)) {
         reconnaissance.elapsed += elapsed;
+        if(reconnaissance.scientific) updateTerrainJourney();
         if (reconnaissance.elapsed >= reconnaissance.duration) {
-          if (!reconnaissance.route) backdrop.src = platformMapped.src;
-          applyDecision(reconnaissance.option);
+          if(reconnaissance.scientific) finishTerrainJourney();
+          else {
+            if (!reconnaissance.route) backdrop.src = platformMapped.src;
+            applyDecision(reconnaissance.option);
+          }
         }
       }
       drawPlatform(canvas, player, mission, phase, time, reconnaissance);
@@ -257,6 +266,13 @@ function interact() {
     scene('explore');
     return;
   }
+  if(game.index === 0) {terrainAnalysis();return;}
+  if(game.index === 1 && !game.roverAvailable) {
+    phase='feedback';
+    const explanation='El rover se perdió en Primer contacto. Los cinco astronautas permanecen protegidos; aplazamos la exploración del cráter hasta disponer de otro vehículo. No se obtienen datos nuevos ni se cobran costes de una salida que no ocurrió.';
+    game.log.push({title:mission.title,name:'Exploración aplazada · sin rover',success:false,explanation});persistExpedition();
+    missionDialogue(explanation,missionContinue('next','Siguiente misión · E'),'Rover no disponible');return;
+  }
   phase = 'decision';
   pressed.clear();
   player.moving = false;
@@ -273,6 +289,7 @@ function missionDialogue(words, controls, title) {
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = false;
   renderNovelDialogue(overlay, 'neil', words, controls, 'h2', title);
+  scheduleViewportFit();
 }
 
 function missionContinue(action, label) {
@@ -290,6 +307,7 @@ function explore() {
   pressed.clear();
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = true;
+  scheduleViewportFit();
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 
@@ -301,6 +319,8 @@ function choose(option) {
   if (phase !== 'decision') return;
   if (finishTyping) finishTyping();
   const mission = missions[game.index];
+  if(game.index === 0 && !terrainRoute)return;
+  if(game.index === 1 && !game.roverAvailable)return;
   if (!mission.platform) {
     applyDecision(option);
     return;
@@ -311,6 +331,7 @@ function choose(option) {
   const rover = Boolean(route) || option === 0;
   reconnaissance = { option, rover, route, elapsed: 0, duration: reducedMotion.matches ? 240 : 4800,
     startX: rover ? platformDoorX : player.x };
+  if(game.index === 0)startTerrainJourney(option);
   if (route) {
     const backdrop = app.querySelector('.map-backdrop');
     backdrop.src = route.image.src;
@@ -318,6 +339,7 @@ function choose(option) {
   }
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = true;
+  scheduleViewportFit();
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
 }
 
@@ -328,6 +350,7 @@ function applyDecision(option) {
   game.resources = before.map((value, i) => Math.min(100, Math.max(0, value + delta[i])));
   const applied = game.resources.map((value, i) => value - before[i]);
   game.log.push({ title: mission.title, name, success, explanation: mission.explanation ? `${explanation} ${mission.explanation}` : explanation });
+  persistExpedition();
   phase = 'feedback';
   document.querySelector('#stats').innerHTML = stats();
   const continuation = missionContinue('next', game.index === missions.length - 1 ? 'Ver resultados' : 'Siguiente misión · E');
@@ -354,7 +377,7 @@ function results() {
   const baseStatus = energy === 0 ? 'sin energía' : oxygen === 0 ? 'sin oxígeno' : finalRepair ? 'operativa' : 'en modo de emergencia';
   const crewStatus = oxygen === 0 || radiation >= 100 ? 'necesita atención urgente' : radiation < 25 ? 'está a salvo' : 'necesita observación médica';
   show('results', `${header()}<section class="panel"><p class="kicker">INFORME LUNAR</p>
-    <h1 tabindex="-1">Resultados de la misión</h1>
+    <h1 tabindex="-1">Resultados de la misión</h1>${terrainSession && terrainRoute ? '<button data-action="scienceInfo">Consultar datos de NASA · Misión 1</button>' : ''}
     <p><strong>${complete}/5 objetivos completados.</strong> Base ${baseStatus}. La tripulación ${crewStatus}.</p>
     <div class="stats">${stats()}</div>
     <h2>Decisiones de la expedición</h2>
@@ -364,7 +387,7 @@ function results() {
 }
 
 const actions = {
-  advance, talk, begin, interact, next, explore,
+  advance, talk, begin, interact, next, explore, terrainAnalysis, terrainDecision, scienceInfo, resumeExpedition,
   returnToStart: start,
   help: () => { pressed.clear(); help.showModal(); }
 };
@@ -374,11 +397,11 @@ app.addEventListener('click', event => {
   const action = button.dataset.action;
   if ((action === 'explore' || action === 'next') && finishTyping) finishTyping();
   else if (action === 'choose') choose(Number(button.dataset.option));
-  else actions[action]();
+  else actions[action]?.();
 });
 
 document.addEventListener('keydown', event => {
-  if (help.open) return;
+  if (help.open || document.querySelector('#science-info').open) return;
   const key = event.key.toLowerCase();
   if (screen === 'opening' && (key === 'enter' || key === ' ')) {
     event.preventDefault();
@@ -407,6 +430,7 @@ document.addEventListener('keydown', event => {
 document.addEventListener('keyup', event => pressed.delete(event.key.toLowerCase()));
 window.addEventListener('blur', () => pressed.clear());
 function allowsMovement() {
+  if(document.querySelector('#science-info').open)return false;
   if (screen === 'ship') return !dialogue;
   return screen === 'map' && (phase === 'base' || phase === 'explore');
 }

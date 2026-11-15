@@ -99,6 +99,7 @@ function renderDialogue([speaker, words, displayResources], button) {
 }
 
 function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', title = '') {
+  if (finishTyping) finishTyping();
   const { name, image } = speakers[speaker];
   content.innerHTML = `
     <div class="ship-dialog">
@@ -111,9 +112,10 @@ function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', 
         ${controls}
       </div>
     </div>`;
-  content.querySelector('.dialog-name').focus({ preventScroll: heading === 'h1' });
+  content.querySelector('.dialog-name').focus({ preventScroll: true });
   const text = content.querySelector('.dialog-text');
   text.textContent = words;
+  scheduleViewportFit();
   if (reducedMotion.matches) return;
 
   // Keep the complete line in the layout so the panel never jumps while it types.

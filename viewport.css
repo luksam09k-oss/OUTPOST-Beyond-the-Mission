@@ -1,0 +1,78 @@
+/* Stable viewport: world, conversation, and controls share the available height. */
+body:has(#app[data-screen="map"],#app[data-screen="ship"]) { height:100dvh; min-height:0; overflow:hidden; }
+#app[data-screen="map"] { width:min(1500px,calc(100% - 24px)); height:100dvh; padding:8px 0; display:flex; flex-direction:column; }
+#app[data-screen="map"] .top { gap:16px; padding-bottom:5px; margin-bottom:6px; flex:none; }
+#app[data-screen="map"] .top .nasa-mark { width:36px; }
+#app[data-screen="map"] .top .mission-badge { font-size:11px; }
+#app[data-screen="map"] .mission-heading { flex:none; }
+#app[data-screen="map"] .mission-heading h1 { font-size:clamp(18px,2.2vw,30px); margin-bottom:6px; }
+#app[data-screen="map"] .mission-heading .kicker { font-size:11px; margin:0; }
+.mission-console { position:relative; flex:1; min-height:0; padding:8px; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:0; }
+.mission-console .mission-viewport, .mission-console:has(.mission-dialogue:not([hidden])) .mission-viewport { flex:none; display:block; width:100%; min-height:0; margin:auto; }
+.mission-console .map-frame { width:100%; height:100%; aspect-ratio:16/9; }
+.mission-console .map-backdrop { object-fit:contain; }
+.mission-console .controls { flex:none; margin:6px 0 0; gap:5px; min-height:36px; align-items:center; }
+.mission-console .controls button { padding:5px 10px; }
+.mission-dialogue { flex:none; width:100%; margin-top:6px; }
+.mission-dialogue .ship-dialog { padding:10px 14px 10px 110px; min-height:0; }
+.mission-dialogue .dialog-name { font-size:19px; margin-bottom:4px; }
+.mission-dialogue .dialog-portrait { width:100px; height:100%; object-fit:contain; }
+.mission-dialogue .dialog-text { font-size:16px; line-height:1.35; margin-bottom:8px; }
+.mission-dialogue .choices { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.mission-dialogue .choices button { font-size:14px; line-height:1.3; padding:7px 10px; }
+.mission-dialogue .choices small { font-size:13px; margin-top:3px; }
+.mission-dialogue .ship-button { font-size:14px; padding:5px 10px; }
+.mission-dialogue .kicker { font-size:11px; }
+.mission-viewport .stats { position:absolute; inset:6px 2% auto; margin:0; }
+.mission-viewport .stat { padding:5px 7px; font-size:12px; gap:3px 6px; }
+.mission-viewport .stat-icon { font-size:20px; }
+.mission-viewport .objective { position:absolute; top:65px; right:2%; width:27%; padding:10px; }
+.mission-viewport .objective h2 { font-size:16px; margin-bottom:6px; }
+.mission-viewport .objective p { font-size:13px; line-height:1.35; }
+#app[data-dialogue="true"] .mission-viewport .objective { display:none; }
+#app[data-dialogue="true"] .mission-viewport .stats { display:none; }
+#app[data-dialogue="true"] .mission-console::before { content:none; }
+#app[data-screen="ship"] { width:100%; height:100dvh; padding:8px; }
+.ship { height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:visible; }
+.ship-room { flex:none; max-width:100%; margin:auto; }
+.ship-content { flex:none; width:min(1300px,98%); margin:8px auto 0; padding:0; }
+.ship-content .ship-dialog { padding:12px 18px 12px 150px; min-height:0; }
+.ship-content .dialog-portrait { width:130px; height:100%; left:5px; }
+.ship-content .dialog-name { font-size:24px; }
+.ship-content .dialog-text { font-size:18px; }
+.ship-content .ship-button { font-size:16px; }
+.ship-content .ship-hint { font-size:14px; }
+.ship-content .ship-controls { margin:0; }
+.resume-expedition { position:absolute; bottom:3%; left:50%; transform:translateX(-50%); z-index:10; background:#0c153b; font-size:12px; }
+@media (max-height:700px) {
+  #app[data-screen="map"] .top { padding-bottom:3px; }
+  #app[data-screen="map"] .top .mission-badge { display:none; }
+  #app[data-screen="map"] .top { grid-template-columns:1fr auto; }
+  .mission-dialogue .dialog-text { font-size:14px; }
+  .mission-dialogue .choices button { font-size:13px; }
+  .mission-dialogue .choices small { font-size:12px; }
+  .mission-dialogue .dialog-name { font-size:17px; }
+}
+@media (max-width:760px) {
+  .mission-dialogue .ship-dialog { padding-left:70px; }
+  .mission-dialogue .dialog-portrait { width:62px; }
+  .mission-viewport .objective { top:55px; width:32%; padding:6px; }
+  .mission-viewport .objective h2 { font-size:13px; }
+  .mission-viewport .objective p { font-size:11px; }
+  .controls #hint { flex-basis:auto; order:0; font-size:12px; }
+  .ship-content .ship-dialog { padding-left:90px; }
+  .ship-content .dialog-portrait { width:80px; }
+  .ship-content .dialog-text { font-size:15px; }
+}
+@media (max-width:480px) {
+  .mission-dialogue .choices { grid-template-columns:1fr; }
+  .mission-dialogue .dialog-portrait { display:none; }
+  .mission-dialogue .ship-dialog { padding:8px; }
+  .mission-console .controls #hint { display:none; }
+  .mission-viewport .stats { display:none; }
+}
+
+.mission-console > .stats { position:static; flex:none; margin:0 0 6px; gap:8px; }
+.mission-console > .stats .stat { padding:5px 10px; font-size:13px; }
+.mission-console > .stats .stat-icon { font-size:24px; }
+.mission-console:has(.journey-map) .objective { display:none; }

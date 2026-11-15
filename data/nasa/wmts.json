@@ -1,0 +1,368 @@
+{
+  "endpoint": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade",
+  "capabilities": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/WMTSCapabilities.xml",
+  "layer": "Site01_final_adj_5mpp_Hillshade",
+  "format": "image/png",
+  "style": "default",
+  "matrixSet": "default028mm",
+  "crs": "IAU2000:30120 / Moon south polar stereographic",
+  "crsNote": "WMTS reports EPSG:0; projection resolved from official layer catalogue and matched to LOLA GeoTIFF. WGS84BoundingBox is mislabeled and is NOT used.",
+  "proj4": "+proj=stere +lat_0=-90 +lon_0=0 +k=1 +R=1737400 +units=m +no_defs",
+  "extent": [
+    -13190.0,
+    -9330.0,
+    -7670.0,
+    -3810.0
+  ],
+  "matrices": [
+    {
+      "id": "0",
+      "resolution": 8561.953124999987,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "id": "1",
+      "resolution": 4280.976562499994,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 4,
+      "height": 2
+    },
+    {
+      "id": "2",
+      "resolution": 2140.488281249997,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 8,
+      "height": 4
+    },
+    {
+      "id": "3",
+      "resolution": 1070.2441406249984,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 16,
+      "height": 8
+    },
+    {
+      "id": "4",
+      "resolution": 535.1220703124992,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 32,
+      "height": 16
+    },
+    {
+      "id": "5",
+      "resolution": 267.5610351562496,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 64,
+      "height": 32
+    },
+    {
+      "id": "6",
+      "resolution": 133.7805175781248,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 128,
+      "height": 64
+    },
+    {
+      "id": "7",
+      "resolution": 66.8902587890624,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 256,
+      "height": 128
+    },
+    {
+      "id": "8",
+      "resolution": 33.4451293945312,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "id": "9",
+      "resolution": 16.7225646972656,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "id": "10",
+      "resolution": 8.3612823486328,
+      "origin": [
+        -1095930.0,
+        1095930.0
+      ],
+      "tileSize": 256,
+      "width": 2048,
+      "height": 1024
+    }
+  ],
+  "cachedAt": "2026-11-15T05:55:05.949837+00:00",
+  "tiles": [
+    {
+      "z": "9",
+      "row": 256,
+      "col": 252,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/256/252.png",
+      "file": "data/nasa/tiles/9-256-252.png",
+      "bytes": 3990,
+      "sha256": "e7d5b4c9b66662c4a9e3d5b5c483f691795aa7deae42be12de1c95cb5db2b56f"
+    },
+    {
+      "z": "9",
+      "row": 256,
+      "col": 253,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/256/253.png",
+      "file": "data/nasa/tiles/9-256-253.png",
+      "bytes": 3794,
+      "sha256": "3d45f804beb38013f301b33057677feed89b18117176b66191f135a8b664473b"
+    },
+    {
+      "z": "9",
+      "row": 256,
+      "col": 254,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/256/254.png",
+      "file": "data/nasa/tiles/9-256-254.png",
+      "bytes": 3639,
+      "sha256": "9bd73dce4077e2b65e2235f6207bec21e35a05c3e1ca046b6176928f528b3ae9"
+    },
+    {
+      "z": "9",
+      "row": 257,
+      "col": 252,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/257/252.png",
+      "file": "data/nasa/tiles/9-257-252.png",
+      "bytes": 49061,
+      "sha256": "be4e12afff86e357c7d6494dfe9552eee5d1cf81acbb2d7eeb9e12d7a308a485"
+    },
+    {
+      "z": "9",
+      "row": 257,
+      "col": 253,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/257/253.png",
+      "file": "data/nasa/tiles/9-257-253.png",
+      "bytes": 45195,
+      "sha256": "01c24c040985b495ade930615aac21949997c5dd9220eba284ddb086d03e1ece"
+    },
+    {
+      "z": "9",
+      "row": 257,
+      "col": 254,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/257/254.png",
+      "file": "data/nasa/tiles/9-257-254.png",
+      "bytes": 45589,
+      "sha256": "24762dae74699f11c96cdf8b1f0f60ea9f57b1b81d086ab606f05ee55bb555bb"
+    },
+    {
+      "z": "9",
+      "row": 258,
+      "col": 252,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/258/252.png",
+      "file": "data/nasa/tiles/9-258-252.png",
+      "bytes": 47117,
+      "sha256": "9c820e6900680c4eccfd24984a1b120c31c901cf69380d532df272bed03e1e5d"
+    },
+    {
+      "z": "9",
+      "row": 258,
+      "col": 253,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/258/253.png",
+      "file": "data/nasa/tiles/9-258-253.png",
+      "bytes": 47127,
+      "sha256": "ef344b1dc9c4b9a1e819f6d377ea737403e514cf1a7f2be0955754573dc92aa7"
+    },
+    {
+      "z": "9",
+      "row": 258,
+      "col": 254,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/9/258/254.png",
+      "file": "data/nasa/tiles/9-258-254.png",
+      "bytes": 49190,
+      "sha256": "42aafe38c33e45402c51e3f7a6c857c0910c851689b2c3cdf26efe6b04744d12"
+    },
+    {
+      "z": "10",
+      "row": 513,
+      "col": 505,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/513/505.png",
+      "file": "data/nasa/tiles/10-513-505.png",
+      "bytes": 6486,
+      "sha256": "6c520e054fcc6d5d9407e1355488639c7c3b472b93ecd68c2116a9da8381cbca"
+    },
+    {
+      "z": "10",
+      "row": 513,
+      "col": 506,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/513/506.png",
+      "file": "data/nasa/tiles/10-513-506.png",
+      "bytes": 6427,
+      "sha256": "f9a9f3c4f33a0a26618ed9f76c6dd7174e48474a295d7e8cf27c3a1a356ea1db"
+    },
+    {
+      "z": "10",
+      "row": 513,
+      "col": 507,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/513/507.png",
+      "file": "data/nasa/tiles/10-513-507.png",
+      "bytes": 6193,
+      "sha256": "6c685c9adb16493d7ab1910b217376e7ec83f687945e3a35670fdb4aa170acd3"
+    },
+    {
+      "z": "10",
+      "row": 513,
+      "col": 508,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/513/508.png",
+      "file": "data/nasa/tiles/10-513-508.png",
+      "bytes": 5831,
+      "sha256": "af31d0e7c04838a0e0af9784c987a653a23ad733a1941b3352f4b4228c2d986e"
+    },
+    {
+      "z": "10",
+      "row": 514,
+      "col": 505,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/514/505.png",
+      "file": "data/nasa/tiles/10-514-505.png",
+      "bytes": 42722,
+      "sha256": "22060d044765053e5c7f6e110fa2d51f6000db15fa6412656e5df4bc8a165ce5"
+    },
+    {
+      "z": "10",
+      "row": 514,
+      "col": 506,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/514/506.png",
+      "file": "data/nasa/tiles/10-514-506.png",
+      "bytes": 41199,
+      "sha256": "20ebf27e0c52dece4a29b3474d1867934b3592be76b87de0ef1dbe56310e223f"
+    },
+    {
+      "z": "10",
+      "row": 514,
+      "col": 507,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/514/507.png",
+      "file": "data/nasa/tiles/10-514-507.png",
+      "bytes": 39719,
+      "sha256": "c9591344e322fa37c5b01755ed7be249cfced13651a9a07f96299dd905f4aff5"
+    },
+    {
+      "z": "10",
+      "row": 514,
+      "col": 508,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/514/508.png",
+      "file": "data/nasa/tiles/10-514-508.png",
+      "bytes": 40502,
+      "sha256": "887150f682826bdee8a4e68cebf16f4831cd3b0d565e08a7ab8c02f5812cbeda"
+    },
+    {
+      "z": "10",
+      "row": 515,
+      "col": 505,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/515/505.png",
+      "file": "data/nasa/tiles/10-515-505.png",
+      "bytes": 44983,
+      "sha256": "ebab6b311bbc5d831e8489d3719eaa39f3666c5c1ee197479b0723ce6cddb32e"
+    },
+    {
+      "z": "10",
+      "row": 515,
+      "col": 506,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/515/506.png",
+      "file": "data/nasa/tiles/10-515-506.png",
+      "bytes": 39946,
+      "sha256": "70b67a3533348cb215735a08c94165adbc94f2d7167089f36d68b60f48523b7c"
+    },
+    {
+      "z": "10",
+      "row": 515,
+      "col": 507,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/515/507.png",
+      "file": "data/nasa/tiles/10-515-507.png",
+      "bytes": 39367,
+      "sha256": "c8aa536f8e11ddddfa5573c7688b4c5cd1e741717b5ae91afe01e912465e375a"
+    },
+    {
+      "z": "10",
+      "row": 515,
+      "col": 508,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/515/508.png",
+      "file": "data/nasa/tiles/10-515-508.png",
+      "bytes": 40959,
+      "sha256": "249fbdd0cbcbdd5d82fa66ee6e875c5925e1921ea39f005593179ca7ebd37691"
+    },
+    {
+      "z": "10",
+      "row": 516,
+      "col": 505,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/516/505.png",
+      "file": "data/nasa/tiles/10-516-505.png",
+      "bytes": 41550,
+      "sha256": "da2749ad979a4bf4142f1756aa04e02981f6424234cfbbc6ff32c4b9bf6db112"
+    },
+    {
+      "z": "10",
+      "row": 516,
+      "col": 506,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/516/506.png",
+      "file": "data/nasa/tiles/10-516-506.png",
+      "bytes": 39720,
+      "sha256": "c6392a86c14780681de043129e12e306c0b5854cb5f509200a4415b837614ab9"
+    },
+    {
+      "z": "10",
+      "row": 516,
+      "col": 507,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/516/507.png",
+      "file": "data/nasa/tiles/10-516-507.png",
+      "bytes": 42804,
+      "sha256": "61d646704ce8a7ef0b641c8e27284960dbef387eba67bcd60fa751e474357056"
+    },
+    {
+      "z": "10",
+      "row": 516,
+      "col": 508,
+      "url": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/1.0.0/default/default028mm/10/516/508.png",
+      "file": "data/nasa/tiles/10-516-508.png",
+      "bytes": 43053,
+      "sha256": "4f4c96d8d4ee561decd23e1a68b08ffe83a47139ca9ce364b95da80ef183a9f8"
+    }
+  ]
+}

@@ -127,7 +127,7 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
   const ctx = canvas.getContext('2d');
   const { box, label } = painter(canvas);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (phase === 'feedback' && !shot.route) return;
+  if (phase === 'feedback' && !shot?.route) return;
 
   if (phase === 'explore') {
     const y = mission.y - 43 - Math.round(Math.sin(time / 210) * 2);
@@ -135,7 +135,7 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
     box(mission.x-1, y+2, 3, 2, '#ffdc7a');
   }
 
-  const progress = shot ? Math.min(1, shot.elapsed / shot.duration / .83) : 0;
+  const progress = shot?.scientific ? shot.travelProgress || 0 : shot ? Math.min(1, shot.elapsed / shot.duration / .83) : 0;
   let x = shot ? shot.startX + (352 - shot.startX) * progress : player.x;
   let y = mission.y;
   if (shot?.route) {
@@ -158,14 +158,19 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
   }
 
   if (!shot || !shot.rover) {
-    const explorer = shot ? { x, y, facing: 1, moving: progress < 1 } : player;
+    const explorer = shot ? { x, y, facing: shot.returning ? -1 : 1, moving: progress < 1 } : player;
     if (explorerSprite.naturalWidth) drawExplorer(ctx, explorer, time, .66);
     else sprite(painter(canvas), x-8, y-20, '#ffcd76');
     if (!shot) label('TÚ', Math.round(player.x), y-35, '#fff1b9');
   } else if (roverSprite.naturalWidth) {
     const frameIndex = progress < 1 ? 6 + Math.floor(time / 95) % 6 : 0;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, Math.round(x)-21, Math.round(y)-34, 42, 34);
+    ctx.save();
+    ctx.translate(Math.round(x),Math.round(y));
+    if(shot.returning)ctx.scale(-1,1);
+    ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, -21, -34, 42, 34);
+    ctx.restore();
+    if(shot.signalLost)label('SEÑAL PERDIDA',Math.round(x),y-40,'#ff8b91');
   }
 
   if (shot && phase === 'cinematic' && progress >= .9 && !reducedMotion.matches) {

@@ -1,0 +1,33 @@
+{
+  "item_DBID": "291598",
+  "item_UUID": "993c33f6-439f-4431-8764-55981e9f4029",
+  "productLabel": "Site01_final_adj_5mpp_Hillshade",
+  "title": "LRO LOLA Hillshade 5mpp, Site01: Connecting Ridge, S Pole",
+  "fileSize": [
+    6867185
+  ],
+  "productCat1": "Topography",
+  "productCat2": "Hillshade",
+  "mission": "Lunar Reconnaissance Orbiter",
+  "trekProjection": "urn:ogc:def:crs:IAU2000::30120",
+  "projection": "PROJCS[\"ESRI PE String = PROJCS[\"Moon2000_sp\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400.0,0.0]],PRIMEM[\"Reference_Meridian\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Stereographic_South_Pole\"],PARAMETER[\"false_easting\",0.0],PARAMETER[\"false_northing\",0.0],PARAMETER[\"central_meridian\",0.0],PARAMETER[\"standard_parallel_1\",-90.0],UNIT[\"Meter\",1.0]]\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]]]",
+  "data_created_date": "2022-05-25T18:12:10Z",
+  "description": "This is a shaded-relief representation generated from the high-resolution Digital Elevation Model (DEM) of the high-priority lunar south pole landing site Connecting Ridge (Site 01). This DEM was generated using exclusively laser altimetry data acquired by LRO-LOLA and through an iterative co-adjustment of the LOLA tracks in a self-consistent fashion. This reduced the orbital errors by over a factor of 10 such that the new track geolocation uncertainty is &tilde;10 - 20 cm horizontally and &tilde;2 - 4 cm vertically. This new 5m/px DEM is substantially more realistic than previous ones with fewer artifacts due to orbital errors and fewer spurious noise points. While the fraction of interpolated 5m pixels in these polar LDEMs is necessarily large (&tilde;90&percnt;) due to LOLA's cross-track and inter-spot spacing, these LDEMs have the advantage of having accurate geodetic control and of being unaffected by shadows, and, thus, will be useful constraints on higher-resolution topographic models derived from imagery. A hillshade function was applied to the original DEM to create this shaded-relief product. The elevation values are in meters and are relative to a radius of 1737400m. The DEM data was created by and should be credited to: Barker, M.K., et al. (2020), Improved LOLA Elevation Maps for South Pole Landing Sites: Error Estimates and Their Impact on Illumination Conditions, Planetary &amp; Space Science, in press, doi:10.1016/j.pss.2020.105119.",
+  "itemType": "product",
+  "resolution": 5.0,
+  "thumbnailURLDir": "https://trek.nasa.gov/tiles/Moon/SP/Site01_final_adj_5mpp_Hillshade/thumbnail/Site01_final_adj_5mpp_Hillshade-",
+  "isContainer": false,
+  "searchable": true,
+  "coverage": "Regional",
+  "serviceTypes": [
+    "Mosaic"
+  ],
+  "shape": "POLYGON((-19000.000 -4000.000, -19000.000 -20000.000, -3000.000 -20000.000, -3000.000 -4000.000, -19000.000 -4000.000))",
+  "trekBbox": "-19000,-20000,-3000,-4000",
+  "bbox": "-19000,-20000,-3000,-4000",
+  "RASTER_TYPE": "grayscale",
+  "BANDS": 1,
+  "PIXEL_DEPTH": "Byte",
+  "instrument": "Lunar Orbiter Laser Altimeter",
+  "_version_": 1733822859567955968
+}
