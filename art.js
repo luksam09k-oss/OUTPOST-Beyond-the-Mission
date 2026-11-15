@@ -57,59 +57,12 @@ function sprite({ box }, x, y, accent) {
 
 }
 
-function consoleUnit({ box, label }, x, name, accent) {
-  box(x-28, 57, 56, 38, '#0e1429');
-  box(x-25, 59, 50, 30, '#354773');
-  box(x-22, 62, 44, 17, '#172e4d');
-  for (let row = 64; row < 77; row += 3) box(x-20, row, 40, 1, '#285976');
-  label(name, x, 73, accent);
-  box(x-20, 83, 8, 2, accent);
-  box(x-8, 83, 3, 2, '#fdb673');
-  box(x+8, 83, 12, 2, '#6d82a8');
-  box(x-21, 89, 5, 10, '#212945');
-  box(x+16, 89, 5, 10, '#212945');
-}
-
 function drawMap(canvas, player, mission, active, crew, time) {
   const pen = painter(canvas);
   const { box, label } = pen;
-  const exterior = mission.outside;
   const context = canvas.getContext('2d');
-  if (exterior) {
-    starfield(pen, 384, 192);
-    box(0, 76, 384, 116, '#444766');
-    for (let x = 0; x < 384; x += 8) {
-      box(x, 73 + Math.floor(Math.sin(x/25)*5), 8, 12, '#676987');
-    }
-    for (let i = 0; i < 330; i++) {
-      box((i*97+i*i*7)%384, 84+(i*23+i*i*9)%108, 2+i%4, 1+i%2, ['#565977','#363a58','#777991'][i%3]);
-    }
-    for (const [x, y] of [[16,143],[142,94],[318,156]]) {
-      box(x, y+3, 29, 7, '#303450');
-      box(x+4, y, 20, 3, '#777a98');
-      box(x+6, y+10, 17, 2, '#606681');
-    }
-    consoleUnit(pen, 42, 'BASE', '#89edff');
-    if (mission.location === 'Borde del cráter') {
-      for (let row = -19; row <= 19; row++) {
-        const radius = Math.round(59 * Math.sqrt(1 - (row / 20) ** 2));
-        box(215-radius, 138+row, radius*2, 1, row < -12 ? '#7d809c' : '#252a49');
-      }
-      box(185, 137, 58, 2, '#313754');
-    } else if (mission.location === 'Zona polar') {
-      for (let row = 0; row < 48; row++) {
-        box(226+Math.floor(row/2), 79+row, 155-Math.floor(row/2), 1, '#292d50');
-      }
-      box(281, 104, 7, 2, '#677ca5');
-      box(298, 95, 4, 2, '#839abd');
-    }
-  } else {
-    if (lunarInterior.naturalWidth) {
-      context.drawImage(lunarInterior, 0, 0, canvas.width, canvas.height);
-    } else {
-      box(0, 0, canvas.width, canvas.height, '#161c3d');
-      box(0, 132, canvas.width, 43, '#303958');
-    }
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  if (!mission.outside) {
     crew.slice(1).forEach((member, i) => sprite(pen, [84, 206, 249, 343][i], 122, member.color));
   }
 
@@ -148,7 +101,8 @@ function drawMissionSky(canvas) {
   }
 }
 
-const platformY = 180;
+const platformY = 181;
+const craterPlatformY = 192;
 const platformDoorX = 67;
 const platformOpen = new Image();
 platformOpen.src = 'assets/primer-contacto.webp';
@@ -157,42 +111,67 @@ platformMapped.src = 'assets/ruta-lunar.webp';
 const roverSprite = new Image();
 roverSprite.src = 'assets/curiosity-sprite.png';
 
-function drawPlatform(canvas, player, phase, time, shot) {
+const craterOutpost = new Image();
+craterOutpost.src = 'assets/puesto-crater.webp';
+const craterRim = new Image();
+craterRim.src = 'assets/borde-crater.webp';
+const craterInterior = new Image();
+craterInterior.src = 'assets/interior-crater.webp';
+
+const craterRoutes = [
+  { image: craterRim, label: 'BORDE ILUMINADO', points: [[34, 165], [107, 176], [195, 193], [272, 202], [349, 200]] },
+  { image: craterInterior, label: 'INTERIOR EN SOMBRA', points: [[34, 169], [111, 171], [184, 174], [241, 169], [289, 166]], headlamp: true }
+];
+
+function drawPlatform(canvas, player, mission, phase, time, shot) {
   const ctx = canvas.getContext('2d');
   const { box, label } = painter(canvas);
-  const background = phase === 'feedback' && platformMapped.naturalWidth ? platformMapped : platformOpen;
-  if (background.naturalWidth) {
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-  } else {
-    box(0, 0, canvas.width, canvas.height, '#161c3d');
-    box(0, platformY, canvas.width, 12, '#7278ac');
-  }
-  if (phase === 'arrival' || phase === 'feedback') return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (phase === 'feedback' && !shot.route) return;
 
   if (phase === 'explore') {
-    const y = platformY - 43 - Math.round(Math.sin(time / 210) * 2);
-    box(125, y, 7, 2, '#ffdc7a');
-    box(127, y+2, 3, 2, '#ffdc7a');
+    const y = mission.y - 43 - Math.round(Math.sin(time / 210) * 2);
+    box(mission.x-3, y, 7, 2, '#ffdc7a');
+    box(mission.x-1, y+2, 3, 2, '#ffdc7a');
   }
 
-  const progress = shot ? Math.min(1, shot.elapsed / shot.duration) : 0;
-  const moverX = shot ? shot.startX + (352 - shot.startX) * Math.min(1, progress / .83) : player.x;
+  const progress = shot ? Math.min(1, shot.elapsed / shot.duration / .83) : 0;
+  let x = shot ? shot.startX + (352 - shot.startX) * progress : player.x;
+  let y = mission.y;
+  if (shot?.route) {
+    const points = shot.route.points;
+    const position = progress * (points.length - 1);
+    const index = Math.min(points.length - 2, Math.floor(position));
+    const offset = position - index;
+    const [[fromX, fromY], [toX, toY]] = points.slice(index, index + 2);
+    x = fromX + (toX - fromX) * offset;
+    y = fromY + (toY - fromY) * offset;
+    if (shot.route.headlamp) {
+      ctx.fillStyle = '#81c9ff2f';
+      ctx.beginPath();
+      ctx.moveTo(x+14, y-21);
+      ctx.lineTo(x+62, y-33);
+      ctx.lineTo(x+62, y+4);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
   if (!shot || !shot.rover) {
-    const explorer = shot ? { x: moverX, y: platformY, facing: 1, moving: progress < .83 } : player;
+    const explorer = shot ? { x, y, facing: 1, moving: progress < 1 } : player;
     if (explorerSprite.naturalWidth) drawExplorer(ctx, explorer, time, .66);
-    else sprite(painter(canvas), explorer.x-8, platformY-20, '#ffcd76');
-    if (!shot) label('TÚ', Math.round(player.x), platformY-35, '#fff1b9');
+    else sprite(painter(canvas), x-8, y-20, '#ffcd76');
+    if (!shot) label('TÚ', Math.round(player.x), y-35, '#fff1b9');
   } else if (roverSprite.naturalWidth) {
-    const frameIndex = progress < .83 ? 6 + Math.floor(time / 95) % 6 : 0;
+    const frameIndex = progress < 1 ? 6 + Math.floor(time / 95) % 6 : 0;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, Math.round(moverX)-21, platformY-34, 42, 34);
+    ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, Math.round(x)-21, Math.round(y)-34, 42, 34);
   }
 
-  if (shot && progress >= .78 && !reducedMotion.matches) {
+  if (shot && phase === 'cinematic' && progress >= .9 && !reducedMotion.matches) {
     for (let i = 0; i < 3; i++) {
       const width = Math.round(((shot.elapsed / 27 + i * 11) % 34) + 5);
-      box(Math.round(moverX)-width/2, platformY-44-i*3, width, 1, '#80f2ff');
+      box(x-width/2, y-44-i*3, width, 1, '#80f2ff');
     }
   }
 }

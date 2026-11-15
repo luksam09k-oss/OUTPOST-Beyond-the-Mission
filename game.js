@@ -13,34 +13,35 @@ const missions = [
     title: 'Primer contacto', location: 'Plataforma lunar', target: 'la terminal de exploración',
     action: 'Revisar el terreno', objective: 'Reconocer el terreno lunar y seleccionar una ruta de exploración.',
     problem: 'La tripulación de cinco astronautas debe estudiar el terreno antes de desplazarse. NASA utiliza instrumentos como LOLA y LROC para analizar elevaciones, pendientes, iluminación y características de la superficie.',
-    x: 128, y: platformY, outside: true, platform: true,
+    x: 128, y: platformY, platform: 'first-contact',
     options: [
       ['Exploración robótica', [-10, -10, 5], true, reconnaissanceExplanation, 'Enviar un rover robótico para reconocer el terreno mientras los cinco astronautas permanecen en una zona protegida.'],
       ['Exploración con astronauta', [-12, -10, 10], true, reconnaissanceExplanation, 'Enviar a un astronauta de la tripulación para reconocer el terreno directamente y seleccionar una ruta de exploración, mientras los otros cuatro permanecen en la zona protegida.']
     ]
   },
   {
-    title: 'Explorando el cráter', location: 'Borde del cráter', target: 'muestra junto al cráter',
-    action: 'Recoger la muestra', objective: 'Recoge suelo lunar y decide cómo estudiar la muestra.',
-    problem: 'El laboratorio y el soporte vital usan la misma batería. Hay que decidir cuál recibe la energía.',
-    x: 205, y: 149, outside: true,
+    title: 'Explorando el cráter', location: 'Polo sur lunar', target: 'la estación de escaneo',
+    action: 'Elegir zona para el rover', platform: 'crater', x: 160, y: craterPlatformY,
+    objective: 'Investigar un cráter lunar, estudiar sus condiciones de iluminación y buscar posibles indicios de hielo de agua.',
+    problem: 'La tripulación llega a un cráter cercano al polo sur lunar. Algunas zonas reciben luz solar durante largos períodos, mientras otras permanecen en oscuridad permanente y presentan temperaturas extremadamente bajas.',
+    explanation: 'NASA investiga los cráteres polares porque sus regiones permanentemente sombreadas pueden conservar hielo. Sin embargo, estas zonas presentan dificultades energéticas y térmicas. Los astronautas permanecen protegidos en ambas opciones; las diferencias de radiación representan la duración de la operación.',
     options: [
-      ['Analizar la muestra ahora', [-24, -12, 0], true, 'Identificaste componentes del suelo. La ventilación consumió parte de la reserva de oxígeno.'],
-      ['Guardar la muestra', [-6, 0, 0], false, 'La muestra queda recogida y pendiente de análisis. La energía se reservó para el soporte vital.']
+      ['Explorar el borde iluminado', [-8, -10, 5], true, 'Obtener información que facilite futuras exploraciones.', 'Enviar un rover a la zona iluminada para estudiar el terreno e identificar rutas seguras. La luz solar facilita la generación de energía, pero limita la investigación del interior del cráter.'],
+      ['Explorar el interior del cráter', [-18, -14, 7], true, 'Obtener información sobre posibles reservas de agua para futuras misiones.', 'Enviar un rover a una región permanentemente sombreada para investigar posibles depósitos de hielo de agua. La falta de luz solar y las temperaturas extremas dificultan la operación.']
     ]
   },
   {
-    title: 'Buscando recursos', location: 'Zona polar', target: 'sensor del terreno',
+    title: 'Buscando recursos', location: 'Zona polar', target: 'el sensor del terreno', backdrop: 'polar',
     action: 'Examinar terreno frío', objective: 'Busca indicios de hielo en el suelo de una zona sombreada.',
     problem: 'El sensor detectó una señal débil. Para comprobarla tendrás que quedarte más tiempo fuera y gastar oxígeno del traje.',
-    x: 267, y: 111, outside: true,
+    x: 267, y: 174, outside: true,
     options: [
       ['Usar el escáner y perforar', [-21, -27, 0], true, 'El análisis encontró indicios de hielo. Buscarlo a mayor profundidad te costó baterías y parte de la reserva de oxígeno.'],
       ['Marcar el punto en el mapa', [-5, -5, 0], false, 'Guardaste la ubicación para otra salida. Una señal débil necesita más mediciones.']
     ]
   },
   {
-    title: 'Alerta solar', location: 'Base lunar', target: 'entrada al refugio',
+    title: 'Alerta solar', location: 'Base lunar', target: 'la entrada al refugio',
     action: 'Consultar la alerta', objective: 'Ve al refugio y avisa a los cinco tripulantes.',
     problem: 'Una alerta solar indica que podría aumentar la radiación. El equipo aún recoge datos afuera.',
     x: 316, y: 142, outside: false,
@@ -50,7 +51,7 @@ const missions = [
     ]
   },
   {
-    title: 'Regreso seguro', location: 'Base lunar', target: 'soporte vital',
+    title: 'Regreso seguro', location: 'Base lunar', target: 'los controles de soporte vital',
     action: 'Revisar soporte vital', objective: 'Restablece la circulación de aire y cierra la expedición.',
     problem: 'Un ventilador del soporte vital se averió. Queda una pieza de repuesto y un circuito de emergencia.',
     x: 286, y: 140, outside: false,
@@ -79,7 +80,7 @@ let launchOpening;
 let reconnaissance;
 
 function nasaBadge() {
-  return '<div class="mission-badge"><span class="nasa-mark">NASA</span><span>NASA<br>Space Apps<br>Challenge 2026</span></div>';
+  return '<div class="mission-badge"><img class="nasa-mark" src="assets/nasa-insignia.png" alt=""><span>NASA<br>Space Apps<br>Challenge 2026</span></div>';
 }
 
 function header() {
@@ -167,29 +168,32 @@ function begin() {
   scene('base');
 }
 
-const base = { title: 'Base lunar', location: 'Base lunar', target: 'terminal de investigación',
+const base = { title: 'Base lunar', location: 'Base lunar', target: 'la terminal de investigación',
   action: 'Abrir expedición', objective: 'Reúnete con tu equipo y activa la terminal de investigación.', x: 134, y: 143 };
 
 function scene(nextPhase) {
   const mission = nextPhase === 'base' ? base : missions[game.index];
-  phase = mission.platform ? 'arrival' : nextPhase;
+  phase = mission.platform === 'first-contact' ? 'arrival' : nextPhase;
   reconnaissance = null;
-  player = { x: mission.platform ? platformDoorX : mission.outside ? 52 : 188,
-    y: mission.platform ? platformY : 155, facing: 1, moving: false };
+  player = { x: mission.platform === 'first-contact' ? platformDoorX : mission.platform ? 62 : mission.outside ? 52 : 188,
+    y: mission.platform ? mission.y : mission.outside ? 180 : 155, facing: 1, moving: false };
   show('map', `${header()}<section class="mission-heading">
       <p class="kicker">${nextPhase === 'base' ? 'ESTABLECIMIENTO' : `MISIÓN ${game.index+1} / 5 · ${mission.location.toUpperCase()}`}</p>
       <h1 tabindex="-1">${mission.title}</h1>
     </section>
-    <div class="stats" id="stats">${stats()}</div>
-    <div class="dashboard">
-      <div class="map-frame console-frame">
-        <canvas id="map" width="384" height="${mission.outside && !mission.platform ? 192 : 216}" aria-label="Mapa de ${mission.location}"></canvas>
+    <div class="dashboard mission-console">
+      <div class="mission-viewport">
+        <div class="map-frame">
+          <img class="map-backdrop" alt="" fetchpriority="high">
+          <canvas id="map" width="384" height="216" aria-label="Mapa de ${mission.location}"></canvas>
+        </div>
+        <div class="stats" id="stats">${stats()}</div>
+        <section class="panel objective console-frame" id="mission-panel">
+          <h2><span aria-hidden="true">⌖</span> Objetivo</h2>
+          <p>${mission.objective}</p>
+          <div class="objective-outpost" aria-hidden="true"><span></span></div>
+        </section>
       </div>
-      <section class="panel objective console-frame" id="mission-panel">
-        <h2><span aria-hidden="true">⌖</span> Objetivo</h2>
-        <p>${mission.objective}</p>
-        <div class="objective-outpost" aria-hidden="true"><span></span></div>
-      </section>
       <div class="mission-dialogue" hidden></div>
       <div class="controls">${movementButtons(mission.platform)}
         <p id="hint" aria-live="polite"></p>
@@ -197,6 +201,10 @@ function scene(nextPhase) {
       </div>
     </div>`);
   const canvas = document.querySelector('#map');
+  const backdrop = app.querySelector('.map-backdrop');
+  const missionImage = mission.platform === 'first-contact' ? platformOpen : mission.platform ? craterOutpost
+    : mission.backdrop === 'polar' ? craterInterior : lunarInterior;
+  backdrop.src = missionImage.src;
   const interactButton = app.querySelector('[data-action="interact"]');
   const hint = document.querySelector('#hint');
   const movement = app.querySelectorAll('[data-move]');
@@ -206,19 +214,21 @@ function scene(nextPhase) {
     const elapsed = lastTime === undefined ? 0 : Math.min(40, time-lastTime);
     lastTime = time;
     if (phase === 'arrival') {
-      if (platformOpen.complete) scenerySince ??= time;
-      drawPlatform(canvas, player, 'arrival', time, null);
+      if (backdrop.complete) scenerySince ??= time;
       if (scenerySince !== undefined && time-scenerySince >= 850) explainMission(mission);
     } else if (mission.platform) {
-      if (phase === 'explore') movePlayer(elapsed, .1, 48, 366, platformY, platformY);
-      if (phase === 'cinematic' && !help.open) {
+      if (phase === 'explore') movePlayer(elapsed, .1, 12, 372, mission.y, mission.y);
+      if (phase === 'cinematic' && !help.open && (!reconnaissance.route || backdrop.complete)) {
         reconnaissance.elapsed += elapsed;
-        if (reconnaissance.elapsed >= reconnaissance.duration) applyDecision(reconnaissance.option);
+        if (reconnaissance.elapsed >= reconnaissance.duration) {
+          if (!reconnaissance.route) backdrop.src = platformMapped.src;
+          applyDecision(reconnaissance.option);
+        }
       }
-      drawPlatform(canvas, player, phase, time, reconnaissance);
+      drawPlatform(canvas, player, mission, phase, time, reconnaissance);
     } else {
       if (phase === 'base' || phase === 'explore') {
-        movePlayer(elapsed, .1, 12, 372, mission.outside ? 97 : 135, 168);
+        movePlayer(elapsed, .1, 12, 372, mission.outside ? 164 : 135, mission.outside ? 193 : 168);
       }
       drawMap(canvas, player, mission, phase === 'base' || phase === 'explore', crew, time);
     }
@@ -227,11 +237,11 @@ function scene(nextPhase) {
     movement.forEach(button => { button.disabled = !canMove; });
     const reachable = canMove && nearby(mission);
     interactButton.disabled = !reachable;
-    const message = reachable ? `Pulsa E · ${mission.action}` : canMove ? `Acércate a ${mission.target}.` : '';
+    const message = phase === 'cinematic' ? 'Reconocimiento en curso…' : reachable ? `Pulsa E · ${mission.action}` : canMove ? `Acércate a ${mission.target}.` : '';
     if (hint.textContent !== message) hint.textContent = message;
     frame = requestAnimationFrame(tick);
   }
-  if (nextPhase === 'explore' && !mission.platform) explainMission(mission);
+  if (nextPhase === 'explore' && phase !== 'arrival') explainMission(mission);
   frame = requestAnimationFrame(tick);
 }
 
@@ -297,9 +307,15 @@ function choose(option) {
   }
 
   phase = 'cinematic';
-  const rover = option === 0;
-  reconnaissance = { option, rover, elapsed: 0, duration: reducedMotion.matches ? 240 : 4800,
+  const route = mission.platform === 'crater' ? craterRoutes[option] : null;
+  const rover = Boolean(route) || option === 0;
+  reconnaissance = { option, rover, route, elapsed: 0, duration: reducedMotion.matches ? 240 : 4800,
     startX: rover ? platformDoorX : player.x };
+  if (route) {
+    const backdrop = app.querySelector('.map-backdrop');
+    backdrop.src = route.image.src;
+    app.querySelector('.mission-heading .kicker').textContent = `MISIÓN 2 / ${missions.length} · ${route.label}`;
+  }
   const overlay = app.querySelector('.mission-dialogue');
   overlay.hidden = true;
   app.querySelector('.mission-heading h1').focus({ preventScroll: true });
@@ -311,11 +327,12 @@ function applyDecision(option) {
   const before = game.resources;
   game.resources = before.map((value, i) => Math.min(100, Math.max(0, value + delta[i])));
   const applied = game.resources.map((value, i) => value - before[i]);
-  game.log.push({ title: mission.title, name, success, explanation });
+  game.log.push({ title: mission.title, name, success, explanation: mission.explanation ? `${explanation} ${mission.explanation}` : explanation });
   phase = 'feedback';
   document.querySelector('#stats').innerHTML = stats();
   const continuation = missionContinue('next', game.index === missions.length - 1 ? 'Ver resultados' : 'Siguiente misión · E');
-  missionDialogue(explanation, `<p class="choice-cost">${changes(applied)}</p>${continuation}`,
+  const benefit = mission.explanation ? `<p class="mission-benefit"><strong>Beneficio</strong> · ${explanation}</p>` : '';
+  missionDialogue(mission.explanation || explanation, `${benefit}<p class="choice-cost">${changes(applied)}</p>${continuation}`,
     success ? 'Objetivo completado' : 'Objetivo parcial');
 }
 

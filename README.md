@@ -6,3 +6,4 @@ Abre `index.html` en el navegador. Desde ahí se juega todo, desde el despegue h
 - Acércate a Neil para elegir la Luna o a Curiosity para consultar el destino Marte. Pulsa **E** o **Hablar**.
 - En la Luna, acércate al objetivo marcado y pulsa **E** o **Interactuar**. Cada decisión afecta la energía, el oxígeno o la radiación.
 - En «Primer contacto», muévete horizontalmente por la plataforma y elige quién reconocerá el terreno. Tras la cinemática, Neil explica el resultado antes de avanzar.
+- En «Explorando el cráter», elige entre enviar el rover al borde iluminado o al interior en sombra. Los valores de recursos son puntos de la simulación.

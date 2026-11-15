@@ -48,28 +48,13 @@
   text-transform: uppercase;
 }
 .nasa-mark {
-  position: relative;
-  display: grid;
-  place-items: center;
+  display: block;
   flex: 0 0 auto;
-  isolation: isolate;
-  width: clamp(31px, 4vw, 59px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 24%, #3974e7, #173995 72%);
-  box-shadow: 0 0 14px #387ae83d;
-  font: bold clamp(10px, 1.35vw, 17px) Georgia, serif;
+  width: clamp(32px, 4vw, 66px);
+  height: auto;
+  filter: drop-shadow(0 0 10px #387ae83d);
 }
-.nasa-mark::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  width: 113%;
-  height: 5%;
-  background: #f64c4c;
-  transform: rotate(-38deg);
-}
-.mission-badge > span + span { border-left: 2px solid #e9ecff; padding-left: clamp(7px, 1vw, 16px); }
+.mission-badge > span { border-left: 2px solid #e9ecff; padding-left: clamp(7px, 1vw, 16px); }
 
 #app[data-screen="briefing"] { width: 100%; padding: 0; }
 .briefing {
@@ -228,15 +213,6 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 .stat[data-resource="2"] meter::-webkit-meter-optimum-value { background: #e8bf81; }
 .stat[data-resource="2"] meter::-moz-meter-bar { background: #e8bf81; }
 
-.dashboard { grid-template-columns: minmax(0, 3.25fr) minmax(220px, 1fr); gap: clamp(8px, 1.15vw, 16px); align-items: stretch; }
-.map-frame {
-  padding: clamp(5px, .65vw, 10px);
-  --frame-edge: #8edcf1;
-  --frame-border: 3px;
-  --frame-fill: #0d1732;
-  filter: drop-shadow(0 0 9px #438cc63a);
-}
-.map-frame canvas { clip-path: var(--cut-corners); }
 .objective {
   display: flex;
   flex-direction: column;
@@ -258,8 +234,6 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 
 @media (max-width: 760px) {
   #app[data-screen="map"],#app[data-screen="results"] { width: calc(100% - 22px); }
-  .dashboard { grid-template-columns: minmax(0, 1fr); }
-  .controls { grid-row: 2; }
   .briefing { padding-inline: 12px; }
   .briefing-frame { --cut-corners: polygon(12px 0, calc(100% - 12px) 0, 100% 12px,
     100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px); }
@@ -354,8 +328,6 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 }
 
 .mission-dialogue {
-  grid-column: 1 / -1;
-  grid-row: 2;
   --ship-blue: #9ae7ff;
   --ship-gold: #ffd27a;
 }
@@ -378,9 +350,79 @@ body:has(#app[data-screen="map"],#app[data-screen="results"]) {
 .mission-dialogue .choices small { margin-top: 4px; }
 .mission-dialogue .choice-cost { color: #abe6ff; }
 .controls #hint { flex: 1; align-self: center; margin: 0; font-size: .9rem; }
-.dashboard .controls { grid-row: 3; }
 @media (max-width: 760px) {
-  .dashboard .objective { grid-row: 4; }
   .mission-dialogue .choices { grid-template-columns: 1fr; }
   .controls #hint { flex-basis: 100%; order: 1; }
+}
+
+/* One frame for the entire mission. The canvas only draws moving objects. */
+#app[data-screen="map"] { width: min(1500px, 100% - 28px, max(720px, calc((100dvh - 210px) * 16 / 9))); }
+.mission-console {
+  display: block;
+  padding: clamp(6px, .8vw, 12px);
+  border: 2px solid #77dcf2;
+  border-radius: 12px;
+  background: #101936;
+  box-shadow: inset 0 0 14px #46aeeb28, 0 0 14px #59daf44a;
+}
+.mission-viewport {
+  position: relative;
+  width: 100%;
+  margin-inline: auto;
+}
+.mission-console:has(.mission-dialogue:not([hidden])) .mission-viewport {
+  width: min(100%, max(600px, calc((100dvh - 365px) * 16 / 9)));
+}
+.map-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #101533;
+  border-radius: 6px;
+}
+.map-frame canvas,.map-backdrop {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.map-backdrop { object-fit: fill; }
+.map-frame canvas { background: transparent; }
+.mission-viewport .stats {
+  position: absolute;
+  inset: 10px 3% auto;
+  margin: 0;
+}
+.mission-viewport .stat { --frame-fill: #101d38ee; }
+.mission-viewport .objective {
+  position: absolute;
+  top: clamp(70px, 25%, 190px);
+  right: 2%;
+  width: clamp(165px, 25%, 340px);
+  padding: clamp(8px, 1.3vw, 20px);
+  --frame-edge: #8ddff4;
+  --frame-fill: #101d37eb;
+}
+.mission-viewport .objective h2 { font-size: clamp(15px, 2vw, 26px); margin-bottom: 7px; }
+.mission-viewport .objective p { font-size: clamp(.8rem, 1.2vw, 1.1rem); margin-bottom: 0; }
+.mission-viewport .objective-outpost { display: none; }
+.mission-console .controls { margin-top: 7px; }
+.mission-dialogue { margin-top: 8px; }
+.mission-dialogue .mission-benefit { color: #e3f4ff; margin-bottom: 6px; }
+
+@media (max-width: 720px) {
+  .mission-console .mission-viewport { display: flex; flex-direction: column; width: 100%; }
+  .mission-viewport .stats {
+    position: static;
+    order: -1;
+    margin-bottom: 6px;
+  }
+  .mission-viewport .objective {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-top: 6px;
+  }
+  .mission-viewport .objective h2 { border-bottom: 0; padding-bottom: 0; margin-bottom: 3px; }
 }
