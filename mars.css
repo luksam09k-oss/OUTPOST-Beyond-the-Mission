@@ -10,7 +10,7 @@
 .mars-route-data dl { display:grid; grid-template-columns:1fr auto; gap:10px; font-size:13px; }
 .mars-route-data dd { margin:0; color:#ffdc9c; }
 .mars-console .result-actions { align-items:center; }
-.mars-console .result-actions button { font-size:13px; padding:6px 10px; }
+.mars-console .result-actions button:not([data-dialogue-continue]) { font-size:13px; padding:6px 10px; }
 @media(max-width:600px) {
  .mars-route-panel { grid-template-columns:1fr;grid-template-rows:minmax(60px,1fr) auto;gap:3px; }
  .mars-route-data { padding:5px; }
@@ -33,4 +33,46 @@
  .mars-console .mars-route-data { padding:4px; }
  .mars-console .mars-route-data dl { grid-template-columns:1fr auto 1fr auto;gap:3px;font-size:10px;margin:5px 0 0; }
  .mars-console .mars-tabs button { font-size:10px;padding:3px 5px; }
+}
+
+
+.mars-console > .stats .stat {
+  padding: 5px 10px;
+  font-size: clamp(11px, 1.65vw, 16px);
+  line-height: 1.25;
+  --frame-edge: var(--resource-color);
+  --resource-color: #ffd386;
+}
+.mars-console .stat[data-resource="1"] { --resource-color: #94e7ff; }
+.mars-console .stat[data-resource="2"] { --resource-color: #ffb39b; }
+.mars-console .stat :is(strong, .stat-icon) { color: var(--resource-color); }
+.mars-console .stat strong { font-size: clamp(16px, 2.2vw, 26px); }
+.mars-console > .stats meter { height: 10px; border-color: var(--resource-color); }
+.mars-console meter::-webkit-meter-optimum-value { background: var(--resource-color); }
+.mars-console meter::-moz-meter-bar { background: var(--resource-color); }
+.mars-console .controls #hint { font-size: clamp(13px, 1.55vw, 16px); color: #e8f5ff; }
+.mars-console .interact:not(:disabled) {
+  --frame-fill: #90d9ff;
+  --frame-edge: #d6f4ff;
+  color: #0b1c35;
+  font-weight: 700;
+}
+.mars-console .mission-dialogue .mars-indicator {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 8px;
+  border-left: 3px solid #8cddff;
+  background: #213653;
+  color: #e0f6ff;
+  font-weight: 700;
+}
+@media (max-width: 520px) {
+  .mars-console > .stats .stat { grid-template-columns: minmax(0, 1fr); gap: 2px; text-align: center; padding-inline: 4px; }
+  .mars-console .stat-icon { display: none; }
+  .mars-console .stat meter { grid-column: 1; }
+}
+@media (max-height: 440px) and (orientation: landscape) {
+  .mars-console > .stats .stat { padding-block: 3px; }
+  .mars-console .stat strong { font-size: 17px; }
+  .mars-console > .stats meter { height: 8px; }
 }

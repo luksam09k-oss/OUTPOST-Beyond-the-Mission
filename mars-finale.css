@@ -17,4 +17,4 @@ body { min-height:0;height:100dvh;overflow:hidden; }
 .final-actions a { padding:6px 10px;border:1px solid #94c5ff;color:#d3eaff;text-decoration:none;font-size:13px; }
 .finale-report { display:none;overflow:auto;min-height:0; }
 .finale-report[open] { display:block; }
-@media(max-width:600px) { .finale-controls { flex-direction:column; }.pad button { padding:5px 10px; }.finale-controls p { font-size:12px; }.finale-dialogue .ship-button { padding:6px 9px;font-size:13px; } }
+@media(max-width:600px) { .finale-controls { flex-direction:column; }.pad button { padding:5px 10px; }.finale-controls p { font-size:12px; } }

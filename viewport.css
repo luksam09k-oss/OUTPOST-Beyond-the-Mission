@@ -63,7 +63,6 @@ body:has(#app:is([data-screen="map"],[data-screen="ship"])) {
 .mission-dialogue .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .mission-dialogue .choices button { font-size: 13px; line-height: 1.3; padding: 6px 8px; }
 .mission-dialogue .choices small { font-size: 12px; margin-top: 3px; }
-.mission-dialogue .ship-button { font-size: 13px; padding: 5px 8px; }
 .mission-dialogue .kicker { font-size: 10px; }
 .mission-dialogue :is(.choice-cost, .mission-benefit) { font-size: 13px; margin-bottom: 7px; }
 .mission-console > .objective {

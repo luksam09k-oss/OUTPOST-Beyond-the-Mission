@@ -83,6 +83,7 @@ function start() {
   show('opening', document.querySelector('#opening-template').innerHTML);
   localizeMarkup(app);
   localizeMarkup(help);
+  app.querySelector(`.language-options a[lang="${language}"]`).setAttribute('aria-current', 'true');
   launchOpening = animateOpening(enterShip);
   try {
     const saved=JSON.parse(localStorage.getItem('outpost-expedition'));

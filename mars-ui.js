@@ -51,10 +51,20 @@ function marsScene(nextPhase) {
     if(canMove)movePlayer(dt,.1,12,372,marsFloor(),marsFloor());
     ctx.clearRect(0,0,384,216);
     const pen=painter(canvas);
-    if(canMove) { pen.box(mission.x-5,marsFloor()-38,10,3,'#ffce77');pen.box(mission.x-2,marsFloor()-35,4,3,'#ffce77'); }
     if(mission.id==='dust'&&marsOutside) {
       ctx.fillStyle='#dcb39760';
       for(let i=0;i<64;i++){const x=(i*53+time*.1)%384,y=(i*31)%216;ctx.fillRect(x,y,8+(i%5),1);}
+    }
+    const reachable = canMove && Math.abs(player.x - mission.x) <= 17;
+    if (canMove) {
+      const y = marsFloor() - 50;
+      const color = reachable ? '#9cf6d5' : '#ffce77';
+      pen.box(mission.x - 11, y, 22, 12, '#081326');
+      pen.box(mission.x - 7, y + 12, 14, 4, '#081326');
+      pen.box(mission.x - 4, y + 16, 8, 4, '#081326');
+      pen.box(mission.x - 8, y + 3, 16, 6, color);
+      pen.box(mission.x - 5, y + 9, 10, 4, color);
+      pen.box(mission.x - 2, y + 13, 4, 4, color);
     }
     if(explorerSprite.naturalWidth)drawExplorer(ctx,player,time);
     else sprite(pen,player.x-8,player.y-23,'#ffcd76');
@@ -76,7 +86,7 @@ function marsScene(nextPhase) {
     }
     const controls=app.querySelector('.controls');controls.hidden=!canMove&&phase!=='cinematic';controls.classList.toggle('cinematic-controls',phase==='cinematic');
     controls.querySelectorAll('[data-move]').forEach(button=>{button.disabled=!canMove;});
-    const reachable=canMove&&Math.abs(player.x-mission.x)<=17;controls.querySelector('.interact').disabled=!reachable;
+    controls.querySelector('.interact').disabled = !reachable;
     app.querySelector('#hint').textContent=phase==='cinematic'?t('Operación en curso…','Operation in progress…'):reachable?`${t('Pulsa E','Press E')} · ${mission.action}`:`${t('Acércate a','Approach')} ${mission.target}.`;
     frame=requestAnimationFrame(tick);
   }
@@ -134,7 +144,7 @@ function marsDecision() {
   const words=dust?(state.dust.maintenanceAllowed?t('El polvo reduce la energía solar. Podemos ahorrar o intentar limpiar los paneles con el robot.','Dust reduces solar power. We can conserve energy or try cleaning the panels with the robot.'):t('La tormenta es demasiado intensa para enviar el robot. Ahorremos energía hasta que pase.','The storm is too strong to send the robot out. Let’s conserve energy until it passes.')):t('Este prototipo produce un poco de oxígeno, pero consume energía. No alcanza para abastecer a cinco personas: seguimos necesitando reservas.','This prototype produces a little oxygen, but uses energy. It cannot supply five people: we still need reserves.');
   const metrics=dust?`${t('Polvo','Dust')}: ${marsDustLabel(state.dust.level)} · ${t('Energía solar','Solar power')}: ${numberText(state.dust.solarW)} W`:`${t('Producción estimada','Estimated output')}: +${numberText(state.oxygen.producedG / MarsScience.balance.oxygenGramsPerPoint,2)} ${t('puntos de oxígeno','oxygen points')}`;
   const choices=marsChoiceNames().map((name,i)=>`<button data-action="choose" data-option="${i}" ${MarsScience.canAfford(game.resources,plans[i])?'':'disabled'}>${name}<small>${plans[i]?changes(plans[i].delta):t('No disponible durante polvo intenso','Unavailable in heavy dust')}</small></button>`).join('');
-  missionDialogue(words,`<p class="choice-cost">${metrics}</p><div class="choices">${choices}</div>${marsInfoButton()}`,missions[game.index].title);
+  missionDialogue(words,`<p class="choice-cost mars-indicator">${metrics}</p><div class="choices">${choices}</div>${marsInfoButton()}`,missions[game.index].title);
 }
 function marsDustLabel(level) { return {low:t('bajo','low'),moderate:t('moderado','moderate'),high:t('intenso','heavy')}[level]; }
 function marsChoose(option) {

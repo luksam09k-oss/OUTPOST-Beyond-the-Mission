@@ -52,8 +52,52 @@ body:has(#stage) { display: grid; place-items: center; background: #070716; }
 @keyframes pulse{50%{transform:scale(1.6) rotate(45deg);opacity:.6}}
 @media (prefers-reduced-motion:reduce){.hero,.arc,.spark,.start em,.start::before,.start::after{animation:none!important}}
 
-.language-options{position:absolute;left:max(6px,2.8cqw);top:max(6px,2.2cqw);display:flex;gap:.65rem;z-index:2}
-.language-options a{color:#c0d9fa;font:700 clamp(10px,1.2cqw,16px)/1.25 "Courier New",monospace;padding:.35em .7em;text-decoration:none;border:1px solid #5480ae;background:#0d193ce8}
-html[lang=es] .language-options a[lang=es],html[lang=en] .language-options a[lang=en]{color:#fff;border-color:#98dfff;background:#223e67}
-.language-options a:focus-visible{outline:2px solid #ffd27a;outline-offset:2px}
-.go .language-options,.go .resume-expedition{visibility:hidden}
+.language-options {
+  position: absolute;
+  top: max(6px, 2.2cqw);
+  left: max(6px, 2.8cqw);
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 4px 6px;
+  padding: 6px;
+  border: 1px solid #75bef4;
+  border-radius: 8px;
+  background: #101c3af5;
+}
+.language-label {
+  grid-column: 1 / -1;
+  padding-inline: 3px;
+  color: #d6ebfc;
+  font: 700 12px/1.15 "Courier New", monospace;
+}
+.language-options a {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 6px clamp(10px, 1.3cqw, 18px);
+  border: 1px solid #7baedc;
+  border-radius: 4px;
+  background: #1d3559;
+  color: #f4f9ff;
+  font: 700 clamp(15px, 1.65cqw, 21px)/1.2 "Courier New", monospace;
+  text-decoration: none;
+}
+.language-options a:hover,
+.language-options a[aria-current="true"] {
+  color: #0b1c35;
+  border-color: #c5f1ff;
+  background: #a6dfff;
+}
+.language-options a:focus-visible { outline: 2px solid #ffd27a; outline-offset: 2px; }
+.go .language-options,.go .resume-expedition { visibility: hidden; }
+
+@media (max-width: 560px), (max-height: 340px) {
+  #stage { min-height: min(280px, 100dvh); }
+  #stage .logo { top: 35%; }
+  #stage .sub { top: 52%; }
+  #stage .tag { top: 61%; }
+  #stage .start { top: 68%; padding: 0; font-size: clamp(11px, 2.25cqw, 15px); }
+  #stage .start em { display: grid; place-items: center; min-height: 44px; padding: 6px 10px; }
+  #stage .orb { transform: translateY(12%); }
+}

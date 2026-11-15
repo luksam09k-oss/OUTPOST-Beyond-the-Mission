@@ -119,19 +119,41 @@ const MarsMap = (() => {
       }
       for (const [point,label] of [[route.points[0],t('BASE','BASE')],[route.points.at(-1),t('DESTINO','DESTINATION')]]) {
         const [x,y] = project(...point);
-        context.fillStyle='#ffe7b3';context.beginPath();context.arc(x,y,8,0,Math.PI*2);context.fill();
-        context.font='bold 16px monospace';context.textAlign='left';context.fillStyle='#101421';context.fillRect(x+8,y-25,106,24);
-        context.fillStyle='#fff';context.fillText(label,x+12,y-8);
+        context.fillStyle = '#141925';
+        context.beginPath();
+        context.arc(x, y, 14, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = '#ffe7b3';
+        context.beginPath();
+        context.arc(x, y, 10, 0, Math.PI * 2);
+        context.fill();
+
+        context.font = 'bold 30px monospace';
+        context.textAlign = 'left';
+        const labelWidth = Math.ceil(context.measureText(label).width) + 20;
+        const preferredX = x < canvas.width / 2 ? x - labelWidth - 16 : x + 16;
+        const labelX = Math.max(8, Math.min(canvas.width - labelWidth - 8, preferredX));
+        const labelY = Math.max(8, y - 46);
+        context.fillStyle = '#101421';
+        context.fillRect(labelX, labelY, labelWidth, 40);
+        context.fillStyle = '#fff';
+        context.fillText(label, labelX + 10, labelY + 30);
       }
       if (session.progress !== null) {
-        const [x,y]=project(...LunarScience.pointAt(route,session.progress));
-        context.fillStyle='#80efff';context.fillRect(x-9,y-9,18,18);
-        context.strokeStyle='#071322';context.lineWidth=3;context.strokeRect(x-9,y-9,18,18);
+        const [x,y] = project(...LunarScience.pointAt(route,session.progress));
+        context.fillStyle = '#80efff';
+        context.fillRect(x - 13, y - 13, 26, 26);
+        context.strokeStyle = '#071322';
+        context.lineWidth = 4;
+        context.strokeRect(x - 13, y - 13, 26, 26);
       }
-      const scale=250/view[2]*canvas.width;
-      context.fillStyle='#111a2ee8';context.fillRect(12,canvas.height-43,scale+20,34);
-      context.fillStyle='#fff';context.fillRect(22,canvas.height-18,scale,3);
-      context.font='14px monospace';context.fillText('250 m',22,canvas.height-24);
+      const scale = 250 / view[2] * canvas.width;
+      context.fillStyle = '#111a2ee8';
+      context.fillRect(12, canvas.height - 61, Math.max(scale, 92) + 20, 49);
+      context.fillStyle = '#fff';
+      context.fillRect(22, canvas.height - 21, scale, 4);
+      context.font = '24px monospace';
+      context.fillText('250 m', 22, canvas.height - 28);
     }
     async function refresh() {
       const current=++request;
