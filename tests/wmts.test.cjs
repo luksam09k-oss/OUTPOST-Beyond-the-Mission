@@ -14,7 +14,7 @@ async function check(mode) {
   const bytes=fs.readFileSync(path.join(root,file));
   return {ok:true,status:200,json:async()=>JSON.parse(bytes),text:async()=>bytes.toString(),blob:async()=>new w.Blob([bytes]),arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)};
  };
- for(const f of ['science.js','moon-map.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),context);
+ for(const f of ['i18n.js','science.js','moon-map.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),context);
  await vm.runInContext(`(async()=>{window.testSession=await MoonMap.load();await MoonMap.capabilities(testSession);MoonMap.mount(document.querySelector('#map'),testSession,testSession.data.routes[0]);})()`,context);
  for(let i=0;i<100 && w.document.querySelector('.map-status').textContent.includes('cargando');i++)await new Promise(r=>setTimeout(r,5));
  const status=w.document.querySelector('.map-status').textContent,s=w.testSession;

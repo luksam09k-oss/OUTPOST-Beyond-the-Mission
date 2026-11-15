@@ -78,7 +78,7 @@ function drawMap(canvas, player, mission, active, crew, time) {
   }
   if (explorerSprite.naturalWidth) drawExplorer(context, player, time);
   else sprite(pen, player.x-8, player.y-20, crew[0].color);
-  label('TÚ', Math.round(player.x), Math.round(player.y-33), '#fff1b9');
+  label(t('TÚ', 'YOU'), Math.round(player.x), Math.round(player.y-33), '#fff1b9');
 }
 
 function drawMissionSky(canvas) {
@@ -119,8 +119,8 @@ const craterInterior = new Image();
 craterInterior.src = 'assets/interior-crater.webp';
 
 const craterRoutes = [
-  { image: craterRim, label: 'BORDE ILUMINADO', points: [[34, 165], [107, 176], [195, 193], [272, 202], [349, 200]] },
-  { image: craterInterior, label: 'INTERIOR EN SOMBRA', points: [[34, 169], [111, 171], [184, 174], [241, 169], [289, 166]], headlamp: true }
+  { image: craterRim, label: t('BORDE ILUMINADO', 'SUNLIT RIM'), points: [[34, 165], [107, 176], [195, 193], [272, 202], [349, 200]] },
+  { image: craterInterior, label: t('INTERIOR EN SOMBRA', 'SHADOWED INTERIOR'), points: [[34, 169], [111, 171], [184, 174], [241, 169], [289, 166]], headlamp: true }
 ];
 
 function drawPlatform(canvas, player, mission, phase, time, shot) {
@@ -161,7 +161,7 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
     const explorer = shot ? { x, y, facing: shot.returning ? -1 : 1, moving: progress < 1 } : player;
     if (explorerSprite.naturalWidth) drawExplorer(ctx, explorer, time, .66);
     else sprite(painter(canvas), x-8, y-20, '#ffcd76');
-    if (!shot) label('TÚ', Math.round(player.x), y-35, '#fff1b9');
+    if (!shot) label(t('TÚ', 'YOU'), Math.round(player.x), y-35, '#fff1b9');
   } else if (roverSprite.naturalWidth) {
     const frameIndex = progress < 1 ? 6 + Math.floor(time / 95) % 6 : 0;
     ctx.imageSmoothingEnabled = false;
@@ -170,7 +170,7 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
     if(shot.returning)ctx.scale(-1,1);
     ctx.drawImage(roverSprite, frameIndex * 64, 0, 64, 52, -21, -34, 42, 34);
     ctx.restore();
-    if(shot.signalLost)label('SEÑAL PERDIDA',Math.round(x),y-40,'#ff8b91');
+    if(shot.signalLost)label(t('SEÑAL PERDIDA', 'SIGNAL LOST'),Math.round(x),y-40,'#ff8b91');
   }
 
   if (shot && phase === 'cinematic' && progress >= .9 && !reducedMotion.matches) {
@@ -179,4 +179,10 @@ function drawPlatform(canvas, player, mission, phase, time, shot) {
       box(x-width/2, y-44-i*3, width, 1, '#80f2ff');
     }
   }
+}
+
+function setMapBackdrop(backdrop, image) {
+  backdrop.src = image.src;
+  const name = image.src.split('/').at(-1).split('.')[0];
+  backdrop.parentElement.dataset.backdrop = name;
 }

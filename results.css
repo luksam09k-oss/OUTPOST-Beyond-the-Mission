@@ -1,0 +1,36 @@
+:root{color-scheme:dark;background:#05050f;color:#f1f7ff;font-family:"Courier New",monospace}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;display:grid;place-items:center}
+.stage{position:relative;width:min(100%,calc(100svh * 1672 / 941));aspect-ratio:1672/941;overflow:hidden;background:#07071a;container-type:inline-size}
+.world,.world img,.world canvas,.vig{position:absolute;inset:0;width:100%;height:100%}
+.world img,.world canvas{display:block;image-rendering:pixelated}
+.world{will-change:transform;animation:world-in 1.4s ease-out both}
+.world canvas,.vig{pointer-events:none}
+.vig{background:radial-gradient(ellipse at 50% 45%,transparent 55%,#02021080)}
+.suit-mark{position:absolute;left:28.3%;top:66.8%;width:3.5%;height:2.25%;background:#151e4a url('assets/nasa-wordmark.png') center / 96% auto no-repeat}
+.report{position:absolute;top:46.5%;left:56%;right:3.6%;bottom:4%;display:flex;flex-direction:column;justify-content:space-between;padding:1.25cqw 1.5cqw;background:linear-gradient(135deg,#101b36f5,#070f25e8);border:1px solid #70c9ec;border-radius:3px;box-shadow:0 0 25px #080d22a8;font-size:clamp(11px,1.05cqw,17px);line-height:1.35}
+.report-content{overflow:auto;min-height:0}
+.report h1{margin:0 0 .35em;font-size:clamp(14px,1.85cqw,31px);color:#b9edff;line-height:1.1}
+.report p{margin:.32em 0}
+.report-status{color:#b3cce6}
+.report dl{display:grid;grid-template-columns:repeat(3,1fr);gap:.5em;margin:.55em 0}
+.report dl div{padding:.28em .4em;border-top:1px solid #3b6486;min-width:0}
+.report dt{font-size:.83em;color:#c7d9f0}
+.report dd{font-size:1.15em;font-weight:bold;margin:0}
+.report ol{margin:.25em 0 .65em;padding:0;list-style:none;display:grid;gap:.18em}
+.report li{display:flex;justify-content:space-between;gap:.5em;font-size:.87em}
+.report li span:last-child{color:#a6dcf6;text-align:right}
+.report-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.45em;margin-top:.4em}
+.report-actions button,.report-actions a{font:inherit;font-size:.84em;font-weight:bold;color:#e8f6ff;text-decoration:none;padding:.38em .6em;background:#173352;border:1px solid #6fb8d8;cursor:pointer}
+.report-actions :focus-visible{outline:2px solid #ffd88a;outline-offset:2px}
+.report [hidden]{display:none}
+.report [data-reveal]:not([hidden]){animation:report-in .38s ease-out both}
+@keyframes world-in{from{opacity:0}to{opacity:1}}
+@keyframes report-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media(max-width:720px) and (orientation:portrait){
+  body{display:block}
+  .stage{min-height:100svh;aspect-ratio:auto;overflow:visible}
+  .world,.vig{height:auto;aspect-ratio:1672/941}
+  .report{position:relative;inset:auto;margin:0 14px;top:0;transform:translateY(28vw);min-height:310px;padding:14px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){.world,.report [data-reveal]:not([hidden]){animation:none}}

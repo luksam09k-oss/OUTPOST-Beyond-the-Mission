@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="opening.css">
+  <script defer src="i18n.js"></script>
   <script defer src="opening.js"></script>
   <script defer src="art.js"></script>
   <link rel="stylesheet" href="ship.css">
@@ -19,16 +20,18 @@
   <script defer src="moon-map.js"></script>
   <script defer src="science-ui.js"></script>
   <script defer src="viewport.js"></script>
+  <script defer src="solar.js"></script>
+  <script defer src="solar-ui.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
   <main id="app"></main>
   <template id="opening-template">
-    <section id="stage" aria-label="Pantalla de inicio">
+    <section id="stage" aria-label="Pantalla de inicio" data-label-en="Start screen">
   <canvas id="c" width="320" height="180"></canvas>
   <div class="scan"></div><div class="vig"></div>
 
-  <div class="badge"><img src="assets/nasa-insignia.png" alt=""><b></b><div>NASA<br>SPACE APPS<br>CHALLENGE 2026</div></div>
+  <div class="badge"><img src="assets/nasa-wordmark.png" alt="NASA"><b></b><div>SPACE APPS<br>CHALLENGE 2026</div></div>
 
   <div class="hero">
     <svg class="orb" viewBox="0 0 160 90" aria-hidden="true">
@@ -45,20 +48,24 @@
     </h1>
     <p class="sub">Beyond the Mission</p>
   </div>
-  <p class="tag">Cada decisión cuenta</p>
-  <button class="start" id="start"><em>COMENZAR MISIÓN</em></button>
+  <p class="tag" data-en="Every decision counts">Cada decisión cuenta</p>
+  <button class="start" id="start"><em data-en="START MISSION">COMENZAR MISIÓN</em></button>
 
+  <nav class="language-options" aria-label="Idioma / Language">
+    <a href="?lang=es" lang="es" hreflang="es">Español</a>
+    <a href="?lang=en" lang="en" hreflang="en">English</a>
+  </nav>
   <div class="hud" id="hud"></div>
-  <div class="load"><b>CARGANDO MISIÓN</b><div class="bar"><i id="bar"></i></div><small>Cada decisión cuenta</small></div>
+  <div class="load"><b data-en="LOADING MISSION">CARGANDO MISIÓN</b><div class="bar"><i id="bar"></i></div><small data-en="Every decision counts">Cada decisión cuenta</small></div>
   <div class="wh" id="wh"></div>
     </section>
   </template>
   <dialog id="science-info" aria-labelledby="science-info-title"></dialog>
   <dialog id="help" aria-labelledby="help-title">
-    <h2 id="help-title">Cómo jugar</h2>
-    <p>Muévete con las flechas, WASD o los botones en pantalla. Acércate a un personaje o al objetivo marcado y pulsa <kbd>E</kbd> o «Interactuar».</p>
-    <p>Completa cinco misiones. Cada decisión cambia la energía, el oxígeno o la radiación acumulada.</p>
-    <form method="dialog"><button class="primary">Entendido</button></form>
+    <h2 id="help-title" data-en="How to play">Cómo jugar</h2>
+    <p data-en="Use the arrows, WASD, or the on-screen buttons to move. Approach a character or a marked objective and press E or Interact.">Muévete con las flechas, WASD o los botones en pantalla. Acércate a un personaje o al objetivo marcado y pulsa <kbd>E</kbd> o «Interactuar».</p>
+    <p data-en="Complete five missions. Each decision changes energy, oxygen, or accumulated radiation.">Completa cinco misiones. Cada decisión cambia la energía, el oxígeno o la radiación acumulada.</p>
+    <form method="dialog"><button class="primary" data-en="Got it">Entendido</button></form>
   </dialog>
 </body>
 </html>

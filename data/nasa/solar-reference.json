@@ -1,0 +1,260 @@
+{
+  "captured": "2026-11-15T14:10:00Z",
+  "sep": [
+    {
+      "sepID": "2024-05-10T12:59:00-SEP-001",
+      "eventTime": "2024-05-10T12:59Z",
+      "instruments": [
+        {
+          "displayName": "SOHO: COSTEP 15.8-39.8 MeV"
+        }
+      ],
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30675/-1",
+      "linkedEvents": [
+        {
+          "activityID": "2024-05-09T08:45:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T17:23:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-10T06:27:00-FLR-001"
+        }
+      ],
+      "sentNotifications": null,
+      "submissionTime": "2024-05-10T13:39Z",
+      "versionId": 1
+    },
+    {
+      "sepID": "2024-05-10T13:02:00-SEP-001",
+      "eventTime": "2024-05-10T13:02Z",
+      "instruments": [
+        {
+          "displayName": "SOHO: COSTEP 28.2-50.1 MeV"
+        }
+      ],
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30676/-1",
+      "linkedEvents": [
+        {
+          "activityID": "2024-05-09T08:45:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T17:23:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-10T06:27:00-FLR-001"
+        }
+      ],
+      "sentNotifications": null,
+      "submissionTime": "2024-05-10T13:41Z",
+      "versionId": 1
+    },
+    {
+      "sepID": "2024-05-10T13:35:00-SEP-001",
+      "eventTime": "2024-05-10T13:35Z",
+      "instruments": [
+        {
+          "displayName": "GOES-P: SEISS >10 MeV"
+        }
+      ],
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
+      "linkedEvents": [
+        {
+          "activityID": "2024-05-08T04:20:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T04:37:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T05:36:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-08T11:26:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T12:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-08T21:08:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T22:05:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T22:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-09T08:45:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T09:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-09T17:23:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T18:23:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-10T06:27:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-10T07:12:00-CME-001"
+        }
+      ],
+      "sentNotifications": [
+        {
+          "messageID": "20240510-AL-004",
+          "messageIssueTime": "2024-05-10T13:46Z",
+          "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30678/1"
+        },
+        {
+          "messageID": "20240510-AL-005",
+          "messageIssueTime": "2024-05-10T14:12Z",
+          "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30679/1"
+        }
+      ],
+      "submissionTime": "2024-05-10T13:46Z",
+      "versionId": 1
+    },
+    {
+      "sepID": "2024-05-10T14:50:00-SEP-001",
+      "eventTime": "2024-05-10T14:50Z",
+      "instruments": [
+        {
+          "displayName": "STEREO A: IMPACT 13-100 MeV"
+        }
+      ],
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30684/-1",
+      "linkedEvents": [
+        {
+          "activityID": "2024-05-08T04:20:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T04:37:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T11:26:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T12:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-08T21:08:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T22:05:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-08T22:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-09T08:45:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T09:24:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-09T17:23:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-09T18:23:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-10T06:27:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-10T07:12:00-CME-001"
+        },
+        {
+          "activityID": "2024-05-10T13:58:00-FLR-001"
+        },
+        {
+          "activityID": "2024-05-10T14:00:00-IPS-001"
+        }
+      ],
+      "sentNotifications": [
+        {
+          "messageID": "20240510-AL-008",
+          "messageIssueTime": "2024-05-10T15:03Z",
+          "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30685/1"
+        },
+        {
+          "messageID": "20240510-AL-009",
+          "messageIssueTime": "2024-05-10T15:17Z",
+          "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30686/1"
+        }
+      ],
+      "submissionTime": "2024-05-10T15:03Z",
+      "versionId": 1
+    }
+  ],
+  "crater": {
+    "columns": [
+      "timestamp",
+      "instrument_id",
+      "absorbed_dose_rate",
+      "instrument"
+    ],
+    "index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "data": [
+      [
+        "2020-05-09T00:59:58",
+        "CRaTER-D1D2",
+        13.648750000000001,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T02:00:00",
+        "CRaTER-D1D2",
+        13.026666666666667,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T02:59:59",
+        "CRaTER-D1D2",
+        13.926666666666668,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T03:59:58",
+        "CRaTER-D1D2",
+        13.137083333333335,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T05:00:00",
+        "CRaTER-D1D2",
+        14.142916666666668,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T05:59:59",
+        "CRaTER-D1D2",
+        13.990416666666668,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T06:59:58",
+        "CRaTER-D1D2",
+        13.350416666666668,
+        "CRaTER"
+      ],
+      [
+        "2020-05-09T08:00:00",
+        "CRaTER-D1D2",
+        12.937083333333334,
+        "CRaTER"
+      ]
+    ]
+  }
+}

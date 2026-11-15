@@ -10,8 +10,9 @@ w.requestAnimationFrame=()=>1;w.cancelAnimationFrame=()=>{};
 w.fetch=async url=>({ok:true,status:200,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))});
 w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
 w.HTMLDialogElement.prototype.close=function(){this.open=false;};
-for(const file of ['opening.js','art.js','ship.js','science.js','moon-map.js','science-ui.js','viewport.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+for(const file of ['i18n.js','opening.js','art.js','ship.js','science.js','moon-map.js','science-ui.js','viewport.js','solar.js','solar-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 const run=s=>vm.runInContext(s,context);
+run('openReport = () => {}');
 const data=JSON.parse(fs.readFileSync(path.join(root,'data/nasa/routes.json')));w.testData=data;
 // Headless DOM checks are intentionally not claimed as visual rendering tests.
 run(`enterShip();`);assert.equal(run('allowsMovement()'),false);
@@ -34,12 +35,20 @@ for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;f
  run('next()');
  for(let mission=1;mission<5;mission++) {
   if(run('screen')==='results')break;
-  run('explore();player.x=missions[game.index].x;player.y=missions[game.index].y;interact()');
+  run('explore();player.x=missions[game.index].x;player.y=missions[game.index].y');
+  if (mission === 2) {
+   const option = (mask >> 1) & 1;
+   run(`solarRun = { level: 'moderate', measurement: { absorbed_dose_rate: 13 } }; phase = 'solar-analysis';
+    solarDecision(); choose(${option}); finishSolarEvacuation(); next();`);
+   continue;
+  }
+  run('interact()');
   if(mission===1 && failure&&mode===0) {assert.equal(run('phase'),'feedback');assert.equal(run('game.log.at(-1).success'),false);}
   else {const opt=(mask>>(mission-1))&1;run(`choose(${opt});if(phase==='cinematic')applyDecision(${opt})`);assert.equal(run('phase'),'feedback');}
   run('next()');
  }
  assert.equal(run('screen'),'results');
+ assert(JSON.parse(w.sessionStorage.getItem('outpost-report')).finished);
  assert(run('game.resources.every(v=>v>=0&&v<=100)'));
  assert.equal(run('game.roverAvailable'),!(failure&&mode===0));
  paths++;
@@ -68,6 +77,17 @@ async function checkSciencePanels() {
  infoTab.click();
  assert(!info.hidden && api.hidden);
  dialog.close();
+ run(`begin(); game.index = 2; scene('explore'); solarRun = {
+   level: 'high', measurement: { instrument_id: 'CRaTER-D1D2', absorbed_dose_rate: 13, timestamp: '2020-05-09T00:59:58' },
+   event: null, eventSource: 'none', measurementSource: 'cache', queries: []
+ }; phase = 'solar-analysis'; solarDecision(); choose(1);`);
+ assert.equal(run('phase'), 'decision');
+ assert.equal(w.document.querySelector('.choices button:last-child').disabled, true);
+ run('solarInfo()');
+ assert.match(dialog.textContent, /órbita lunar/);
+ dialog.close();
+ run('choose(0); finishSolarEvacuation()');
+ assert.match(w.document.querySelector('.mission-dialogue').textContent, /Evacuación completada/);
  console.log(`PASS: ${paths} expedition combinations, Neil's debriefs, simplified route overview, and keyboard-accessible technical tabs.`);
 }
 checkSciencePanels().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => dom.window.close());

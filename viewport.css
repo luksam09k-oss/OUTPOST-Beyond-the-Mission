@@ -76,3 +76,26 @@ body:has(#app[data-screen="map"],#app[data-screen="ship"]) { height:100dvh; min-
 .mission-console > .stats .stat { padding:5px 10px; font-size:13px; }
 .mission-console > .stats .stat-icon { font-size:24px; }
 .mission-console:has(.journey-map) .objective { display:none; }
+
+.map-wordmark {
+  display:none;
+  position:absolute;
+  transform:translate(-50%,-50%);
+  border:1px solid #7b94bd;
+  border-radius:2px;
+  background:#182543 url('assets/nasa-wordmark.png') center / 84% auto no-repeat;
+}
+.map-frame:is([data-backdrop="primer-contacto"],[data-backdrop="ruta-lunar"]) .map-wordmark {
+  display:block;left:8.25%;top:63.7%;width:7.6%;height:12%;
+}
+.map-frame[data-backdrop="puesto-crater"] .map-wordmark {
+  display:block;left:10.9%;top:31.5%;width:6.2%;height:9.6%;
+}
+.dialog-portrait { container-type:size; display:flex; justify-content:center; align-items:flex-end; }
+.dialog-portrait .portrait-art { width:min(100%, 98cqh); }
+.portrait-art { position:relative; display:block; line-height:0; }
+.portrait-art img { width:100%; height:auto; display:block; image-rendering:pixelated; }
+.portrait-neil::after {
+  content:""; position:absolute; left:14.8%; top:73.2%; width:13%; height:14%;
+  border-radius:50%; transform:rotate(-8deg); background:#132441 url('assets/nasa-wordmark.png') center / 90% auto no-repeat;
+}

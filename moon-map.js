@@ -28,10 +28,10 @@ const MoonMap = (() => {
         if (!live || Math.abs(Number(value('ScaleDenominator')) * .00028 - matrix.resolution) > .001
           || origin.some((v,i) => v !== matrix.origin[i]) || Number(value('TileWidth')) !== matrix.tileSize) throw new Error('La geometría WMTS cambió; se usa la copia verificada');
       }
-      session.capabilitiesStatus = 'HTTP correcto · metadatos verificados';
+      session.capabilitiesStatus = t('HTTP correcto · metadatos verificados', 'HTTP successful · metadata verified');
       session.logs.push({ service: 'Moon Trek GetCapabilities', url, time, status: r.status, source: 'Solicitud de red', layer: session.manifest.layer, raw: text });
     } catch (e) {
-      session.capabilitiesStatus = 'Metadatos locales verificados · red no disponible o cambió';
+      session.capabilitiesStatus = t('Metadatos locales verificados', 'Verified local metadata');
       session.logs.push({ service: 'Moon Trek GetCapabilities', url, time, status: 'No completado', error: e.message, fallback: 'data/nasa/WMTSCapabilities.xml' });
     }
     session.update?.();
@@ -74,10 +74,10 @@ const MoonMap = (() => {
   }
   function mount(host, session, route, compact = false) {
     host.innerHTML = `<div class="lunar-map"><div class="map-plot">
-      <canvas width="960" height="650" aria-label="Mapa NASA de Connecting Ridge con ruta y base ficticias"></canvas>
-      <div class="map-legend">● Base ficticia &nbsp; ● Destino &nbsp; ━ Ruta</div>
-      ${compact ? '' : '<div class="map-zoom"><button data-map-zoom="1" aria-label="Acercar mapa">+</button><button data-map-zoom="-1" aria-label="Alejar mapa">−</button><button data-map-zoom="0">Encuadrar</button></div>'}
-      </div><p class="map-status" role="status">Moon Trek: cargando mapa…</p></div>`;
+      <canvas width="960" height="650" aria-label="${t('Mapa NASA de Connecting Ridge con ruta y base ficticias', 'NASA map of Connecting Ridge with a fictional route and base')}"></canvas>
+      <div class="map-legend">${t('● Base ficticia · ● Destino · ━ Ruta', '● Fictional base · ● Destination · ━ Route')}</div>
+      ${compact ? '' : `<div class="map-zoom"><button data-map-zoom="1" aria-label="${t('Acercar mapa', 'Zoom in')}">+</button><button data-map-zoom="-1" aria-label="${t('Alejar mapa', 'Zoom out')}">−</button><button data-map-zoom="0">${t('Encuadrar', 'Fit route')}</button></div>`}
+      </div><p class="map-status" role="status">Moon Trek: ${t('cargando mapa…', 'loading map…')}</p></div>`;
     const canvas = host.querySelector('canvas'), ctx = canvas.getContext('2d'), label = host.querySelector('.map-status');
     const m = session.manifest;
     let zoom = 0, requestId = 0, tiles = [], view;
@@ -99,7 +99,7 @@ const MoonMap = (() => {
         ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();route.points.forEach((p,i)=>{const xy=projection(p[0],p[1]);if(i)ctx.lineTo(...xy);else ctx.moveTo(...xy);});ctx.stroke();
       };
       line('#081420',7);line('#75f6ff',3);
-      for (const [p,name,color] of [[route.points[0],'BASE','#ffe69a'],[route.points.at(-1),'DESTINO','#91ffff']]) {
+      for (const [p,name,color] of [[route.points[0],'BASE','#ffe69a'],[route.points.at(-1),t('DESTINO', 'DESTINATION'),'#91ffff']]) {
         const [x,y]=projection(p[0],p[1]);ctx.fillStyle=color;ctx.strokeStyle='#061020';ctx.lineWidth=3;
         ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();ctx.stroke();
         ctx.font='bold 14px monospace';const tx=Math.min(canvas.width-82,Math.max(4,x+12)),ty=Math.max(20,y-12);
@@ -122,8 +122,8 @@ const MoonMap = (() => {
       const z=zoom || fitWidth < 2500 ? '10' : '9',matrix=m.matrices.find(v=>v.id===z),span=matrix.resolution*256;
       const entries=m.tiles.filter(t=>t.z===z && matrix.origin[0]+(t.col+1)*span>view[0] && matrix.origin[0]+t.col*span<view[2]
         && matrix.origin[1]-t.row*span>view[1] && matrix.origin[1]-(t.row+1)*span<view[3]);
-      tiles=[];label.textContent='Moon Trek: cargando mapa…';draw();
-      session.mapStatus = 'Consultando mosaicos…';
+      tiles=[];label.textContent=`Moon Trek: ${t('cargando mapa…', 'loading map…')}`;draw();
+      session.mapStatus = t('Consultando mosaicos…', 'Loading tiles…');
       session.update?.();
       // Four simultaneous requests, bounded by the verified manifest.
       let index=0;
@@ -134,9 +134,11 @@ const MoonMap = (() => {
       const live=tiles.filter(t=>t.result.source==='NASA · solicitud HTTP').length;
       const cached=tiles.filter(t=>t.result.image && t.result.source!=='NASA · solicitud HTTP').length;
       const missing=tiles.length-live-cached;
-      session.mapStatus = `Moon Trek: ${live} mosaicos por HTTP · ${cached} en caché${missing ? ' · '+missing+' no disponibles' : ''}`;
-      const sources = [live && 'en línea', cached && 'copia local'].filter(Boolean);
-      const mapStatus = sources.length ? sources.join(' y ') + (missing ? ' · mapa parcial' : '') : 'mapa no disponible';
+      session.mapStatus = t(
+        `Moon Trek: ${live} mosaicos por HTTP · ${cached} en caché${missing ? ' · '+missing+' no disponibles' : ''}`,
+        `Moon Trek: ${live} tiles fetched · ${cached} cached${missing ? ' · '+missing+' unavailable' : ''}`);
+      const sources = [live && t('en línea', 'online'), cached && t('copia local', 'local copy')].filter(Boolean);
+      const mapStatus = sources.length ? sources.join(t(' y ', ' and ')) + (missing ? t(' · mapa parcial', ' · partial map') : '') : t('mapa no disponible', 'map unavailable');
       label.textContent = `Moon Trek: ${mapStatus}`;
       session.update?.();
     }
@@ -146,66 +148,44 @@ const MoonMap = (() => {
   }
   function technical(session, route, result) {
     const { manifest, data } = session;
-    const number = new Intl.NumberFormat('es', { maximumFractionDigits: 3 });
+    const plan = result || LunarScience.estimate(route, 'rover');
+    const title = routeTitle(route);
     const metrics = [
-      ['Distancia de ida', route.distanceM, 'm'],
-      ['Pendiente máxima', route.maxSlopeDeg, '°'],
-      ['Pendiente media', route.meanSlopeDeg, '°'],
-      ['Desnivel máximo − mínimo', route.reliefM, 'm'],
-      ['Ascenso acumulado', route.ascentM, 'm'],
-      ['Descenso acumulado', route.descentM, 'm'],
-      ['Elevación mínima', route.elevationMinM, 'm'],
-      ['Elevación máxima', route.elevationMaxM, 'm']
+      [t('Desnivel del terreno', 'Elevation range'), `${numberText(route.reliefM, 1)} m`],
+      [t('Altitud mínima y máxima', 'Lowest and highest elevation'), `${numberText(route.elevationMinM)}–${numberText(route.elevationMaxM)} m`],
+      [result ? t('Duración de la salida', 'Trip duration') : t('Tiempo estimado con rover', 'Estimated rover time'),
+        `${numberText(result ? result.elapsedHours : plan.hours, 1)} h`],
+      [result?.mode === 'astronaut' ? t('Riesgo de retirada', 'Retreat risk') : t('Riesgo de perder el rover', 'Rover loss risk'), `${numberText(plan.risk * 100, 1)} %`]
     ];
-    const information = `<h3>${escape(route.name)}</h3>
-      <p>${escape(route.difficulty)} · Connecting Ridge</p>
-      <dl class="science-metrics">${metrics.map(([label, value, unit]) =>
-        `<div><dt>${label}</dt><dd>${number.format(value)}${unit === '°' ? '' : ' '}${unit}</dd></div>`).join('')}</dl>
+    const information = `<h3>${escape(title)}</h3>
+      <dl class="science-metrics">${metrics.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl>
       <figure class="science-profile">
-        <canvas class="elevation-profile" width="360" height="100" aria-label="Perfil de elevación de LOLA"></canvas>
-        <figcaption>Perfil de elevación a lo largo de la ruta de ida</figcaption>
+        <canvas class="elevation-profile" width="360" height="100" aria-label="${t('Perfil de elevación de LOLA', 'LOLA elevation profile')}"></canvas>
+        <figcaption>${t('Altura del terreno en el trayecto de ida', 'Terrain elevation along the outbound route')}</figcaption>
       </figure>
-      <details><summary>Cómo se calculó la ruta</summary>
-        <p>Las alturas se expresan respecto al radio lunar de 1 737 400 m. Las pendientes se verificaron en celdas de 20 m con el máximo de sus 16 píxeles de 5 m. El perfil se muestreó cada 5 m o menos.</p>
-        <p>La base y la ruta son ficticias. LOLA incluye alturas interpoladas. Los obstáculos de menos de 5 m y la iluminación quedan fuera de este análisis, incluso en la ruta «Aproximación a la sombra».</p>
-        <p><a href="data/nasa/routes.json" target="_blank" rel="noopener">Perfil LOLA completo y coordenadas</a></p>
-      </details>
-      <details><summary>Fórmulas y valores de la simulación</summary>
-        <p>Tiempo = ida y vuelta / velocidad × (1 + pendiente media / 20) + 0,25 h de estudio. Oxígeno = horas × (5 × consumo base + traje, si sale un astronauta). Energía = soporte de base + kilómetros × equipo × pendiente + ascenso y descenso + instrumentos. Radiación = horas × (índice protegido + índice exterior, si procede) × condición ambiental simulada.</p>
-        <p>Riesgo del rover = referencia de ruta + distancia de ida × 0,8 %/km + pendiente máxima × 0,2 %/grado + relieve × 0,6 %/100 m, limitado al 45 %. La retirada humana tiene un 60 % de ese riesgo, con un límite del 30 %. El resultado se sortea una vez.</p>
-        <p>Si falla, se aplica la fracción del consumo previsto según el tiempo transcurrido. Una retirada humana incluye el regreso. Las observaciones se transmiten al llegar al destino. El juego redondea el consumo hacia arriba y lo limita a la reserva disponible.</p>
-        <pre>${escape(JSON.stringify({ coefficients: LunarScience.balance, result: result || 'Todavía sin decisión' }, null, 2))}</pre>
-      </details>`;
-    const api = `<h3>Moon Trek</h3>
+      <p>${t('La distancia y las pendientes afectan el tiempo y los recursos. Las alturas vienen de LOLA. El riesgo, el consumo y el tiempo son estimaciones del juego.',
+        'Distance and slope affect time and resources. Elevations come from LOLA. Risk, resource use and time are game estimates.')}</p>`;
+    const api = `<h3>NASA Moon Trek · LOLA</h3>
       <dl class="science-metrics">
-        <div><dt>Mapa</dt><dd data-api-map></dd></div>
-        <div><dt>Metadatos</dt><dd data-api-capabilities></dd></div>
-        <div><dt>Última consulta</dt><dd data-api-timestamp></dd></div>
+        <div><dt>${t('Mapa', 'Map')}</dt><dd data-api-map></dd></div>
+        <div><dt>${t('Última consulta', 'Last query')}</dt><dd data-api-timestamp></dd></div>
       </dl>
-      <details><summary>Capa, proyección y archivos cartográficos</summary>
-        <p>Capa <code>${escape(manifest.layer)}</code>. Relieve sombreado de LRO derivado de LOLA.</p>
-        <p>${escape(manifest.crs)}. ${escape(manifest.crsNote)}</p>
-        <ul>
-          <li><a href="${manifest.capabilities}" target="_blank" rel="noopener">GetCapabilities de NASA Moon Trek</a></li>
-          <li><a href="data/nasa/WMTSCapabilities.xml" target="_blank" rel="noopener">Copia local de GetCapabilities</a></li>
-          <li><a href="data/nasa/layer-metadata.json" target="_blank" rel="noopener">Metadatos originales de la capa</a></li>
-          <li><a href="data/nasa/wmts.json" target="_blank" rel="noopener">Mosaicos y hashes del respaldo</a></li>
-        </ul>
-      </details>
-      <details><summary>Registro de solicitudes y respuestas originales</summary><pre data-api-log></pre></details>
-      <h3>Fuente de elevación LOLA</h3>
-      <p>Modelo histórico de <a href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noopener">Barker et al. · Site01</a>, 5 m/píxel, marco MOON_ME DE421. Datos locales preparados el ${escape(new Date(data.preparedAt).toLocaleDateString('es'))}.</p>
-      <details><summary>Archivos originales y verificaciones SHA-256</summary>
-        ${data.sources.map(source => `<p><a href="${source.url}" target="_blank" rel="noopener">${source.url.split('/').at(-1)}</a><br>SHA-256 <code>${source.sha256}</code></p>`).join('')}
-      </details>
-      <p>El índice de radiación es simulado. RadLab y DONKI quedan fuera de la simulación actual.</p>`;
+      <p>${t('Mapa de relieve lunar de Moon Trek. Las alturas y pendientes provienen del conjunto LOLA Site01, con una resolución de 5 m por píxel.',
+        'Moon Trek supplies the lunar relief map. Elevations and slopes come from the LOLA Site01 dataset at 5 meters per pixel.')}</p>
+      <p><a href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noopener">${t('Fuente LOLA', 'LOLA source')}</a>
+        · <a href="${manifest.capabilities}" target="_blank" rel="noopener">Moon Trek WMTS</a>
+        · <a href="data/nasa/routes.json" target="_blank" rel="noopener">${t('Datos de la ruta', 'Route data')}</a></p>
+      <details><summary>${t('Capa y consultas originales', 'Map layer and original queries')}</summary>
+        <p><code>${escape(manifest.layer)}</code> · ${escape(manifest.crs)} · <span data-api-capabilities></span></p>
+        <pre data-api-log></pre>
+      </details>`;
     return { information, api };
   }
 
   function updateApiDetails(dialog, session) {
-    dialog.querySelector('[data-api-map]').textContent = session.mapStatus || 'Consultando mosaicos…';
+    dialog.querySelector('[data-api-map]').textContent = session.mapStatus || t('Consultando mosaicos…', 'Loading tiles…');
     dialog.querySelector('[data-api-capabilities]').textContent = session.capabilitiesStatus;
-    dialog.querySelector('[data-api-timestamp]').textContent = new Date(session.timestamp).toLocaleString('es');
+    dialog.querySelector('[data-api-timestamp]').textContent = new Date(session.timestamp).toLocaleString(language);
     dialog.querySelector('[data-api-log]').textContent = JSON.stringify(session.logs, null, 2);
   }
 

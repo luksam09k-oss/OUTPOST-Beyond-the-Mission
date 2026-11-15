@@ -158,7 +158,7 @@ function animateOpening(onComplete, backdrop) {
       scene(now, t);
       g.restore();
     }
-    if (rk) { rocket(t, tr); hud.textContent = 'ALTITUD ' + String(Math.round(tr * tr * 140)).padStart(5, '0') + ' KM'; }
+    if (rk) { rocket(t, tr); hud.textContent = (language === 'en' ? 'ALTITUDE ' : 'ALTITUD ') + String(Math.round(tr * tr * 140)).padStart(5, '0') + ' KM'; }
     if (sp) { smoke.length = 0; constel(ts); }
     g.restore();
 
@@ -187,8 +187,8 @@ function animateOpening(onComplete, backdrop) {
     if (tl >= 0) return;
     tl = performance.now();
     stage.classList.add('go');
-    stage.querySelector('button').disabled = true;
+    stage.querySelector('#start').disabled = true;
   }
-  stage.addEventListener('click', launch);
+  stage.querySelector('#start').addEventListener('click', launch);
   return launch;
 }

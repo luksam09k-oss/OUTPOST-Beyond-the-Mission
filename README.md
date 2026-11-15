@@ -76,7 +76,16 @@ Los coeficientes están en `LunarScience.balance` en `science.js`:
 
 El sorteo ocurre **una vez** por decisión, con `Math.random()`. Los fallos suceden antes de la transmisión del destino. Se descuenta la fracción transcurrida del consumo previsto; una retirada incluye el regreso. Se redondea hacia arriba y se limita a reservas de 0–100. El resumen muestra el descuento efectivamente aplicado.
 
-Estos porcentajes son **puntos de un juego, no dosis ni predicciones de NASA**. **RadLab y DONKI no están integrados**, como indica la interfaz. No se presentan datos orbitales como dosis lunares.
+Estos porcentajes son **puntos de un juego, no dosis ni predicciones de NASA**. El índice de Primer contacto se calcula con datos del terreno. Alerta solar incorpora DONKI y RadLab por separado.
+
+## Misión 3 · Alerta solar
+
+- [NASA DONKI SEP](https://ccmc.gsfc.nasa.gov/tools/DONKI/) busca registros de los últimos 30 días. Si faltan registros observados, consulta mayo de 2024 y usa una copia local fechada como respaldo. El 15 de noviembre de 2026, la consulta reciente devolvió una lista vacía y el archivo devolvió eventos observados.
+- [NASA RadLab](https://visualization.osdr.nasa.gov/radlab/gui/data-api/) consulta ventanas históricas acotadas para LND y CRaTER. LND no devolvió registros en la ventana consultada. CRaTER-D1D2 devolvió 48 mediciones orbitales de LRO del 9 y 10 de mayo de 2020 en μGy/h. RadLab no entregó permiso CORS para el origen del juego en la prueba HTTP, por lo que el navegador puede usar las mediciones originales incluidas en la copia local.
+- La dosis absorbida de fondo se simula en μGy con la tasa de referencia, el tiempo fuera, el tiempo bajo un blindaje supuesto del 25 % de transmisión y una variación de ±15 %. El registro solar modifica la probabilidad de la alerta simulada. La alerta y el indicador de radiación del juego no calculan la dosis adicional de un evento SEP.
+- La alerta alta bloquea la opción de asegurar equipos. «Ver más información» muestra fuentes, fechas, consultas y supuestos.
+
+El idioma se elige en la portada y se recuerda entre sesiones. El informe final vive en `results.html`. Recibe el estado de la expedición y muestra el resumen, los recursos y cada objetivo por turnos bajo la Tierra.
 
 ## Pruebas y reproducción
 

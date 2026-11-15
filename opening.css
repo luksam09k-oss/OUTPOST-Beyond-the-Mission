@@ -54,3 +54,9 @@ body:has(#stage) { display: grid; place-items: center; background: #070716; }
 @keyframes sway{50%{stroke-dashoffset:-30}}
 @keyframes pulse{50%{transform:scale(1.6) rotate(45deg);opacity:.6}}
 @media (prefers-reduced-motion:reduce){.hero,.arc,.spark,.start em,.start::before,.start::after{animation:none!important}}
+
+.language-options{position:absolute;left:50%;top:80%;transform:translateX(-50%);display:flex;gap:.65rem;z-index:2}
+.language-options a{color:#c0d9fa;font:700 clamp(10px,1.2cqw,16px)/1.25 "Courier New",monospace;padding:.35em .7em;text-decoration:none;border:1px solid #5480ae;background:#0d193ce8}
+html[lang=es] .language-options a[lang=es],html[lang=en] .language-options a[lang=en]{color:#fff;border-color:#98dfff;background:#223e67}
+.language-options a:focus-visible{outline:2px solid #ffd27a;outline-offset:2px}
+.go .language-options,.go .resume-expedition{visibility:hidden}

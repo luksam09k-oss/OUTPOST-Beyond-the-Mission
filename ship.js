@@ -4,13 +4,13 @@ const speakers = {
 };
 
 const introduction = [
-  ['curiosity', '¡Hola, exploradores! Bienvenidos a OUTPOST.'],
-  ['neil', 'Su misión será explorar el espacio y mantener a salvo a su tripulación.'],
-  ['curiosity', 'Deberán administrar tres recursos:', true],
-  ['neil', 'Cada decisión puede cambiar sus niveles. ¡Elijan sabiamente y protejan a su tripulación!'],
-  ['curiosity', '¿A dónde viajaremos? Acércate a Neil para ir a la Luna o a mí para ir a Marte.']
+  ['curiosity', t('¡Hola, exploradores! Bienvenidos a OUTPOST.', 'Hello, explorers! Welcome to OUTPOST.')],
+  ['neil', t('Su misión será explorar el espacio y mantener a salvo a su tripulación.', 'Your mission is to explore space and keep your crew safe.')],
+  ['curiosity', t('Deberán administrar tres recursos:', 'You will manage three resources:'), true],
+  ['neil', t('Cada decisión puede cambiar sus niveles. ¡Elijan sabiamente y protejan a su tripulación!', 'Every decision can change those levels. Choose carefully and protect your crew!')],
+  ['curiosity', t('¿A dónde viajaremos? Acércate a Neil para ir a la Luna o a mí para ir a Marte.', 'Where should we go? Talk to Neil for the Moon or to me for Mars.')]
 ];
-const lunarIntroduction = ['neil', '¡Soy Neil Armstrong! En 1969 fui el primer ser humano en caminar sobre la Luna, durante la misión Apollo 11. ¡Prepárate para tu misión lunar!'];
+const lunarIntroduction = ['neil', t('¡Soy Neil Armstrong! En 1969 fui el primer ser humano en caminar sobre la Luna, durante la misión Apollo 11. ¡Prepárate para tu misión lunar!', 'I am Neil Armstrong. In 1969, I became the first person to walk on the Moon during Apollo 11. Get ready for your lunar mission!')];
 const shipCrew = [{ id: 'neil', x: 30, y: 68 }, { id: 'curiosity', x: 71, y: 68 }];
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -25,18 +25,18 @@ function enterShip() {
   finishTyping = null;
   player = { x: 50, y: 69, facing: 1, moving: false };
   show('ship', `
-    <section class="ship" aria-label="Interior de la nave">
+    <section class="ship" aria-label="${t('Interior de la nave', 'Ship interior')}">
       <div class="ship-room" aria-hidden="true">
         <div class="ship-light"></div>
         ${shipCrew.map(({ id, x, y }) => `<div class="ship-actor ship-${id}" style="left:${x}%;top:${y}%"><span>${speakers[id].name}</span></div>`).join('')}
-        <div class="ship-actor ship-player"><span>Tú</span></div>
+        <div class="ship-actor ship-player"><span>${t('Tú', 'You')}</span></div>
         <div class="ship-scan"></div>
       </div>
       <div class="ship-content">
         <div class="ship-overlay"></div>
         <div class="ship-controls" hidden>
           ${movementButtons()}
-          <button class="ship-button" data-action="talk" disabled>Hablar · E</button>
+          <button class="ship-button" data-action="talk" disabled>${t('Hablar · E', 'Talk · E')}</button>
         </div>
         <p class="ship-hint" tabindex="-1" aria-live="polite" hidden></p>
       </div>
@@ -55,14 +55,14 @@ function enterShip() {
     actor.style.backgroundPositionX = (player.moving ? (1 + Math.floor(time / 100) % 6) * 100 / 6 : 0) + '%';
     const near = nearbySpeaker();
     const message = near
-      ? (near.id === 'neil' ? 'E · Neil Armstrong · La Luna' : 'E · Curiosity · Marte (no disponible)')
-      : 'Muévete con WASD o las flechas y acércate a Neil o Curiosity para elegir destino.';
+      ? (near.id === 'neil' ? t('E · Neil Armstrong · La Luna', 'E · Neil Armstrong · Moon') : t('E · Curiosity · Marte (no disponible)', 'E · Curiosity · Mars (unavailable)'))
+      : t('Muévete con WASD o las flechas y acércate a Neil o Curiosity para elegir destino.', 'Use WASD or the arrows and approach Neil or Curiosity to choose a destination.');
     talk.disabled = !near || Boolean(dialogue);
     if (!dialogue && hint.textContent !== message) hint.textContent = message;
     frame = requestAnimationFrame(tick);
   }
   tick(0);
-  renderDialogue(introduction[0], 'Siguiente · E');
+  renderDialogue(introduction[0], t('Siguiente · E', 'Next · E'));
 }
 
 function nearbySpeaker() {
@@ -83,10 +83,10 @@ function talk() {
   app.querySelector('.ship-hint').hidden = true;
   if (near.id === 'neil') {
     dialogue = 'moon';
-    renderDialogue(lunarIntroduction, 'Continuar a la Luna');
+    renderDialogue(lunarIntroduction, t('Continuar a la Luna', 'Continue to the Moon'));
   } else {
     dialogue = 'mars';
-    renderDialogue(['curiosity', 'Marte todavía no está disponible. Puedes continuar con Neil hacia la Luna.'], 'Volver a la nave');
+    renderDialogue(['curiosity', t('Marte todavía no está disponible. Puedes continuar con Neil hacia la Luna.', 'Mars is not available yet. Talk to Neil to continue to the Moon.')], t('Volver a la nave', 'Return to ship'));
   }
 }
 
@@ -98,12 +98,16 @@ function renderDialogue([speaker, words, displayResources], button) {
      <button class="ship-button" data-action="advance">${button} <span aria-hidden="true">▸</span></button>`, 'h1');
 }
 
+function portraitArt({ image, name }) {
+  return `<span class="portrait-art${name === 'Neil Armstrong' ? ' portrait-neil' : ''}" aria-hidden="true"><img src="${image}" alt=""></span>`;
+}
+
 function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', title = '') {
   if (finishTyping) finishTyping();
   const { name, image } = speakers[speaker];
   content.innerHTML = `
     <div class="ship-dialog">
-      <img class="dialog-portrait" src="${image}" alt="">
+      <span class="dialog-portrait">${portraitArt({ image, name })}</span>
       <div class="dialog-content">
         ${title ? `<p class="kicker">${title}</p>` : ''}
         <${heading} class="dialog-name" tabindex="-1">${name}</${heading}>
@@ -144,7 +148,7 @@ function renderNovelDialogue(content, speaker, words, controls, heading = 'h2', 
 }
 
 function initialMeters() {
-  return `<ul class="ship-meters" aria-label="Recursos iniciales">${resourceNames.map((name, i) =>
+  return `<ul class="ship-meters" aria-label="${t('Recursos iniciales', 'Starting resources')}">${resourceNames.map((name, i) =>
     `<li>${name} <strong>${initialResources[i]} %</strong></li>`).join('')}</ul>`;
 }
 
@@ -159,7 +163,7 @@ function advance() {
   }
   if (!dialogue) return;
   if (dialogue === 'intro' && ++dialogueLine < introduction.length) {
-    const button = dialogueLine === introduction.length - 1 ? 'Elegir destino · E' : 'Siguiente · E';
+    const button = dialogueLine === introduction.length - 1 ? t('Elegir destino · E', 'Choose destination · E') : t('Siguiente · E', 'Next · E');
     renderDialogue(introduction[dialogueLine], button);
     return;
   }

@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "description": "Static HTML/CSS/JavaScript lunar exploration prototype",
   "scripts": {
-    "test": "node tests/science.test.cjs && node tests/wmts.test.cjs && node tests/game.test.cjs",
+    "test": "node tests/science.test.cjs && node tests/wmts.test.cjs && node tests/solar.test.cjs && node tests/game.test.cjs",
     "start": "python3 -m http.server 8080"
   },
   "devDependencies": { "jsdom": "26.1.0" }
