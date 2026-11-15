@@ -25,6 +25,7 @@
   padding-left: .18em;
   font-size: clamp(12px, 1.3vw, 17px);
   letter-spacing: .18em;
+  text-shadow: 0 1px 4px #030b21, 0 1px 8px #030b21;
 }
 .support-credit {
   grid-column: 3;
@@ -39,7 +40,7 @@
 .support-logos { display: flex; gap: 4px; }
 .support-logos img {
   display: block;
-  width: clamp(20px, 3.2vw, 32px);
+  width: clamp(30px, 4cqw, 54px);
   height: auto;
 }
 
