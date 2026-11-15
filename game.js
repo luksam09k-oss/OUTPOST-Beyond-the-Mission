@@ -377,7 +377,7 @@ function results() {
   const baseStatus = energy === 0 ? 'sin energía' : oxygen === 0 ? 'sin oxígeno' : finalRepair ? 'operativa' : 'en modo de emergencia';
   const crewStatus = oxygen === 0 || radiation >= 100 ? 'necesita atención urgente' : radiation < 25 ? 'está a salvo' : 'necesita observación médica';
   show('results', `${header()}<section class="panel"><p class="kicker">INFORME LUNAR</p>
-    <h1 tabindex="-1">Resultados de la misión</h1>${terrainSession && terrainRoute ? '<button data-action="scienceInfo">Consultar datos de NASA · Misión 1</button>' : ''}
+    <h1 tabindex="-1">Resultados de la misión</h1>${terrainSession && terrainRoute ? '<button data-action="scienceInfo" aria-haspopup="dialog">Detalles técnicos · Primer contacto</button>' : ''}
     <p><strong>${complete}/5 objetivos completados.</strong> Base ${baseStatus}. La tripulación ${crewStatus}.</p>
     <div class="stats">${stats()}</div>
     <h2>Decisiones de la expedición</h2>

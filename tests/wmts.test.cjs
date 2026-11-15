@@ -16,11 +16,13 @@ async function check(mode) {
  };
  for(const f of ['science.js','moon-map.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),context);
  await vm.runInContext(`(async()=>{window.testSession=await MoonMap.load();await MoonMap.capabilities(testSession);MoonMap.mount(document.querySelector('#map'),testSession,testSession.data.routes[0]);})()`,context);
- for(let i=0;i<100 && !w.document.querySelector('.map-status').textContent.startsWith('Moon Trek:');i++)await new Promise(r=>setTimeout(r,5));
+ for(let i=0;i<100 && w.document.querySelector('.map-status').textContent.includes('cargando');i++)await new Promise(r=>setTimeout(r,5));
  const status=w.document.querySelector('.map-status').textContent,s=w.testSession;
  assert(requests.includes(manifest.capabilities));assert(s.logs.some(l=>l.service==='Moon Trek GetTile'));
  if(mode==='live'){assert(s.capabilitiesStatus.includes('HTTP correcto'));assert(s.logs.filter(l=>l.service==='Moon Trek GetTile').every(l=>l.source==='NASA · solicitud HTTP'));}
  else {assert(s.capabilitiesStatus.includes('locales'));assert(s.logs.filter(l=>l.service==='Moon Trek GetTile').every(l=>mode==='cached'?l.source==='Caché local NASA':l.status==='Error'));}
- assert(!status.includes('Consultando'));dom.window.close();console.log('PASS WMTS '+mode+': '+status);
+ assert.equal(status, `Moon Trek: ${{live:'en línea',cached:'copia local',unavailable:'mapa no disponible'}[mode]}`);
+ assert.match(s.mapStatus, /mosaicos por HTTP/);
+ dom.window.close();console.log('PASS WMTS '+mode+': '+status);
 }
 (async()=>{for(const mode of ['live','cached','unavailable'])await check(mode);})().catch(e=>{console.error(e);process.exitCode=1;});

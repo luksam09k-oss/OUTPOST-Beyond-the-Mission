@@ -73,10 +73,11 @@ const MoonMap = (() => {
     return result;
   }
   function mount(host, session, route, compact = false) {
-    host.innerHTML = `<div class="lunar-map"><canvas width="960" height="650" aria-label="Mapa NASA de Connecting Ridge con ruta y base ficticias"></canvas>
-      <div class="map-legend">● Base ficticia &nbsp; ◇ Destino &nbsp; ━ Ruta calculada</div>
+    host.innerHTML = `<div class="lunar-map"><div class="map-plot">
+      <canvas width="960" height="650" aria-label="Mapa NASA de Connecting Ridge con ruta y base ficticias"></canvas>
+      <div class="map-legend">● Base ficticia &nbsp; ● Destino &nbsp; ━ Ruta</div>
       ${compact ? '' : '<div class="map-zoom"><button data-map-zoom="1" aria-label="Acercar mapa">+</button><button data-map-zoom="-1" aria-label="Alejar mapa">−</button><button data-map-zoom="0">Encuadrar</button></div>'}
-      <p class="map-status" role="status">Consultando NASA Moon Trek…</p></div>`;
+      </div><p class="map-status" role="status">Moon Trek: cargando mapa…</p></div>`;
     const canvas = host.querySelector('canvas'), ctx = canvas.getContext('2d'), label = host.querySelector('.map-status');
     const m = session.manifest;
     let zoom = 0, requestId = 0, tiles = [], view;
@@ -121,7 +122,9 @@ const MoonMap = (() => {
       const z=zoom || fitWidth < 2500 ? '10' : '9',matrix=m.matrices.find(v=>v.id===z),span=matrix.resolution*256;
       const entries=m.tiles.filter(t=>t.z===z && matrix.origin[0]+(t.col+1)*span>view[0] && matrix.origin[0]+t.col*span<view[2]
         && matrix.origin[1]-t.row*span>view[1] && matrix.origin[1]-(t.row+1)*span<view[3]);
-      tiles=[];label.textContent='Consultando NASA Moon Trek…';draw();
+      tiles=[];label.textContent='Moon Trek: cargando mapa…';draw();
+      session.mapStatus = 'Consultando mosaicos…';
+      session.update?.();
       // Four simultaneous requests, bounded by the verified manifest.
       let index=0;
       await Promise.all(Array.from({length:Math.min(4,entries.length)},async()=>{
@@ -131,33 +134,80 @@ const MoonMap = (() => {
       const live=tiles.filter(t=>t.result.source==='NASA · solicitud HTTP').length;
       const cached=tiles.filter(t=>t.result.image && t.result.source!=='NASA · solicitud HTTP').length;
       const missing=tiles.length-live-cached;
-      label.textContent=`Moon Trek: ${live} mosaicos por HTTP · ${cached} en caché${missing?' · '+missing+' no disponibles':''}`;
-      session.mapStatus=label.textContent;session.update?.();
+      session.mapStatus = `Moon Trek: ${live} mosaicos por HTTP · ${cached} en caché${missing ? ' · '+missing+' no disponibles' : ''}`;
+      const sources = [live && 'en línea', cached && 'copia local'].filter(Boolean);
+      const mapStatus = sources.length ? sources.join(' y ') + (missing ? ' · mapa parcial' : '') : 'mapa no disponible';
+      label.textContent = `Moon Trek: ${mapStatus}`;
+      session.update?.();
     }
     host.querySelectorAll('[data-map-zoom]').forEach(b=>b.addEventListener('click',()=>{zoom=Number(b.dataset.mapZoom)>0?1:0;refresh();}));
     refresh();
     return { draw, dispose:()=>{requestId++;}, canvas };
   }
   function technical(session, route, result) {
-    const m=session.manifest,d=session.data;
-    const fields=['distanceM','maxSlopeDeg','meanSlopeDeg','reliefM','ascentM','descentM','elevationMinM','elevationMaxM'];
-    return `<p>Cartografía: <a href="${m.capabilities}" target="_blank" rel="noopener">NASA Moon Trek / LRO</a>. ${escape(session.mapStatus||'Consultando mosaicos')}</p>
-      <p>Capa: ${escape(m.layer)}. Relieve sombreado derivado de LOLA; no es una fotografía ni una medición de luz solar.</p>
-      <p>${escape(m.crs)}. ${escape(m.crsNote)}</p>
-      <p>LOLA: modelos históricos de <a href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noopener">Barker et al. · Site01</a>, 5 m/píxel, MOON_ME DE421. Datos locales preparados: ${escape(d.preparedAt)}.</p>
-      <p>RadLab: no integrado. DONKI: no integrado. No hay medición de radiación en tiempo real.</p>
-      <p>Última consulta iniciada: ${escape(new Date(session.timestamp).toLocaleString())}. Cada petición conserva su propia hora en el registro.</p>
-      <h3>Valores derivados de LOLA</h3><pre>${escape(JSON.stringify(Object.fromEntries(fields.map(k=>[k,route[k]])),null,2))}</pre>
-      <p>Distancias, desniveles y elevaciones en metros; pendientes en grados. Elevaciones relativas al radio lunar de 1 737 400 m. Base y rutas ficticias. La viabilidad aquí solo evalúa el modelo de terreno; no certifica una ruta para una misión real. El nombre «sombra» no verifica iluminación.</p>
-      <p>Las pendientes se comprobaron en celdas de 20 m usando el máximo de los 16 píxeles de 5 m; perfil muestreado cada ≤5 m. Hay interpolación en el modelo LOLA y no se representan rocas menores de 5 m.</p>
-      <h3>Fórmulas del juego · puntos simulados</h3>
-      <p>Tiempo = ida y vuelta / velocidad × (1 + pendiente media / 20) + 0,25 h de estudio. Oxígeno = horas × (5 × consumo base + traje, si sale un astronauta). Energía = soporte de base + kilómetros × equipo × pendiente + ascenso y descenso + instrumentos. Radiación = horas × (índice protegido + índice exterior, si procede) × condición ambiental simulada.</p>
-      <p>Riesgo del rover = referencia de ruta + distancia de ida × 0,8 %/km + pendiente máxima × 0,2 %/grado + relieve × 0,6 %/100 m, limitado al 45 %. Retirada humana = 60 % de ese riesgo. Se sortea una vez. Distancia, pendiente y relieve sustituyen la rugosidad a esta escala; no se inventan obstáculos observados.</p>
-      <p>Si falla, solo se cobra la fracción del tiempo transcurrido (incluido el regreso en una retirada humana). No hay observaciones nuevas antes de llegar al destino. Los recursos se redondean hacia arriba a puntos enteros y se limitan a la reserva disponible.</p>
-      <pre>${escape(JSON.stringify({coefficients:LunarScience.balance,result:result||'Todavía sin decisión'},null,2))}</pre>
-      <h3>Archivos y trazabilidad</h3>${d.sources.map(s=>`<p><a href="${s.url}" target="_blank" rel="noopener">${s.url.split('/').at(-1)}</a><br>SHA-256: <code>${s.sha256}</code></p>`).join('')}
-      <p><a href="data/nasa/routes.json" target="_blank">Perfil LOLA completo y coordenadas</a> · <a href="data/nasa/layer-metadata.json" target="_blank">Metadatos originales de la capa</a> · <a href="data/nasa/wmts.json" target="_blank">Mosaicos y hashes del respaldo</a></p>
-      <details><summary>Registro de solicitudes y respuestas originales</summary><pre>${escape(JSON.stringify(session.logs,null,2))}</pre></details>`;
+    const { manifest, data } = session;
+    const number = new Intl.NumberFormat('es', { maximumFractionDigits: 3 });
+    const metrics = [
+      ['Distancia de ida', route.distanceM, 'm'],
+      ['Pendiente máxima', route.maxSlopeDeg, '°'],
+      ['Pendiente media', route.meanSlopeDeg, '°'],
+      ['Desnivel máximo − mínimo', route.reliefM, 'm'],
+      ['Ascenso acumulado', route.ascentM, 'm'],
+      ['Descenso acumulado', route.descentM, 'm'],
+      ['Elevación mínima', route.elevationMinM, 'm'],
+      ['Elevación máxima', route.elevationMaxM, 'm']
+    ];
+    const information = `<h3>${escape(route.name)}</h3>
+      <p>${escape(route.difficulty)} · Connecting Ridge</p>
+      <dl class="science-metrics">${metrics.map(([label, value, unit]) =>
+        `<div><dt>${label}</dt><dd>${number.format(value)}${unit === '°' ? '' : ' '}${unit}</dd></div>`).join('')}</dl>
+      <figure class="science-profile">
+        <canvas class="elevation-profile" width="360" height="100" aria-label="Perfil de elevación de LOLA"></canvas>
+        <figcaption>Perfil de elevación a lo largo de la ruta de ida</figcaption>
+      </figure>
+      <details><summary>Cómo se calculó la ruta</summary>
+        <p>Las alturas se expresan respecto al radio lunar de 1 737 400 m. Las pendientes se verificaron en celdas de 20 m con el máximo de sus 16 píxeles de 5 m. El perfil se muestreó cada 5 m o menos.</p>
+        <p>La base y la ruta son ficticias. LOLA incluye alturas interpoladas. Los obstáculos de menos de 5 m y la iluminación quedan fuera de este análisis, incluso en la ruta «Aproximación a la sombra».</p>
+        <p><a href="data/nasa/routes.json" target="_blank" rel="noopener">Perfil LOLA completo y coordenadas</a></p>
+      </details>
+      <details><summary>Fórmulas y valores de la simulación</summary>
+        <p>Tiempo = ida y vuelta / velocidad × (1 + pendiente media / 20) + 0,25 h de estudio. Oxígeno = horas × (5 × consumo base + traje, si sale un astronauta). Energía = soporte de base + kilómetros × equipo × pendiente + ascenso y descenso + instrumentos. Radiación = horas × (índice protegido + índice exterior, si procede) × condición ambiental simulada.</p>
+        <p>Riesgo del rover = referencia de ruta + distancia de ida × 0,8 %/km + pendiente máxima × 0,2 %/grado + relieve × 0,6 %/100 m, limitado al 45 %. La retirada humana tiene un 60 % de ese riesgo, con un límite del 30 %. El resultado se sortea una vez.</p>
+        <p>Si falla, se aplica la fracción del consumo previsto según el tiempo transcurrido. Una retirada humana incluye el regreso. Las observaciones se transmiten al llegar al destino. El juego redondea el consumo hacia arriba y lo limita a la reserva disponible.</p>
+        <pre>${escape(JSON.stringify({ coefficients: LunarScience.balance, result: result || 'Todavía sin decisión' }, null, 2))}</pre>
+      </details>`;
+    const api = `<h3>Moon Trek</h3>
+      <dl class="science-metrics">
+        <div><dt>Mapa</dt><dd data-api-map></dd></div>
+        <div><dt>Metadatos</dt><dd data-api-capabilities></dd></div>
+        <div><dt>Última consulta</dt><dd data-api-timestamp></dd></div>
+      </dl>
+      <details><summary>Capa, proyección y archivos cartográficos</summary>
+        <p>Capa <code>${escape(manifest.layer)}</code>. Relieve sombreado de LRO derivado de LOLA.</p>
+        <p>${escape(manifest.crs)}. ${escape(manifest.crsNote)}</p>
+        <ul>
+          <li><a href="${manifest.capabilities}" target="_blank" rel="noopener">GetCapabilities de NASA Moon Trek</a></li>
+          <li><a href="data/nasa/WMTSCapabilities.xml" target="_blank" rel="noopener">Copia local de GetCapabilities</a></li>
+          <li><a href="data/nasa/layer-metadata.json" target="_blank" rel="noopener">Metadatos originales de la capa</a></li>
+          <li><a href="data/nasa/wmts.json" target="_blank" rel="noopener">Mosaicos y hashes del respaldo</a></li>
+        </ul>
+      </details>
+      <details><summary>Registro de solicitudes y respuestas originales</summary><pre data-api-log></pre></details>
+      <h3>Fuente de elevación LOLA</h3>
+      <p>Modelo histórico de <a href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noopener">Barker et al. · Site01</a>, 5 m/píxel, marco MOON_ME DE421. Datos locales preparados el ${escape(new Date(data.preparedAt).toLocaleDateString('es'))}.</p>
+      <details><summary>Archivos originales y verificaciones SHA-256</summary>
+        ${data.sources.map(source => `<p><a href="${source.url}" target="_blank" rel="noopener">${source.url.split('/').at(-1)}</a><br>SHA-256 <code>${source.sha256}</code></p>`).join('')}
+      </details>
+      <p>El índice de radiación es simulado. RadLab y DONKI quedan fuera de la simulación actual.</p>`;
+    return { information, api };
   }
-  return { load, capabilities, mount, technical, escape };
+
+  function updateApiDetails(dialog, session) {
+    dialog.querySelector('[data-api-map]').textContent = session.mapStatus || 'Consultando mosaicos…';
+    dialog.querySelector('[data-api-capabilities]').textContent = session.capabilitiesStatus;
+    dialog.querySelector('[data-api-timestamp]').textContent = new Date(session.timestamp).toLocaleString('es');
+    dialog.querySelector('[data-api-log]').textContent = JSON.stringify(session.logs, null, 2);
+  }
+
+  return { load, capabilities, mount, technical, updateApiDetails, escape };
 })();

@@ -24,6 +24,12 @@ for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;f
  scene('explore');phase='decision';terrainResult=LunarScience.outcome(terrainRoute,${mode?'"astronaut"':'"rover"'},()=>${failure?0:.999});
  reconnaissance={scientific:true,rover:${mode===0},elapsed:9000,duration:9000};finishTerrainJourney();`);
  assert.equal(run('game.log.length'),1);
+ if (mask === 0) {
+  assert.equal(w.document.querySelector('.mission-dialogue .dialog-name').textContent, 'Neil Armstrong');
+  const message = w.document.querySelector('.mission-dialogue .dialog-text').textContent;
+  assert.match(message, failure ? mode ? /regresó a salvo.*rover sigue disponible/ : /Perdimos la señal.*aplazar/ : /observaciones de todo el recorrido/);
+  assert.match(w.document.querySelector('.mission-dialogue .choice-cost').textContent, /min simulados.*Energía/);
+ }
  const stored=JSON.parse(w.localStorage.getItem('outpost-expedition'));assert.equal(stored.game.roverAvailable,!(failure&&mode===0));
  run('next()');
  for(let mission=1;mission<5;mission++) {
@@ -40,5 +46,28 @@ for(let route=0;route<4;route++)for(let mode=0;mode<2;mode++)for(let failure=0;f
 }
 // Movement locked throughout analysis, choices, and all cinematics.
 for(const p of ['analysis','decision','briefing','cinematic','feedback']) {run(`screen='map';phase='${p}'`);assert.equal(run('allowsMovement()'),false);}
-console.log(`PASS: intro lock, five crew, Mars unavailable, ${paths} expedition combinations, lost rover across missions, saved state, resources and results.`);
-dom.window.close();
+async function checkSciencePanels() {
+ run('begin(); scene("explore");');
+ await run('terrainAnalysis()');
+ const overview = w.document.querySelector('.terrain-panel');
+ assert.deepEqual([...overview.querySelectorAll('dt')].map(node => node.textContent), ['Distancia de ida', 'Pendiente máxima']);
+ assert.equal(overview.querySelector('.elevation-profile'), null);
+ overview.querySelector('[data-action="scienceInfo"]').click();
+ const dialog = w.document.querySelector('#science-info');
+ assert(dialog.open);
+ const info = dialog.querySelector('#science-information');
+ const api = dialog.querySelector('#science-api');
+ const infoTab = dialog.querySelector('#science-information-tab');
+ const apiTab = dialog.querySelector('#science-api-tab');
+ assert(!info.hidden && api.hidden);
+ assert(info.querySelector('.elevation-profile'));
+ assert(api.querySelector('[data-api-log]'));
+ infoTab.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+ assert.equal(apiTab.getAttribute('aria-selected'), 'true');
+ assert(info.hidden && !api.hidden);
+ infoTab.click();
+ assert(!info.hidden && api.hidden);
+ dialog.close();
+ console.log(`PASS: ${paths} expedition combinations, Neil's debriefs, simplified route overview, and keyboard-accessible technical tabs.`);
+}
+checkSciencePanels().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => dom.window.close());
